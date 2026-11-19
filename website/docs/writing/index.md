@@ -55,3 +55,17 @@ date: "2026-11-19"
 Both fields are optional. Use any category name and a date in `YYYY-MM-DD` format. The category selector appears if at least one book has a category. The sort selector appears if at least one book has a publication date.
 
 The selectors work with title search and carry across Shelves and Index. **Newest first** lists dated books first, with same-day books in title order and undated books at the end. **Default order** restores folder order on the shelves and title order in the index. Chapter order comes from the files in each book.
+
+## Custom cover artwork
+
+Set `coverImage` in the book's `index.md` to show your own artwork on the front of its book on the shelves.
+
+```markdown
+---
+cover: green
+coverImage: ./assets/field-notes.webp
+---
+# Field Notes
+```
+
+Use an AVIF, GIF, JPEG, PNG, or WebP file anywhere under `docs/`. Paths are relative to the book's `index.md`. The image fits below the title without cropping. Long titles use up to three lines on the cover, and the book link keeps its full title. Use a small, compressed image for a fast bookshelf.

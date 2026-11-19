@@ -9,10 +9,11 @@ import {
   useMemo,
   useRef,
 } from "react";
+import { BookCover } from "../../cli/book-cover.js";
 import { LibraryFooter } from "../../cli/library-footer.js";
 import { type CoverOrigin, motionQuery } from "./BookTransition";
 import { coverFor } from "./covers";
-import { bookHref, initialShelfArt } from "./navigation";
+import { assetHref, bookHref, initialShelfArt } from "./navigation";
 import type { BookSummary, Copy, Library } from "./types";
 
 export const shelfBatchSize = 12;
@@ -53,23 +54,6 @@ function Volume({
   front?: boolean;
 }): JSX.Element {
   const finish = coverFor(book.id, book.cover);
-  const cover = (
-    <>
-      <picture>
-        <source media="(max-width: 699px)" srcSet={finish.compact} />
-        <img
-          className="volume-render"
-          width={600}
-          height={760}
-          src={finish.src}
-          alt=""
-          loading={front ? "eager" : "lazy"}
-          decoding="async"
-        />
-      </picture>
-      <span className="volume-title">{book.title}</span>
-    </>
-  );
   return (
     <a
       className="volume"
@@ -82,7 +66,13 @@ function Volume({
       title={book.title}
       onClick={onOpen}
     >
-      {cover}
+      <BookCover
+        title={book.title}
+        src={finish.src}
+        compact={finish.compact}
+        artwork={book.coverImage && assetHref(book.coverImage)}
+        loading={front ? "eager" : "lazy"}
+      />
     </a>
   );
 }
@@ -269,6 +259,7 @@ export function LibraryView({
             id: book.id,
             title: book.title,
             cover: book.cover,
+            artwork: book.coverImage && assetHref(book.coverImage),
             src:
               link.querySelector("img")?.currentSrc ||
               coverFor(book.id, book.cover).src,
@@ -327,6 +318,7 @@ export function LibraryView({
       id: book.id,
       title: book.title,
       cover: book.cover,
+      artwork: book.coverImage && assetHref(book.coverImage),
       src:
         link.querySelector("img")?.currentSrc ||
         coverFor(book.id, book.cover).src,

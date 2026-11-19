@@ -6,6 +6,7 @@ export interface BookSummary {
   id: string;
   title: string;
   cover?: string;
+  coverImage?: string;
   category?: string;
   date?: string;
 }

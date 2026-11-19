@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import Markdown, { defaultUrlTransform } from "react-markdown";
 import remarkDirective from "remark-directive";
 import remarkGfm from "remark-gfm";
+import { BookCover } from "./book-cover.js";
 import { coverOptions, selectCover } from "./cover-options.js";
 import { LibraryFooter } from "./library-footer.js";
 import { remarkGrimoire } from "./markup.js";
@@ -262,8 +263,10 @@ function assetNamed(assets, prefix, name, ext = ".avif") {
 
 function staticShelf(site, prefix, assets, label) {
   const books = site.books.slice(0, 12);
-  // Catalog controls move the shelf when the interactive library starts.
-  const reuseShelfArt = !site.books.some((book) => book.category || book.date);
+  // Enhance the entire bookshelf together when adding catalog controls or custom art.
+  const reuseShelfArt = !site.books.some(
+    (book) => book.category || book.date || book.coverImage
+  );
   const button = site.locale === "ja" ? "目録" : "Index";
   const titleStyle = (finish) =>
     finish.lettering
@@ -284,7 +287,16 @@ function staticShelf(site, prefix, assets, label) {
         `cover-${finish.base}-mobile`
       );
       const style = `--cover-filter:${finish.filter};${titleStyle(finish)}`;
-      return `<div class="shelf-cell"><a class="volume" href="${prefix + escapeHtml(readerPath(book.id))}" aria-label="${escapeHtml(book.title)}" style="${style}">${cover ? `<picture>${mobileCover ? `<source media="(max-width: 699px)" srcset="${mobileCover}">` : ""}<img class="volume-render" src="${prefix}assets/${cover}" width="600" height="760" alt="" fetchpriority="low"${index > 2 ? ' loading="lazy"' : ""}></picture>` : ""}<span class="volume-title">${escapeHtml(book.title)}</span></a></div>`;
+      const face = renderToStaticMarkup(
+        element(BookCover, {
+          title: book.title,
+          src: cover && `${prefix}assets/${cover}`,
+          compact: mobileCover,
+          artwork: book.coverImage && prefix + book.coverImage.slice(2),
+          loading: index < 3 ? "eager" : "lazy",
+        })
+      );
+      return `<div class="shelf-cell"><a class="volume" href="${prefix + escapeHtml(readerPath(book.id))}" aria-label="${escapeHtml(book.title)}" style="${style}">${face}</a></div>`;
     })
     .join("");
   return `<main class="library"><header class="library-brand brand">${escapeHtml(site.title)}</header>

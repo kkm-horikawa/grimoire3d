@@ -101,6 +101,10 @@ function describeBook(pages, folder, fallback) {
     cover,
     category: index?.metadata.category,
     date: readPublicationDate(index),
+    coverImage: index?.metadata.coverImage && {
+      path: index.path,
+      value: index.metadata.coverImage,
+    },
     chapters: pages.sort(comparePages).map((page) => {
       const group = posix.dirname(page.path);
       const inBook = folder ? page.path.slice(folder.length + 1) : page.path;
@@ -345,9 +349,37 @@ export async function readLibrary(cwd, settings) {
     return image || undefined;
   }
   const socialImage = await socialAsset(settings.socialImage, "index.md");
+  const summaries = [];
   const publishedBooks = [];
   const documents = [];
-  for (const { id, title, cover, chapters } of books) {
+  for (const {
+    id,
+    title,
+    cover,
+    category,
+    date,
+    coverImage,
+    chapters,
+  } of books) {
+    let artwork;
+    if (coverImage) {
+      const { path, value } = coverImage;
+      const extension = extname(value.split(/[?#]/, 1)[0]).toLowerCase();
+      if (
+        ![".avif", ".gif", ".jpeg", ".jpg", ".png", ".webp"].includes(extension)
+      ) {
+        throw new Error(
+          `${path}: coverImage must point to an AVIF, GIF, JPEG, PNG, or WebP file.`
+        );
+      }
+      artwork = await loadLink(value, { path }, links, docs, assets, issues);
+      if (!artwork?.startsWith("./content/")) {
+        throw new Error(
+          `${path}: coverImage "${value}" must be a readable local image inside docs/.`
+        );
+      }
+    }
+    summaries.push({ id, title, cover, category, date, coverImage: artwork });
     const pages = [];
     for (const chapter of chapters) {
       const {
@@ -405,13 +437,7 @@ export async function readLibrary(cwd, settings) {
       author: settings.author,
       magicMode: settings.magicMode,
       footer: settings.footer,
-      books: books.map(({ id, title, cover, category, date }) => ({
-        id,
-        title,
-        cover,
-        category,
-        date,
-      })),
+      books: summaries,
     },
     books: publishedBooks,
     documents,
