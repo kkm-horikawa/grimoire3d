@@ -29,14 +29,14 @@
       if (started) return;
       started = true;
       for (const event of events) window.removeEventListener(event,start,true);
-      const reader = "../../assets/BookReader-DqI80zVd.js";
+      const reader = "../../assets/BookReader-D6Y6-YiA.js";
       if (reader) {
         const preload = document.createElement("link");
         preload.rel = "modulepreload";
         preload.href = reader;
         document.head.append(preload);
       }
-      void import("../../assets/index-8E35cdp1.js");
+      void import("../../assets/index-c2f4iI83.js");
     }
     const art = [...document.querySelectorAll("link[data-first-art]")].find(link => matchMedia(link.media).matches);
     if (!art || !matchMedia("(max-width: 699px)").matches) start();
@@ -50,7 +50,8 @@
       image.src = art.href;
     }
     </script>
-    <link rel="stylesheet" crossorigin href="../../assets/index-Co4uOkuH.css">
+    <link rel="modulepreload" crossorigin href="../../assets/jsxRuntime-WpZ1bTm4.js">
+    <link rel="stylesheet" crossorigin href="../../assets/index-aLXzUwjX.css">
   </head>
   <body>
     <div id="root"><main class="static-reading"><nav><a href="../../">Library</a></nav><h1>Writing Books</h1><ul><li><a href="../../read/writing/index/">Writing Books</a></li><li><a href="../../read/writing/formatting/">Formatting and Spell Mode</a></li><li><a href="../../read/writing/media/">Images, video, and diagrams</a></li></ul></main></div>
