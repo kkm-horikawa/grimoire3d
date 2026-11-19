@@ -132,6 +132,7 @@ export function readMarkdown(source) {
           ? metadata.category.trim() || undefined
           : undefined,
       date: metadata.date,
+      noindex: metadata.noindex === true,
       coverImage:
         typeof metadata.coverImage === "string"
           ? metadata.coverImage.trim() || undefined

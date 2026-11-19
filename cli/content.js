@@ -412,6 +412,7 @@ export async function readLibrary(cwd, settings) {
         chapter: chapterId,
         title: chapterTitle,
         hasTitle: chapter.hasTitle,
+        noindex: chapter.metadata.noindex,
         description:
           chapter.metadata.description ||
           chapter.excerpt ||

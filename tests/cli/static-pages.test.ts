@@ -61,6 +61,11 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
       ].join("\n")
     );
 
+    await writeFile(
+      join(root, "docs/notes/review.md"),
+      "---\nnoindex: true\n---\n# Review notes\n\nReadable by direct link."
+    );
+
     const settings = await readSettings(root);
     const library = await readLibrary(root, settings);
     expect(library.manifest).toMatchObject({
@@ -126,7 +131,69 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
     expect(sitemap).toContain(
       "<loc>https://example.com/projects/grimoire/read/notes/guide/</loc>"
     );
+    const review = await readFile(
+      join(root, "site/read/notes/review/index.html"),
+      "utf8"
+    );
+    expect(review).toContain('<meta name="robots" content="noindex">');
+    expect(review).toContain("Readable by direct link.");
+    expect(sitemap).not.toContain("/read/notes/review/");
+    for (const html of [shelf, book, cover, guide]) {
+      expect(html).not.toContain('<meta name="robots" content="noindex">');
+    }
   } finally {
     await rm(root, { recursive: true, force: true });
   }
 });
+
+it.each([
+  ["book directory", "docs/notes", "notes", "https://example.com/", ["/"]],
+  ["single book", "docs", "_root", "https://example.com/", []],
+  ["single book without a site URL", "docs", "_root", undefined, []],
+] as const)(
+  "marks entry URLs that open a noindex first chapter in a %s",
+  async (_name, docs, id, siteUrl, indexable) => {
+    const root = await mkdtemp(join(tmpdir(), "grimoire-noindex-"));
+    try {
+      await mkdir(join(root, docs), { recursive: true });
+      await mkdir(join(root, "template"));
+      await writeFile(
+        join(root, "template/index.html"),
+        '<html lang="en"><head><title>Default</title></head><body><div id="root"></div></body></html>'
+      );
+      await writeFile(
+        join(root, docs, "index.md"),
+        "---\nnoindex: true\n---\n# Review notes"
+      );
+      const library = await readLibrary(root, { locale: "en", siteUrl });
+      const output = join(root, "site");
+      await writeStaticPages(join(root, "template"), output, library);
+
+      for (const route of ["/", `/read/${id}/`, `/read/${id}/index/`]) {
+        const html = await readFile(join(output, route, "index.html"), "utf8");
+        expect(html.includes('<meta name="robots" content="noindex">')).toBe(
+          !indexable.some((url) => url === route)
+        );
+      }
+      if (indexable.length) {
+        const sitemap = await readFile(join(output, "sitemap.xml"), "utf8");
+        expect(sitemap.match(/<loc>(.*?)<\/loc>/g)).toEqual([
+          "<loc>https://example.com/</loc>",
+        ]);
+      } else {
+        await expect(
+          readFile(join(output, "sitemap.xml"))
+        ).rejects.toMatchObject({
+          code: "ENOENT",
+        });
+        await expect(
+          readFile(join(output, "robots.txt"))
+        ).rejects.toMatchObject({
+          code: "ENOENT",
+        });
+      }
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  }
+);
