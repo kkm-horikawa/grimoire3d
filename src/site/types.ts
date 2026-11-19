@@ -1,9 +1,14 @@
+import type { LibraryPublisher } from "../../cli/library-footer";
+
 export type Locale = "en" | "ja";
 
 export interface BookSummary {
   id: string;
   title: string;
   cover?: string;
+  coverImage?: string;
+  category?: string;
+  date?: string;
 }
 
 export interface Library {
@@ -12,6 +17,7 @@ export interface Library {
   shelf: boolean;
   magicMode?: boolean;
   siteUrl?: string;
+  footer?: LibraryPublisher;
   books: BookSummary[];
 }
 
@@ -41,6 +47,11 @@ export const copy = {
     shelves: "Shelves",
     index: "Index",
     find: "Find a book",
+    category: "Category",
+    allCategories: "All categories",
+    sort: "Sort books",
+    defaultOrder: "Default order",
+    newestFirst: "Newest first",
     clear: "Clear search",
     zero: "No books found",
     count: (count: number) => `${count} ${count === 1 ? "book" : "books"}`,
@@ -71,6 +82,11 @@ export const copy = {
     shelves: "書架",
     index: "目録",
     find: "本を探す",
+    category: "カテゴリ",
+    allCategories: "すべてのカテゴリ",
+    sort: "並び順",
+    defaultOrder: "既定順",
+    newestFirst: "公開日が新しい順",
     clear: "検索をクリア",
     zero: "一致する本がありません",
     count: (count: number) => `${count} 冊`,

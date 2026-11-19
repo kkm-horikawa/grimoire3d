@@ -1,6 +1,6 @@
 {
   "name": "grimoire3d",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "3D magical book documentation generator - Transform your docs into an interactive grimoire",
   "type": "module",
   "main": "./dist/index.js",
@@ -78,6 +78,7 @@
     "mermaid": "12.3.0",
     "micromark-extension-gfm": "3.0.0",
     "mime-types": "^3.0.2",
+    "parse5": "^8.1.1",
     "react-markdown": "^10.1.0",
     "remark-directive": "4.0.0",
     "remark-gfm": "^4.0.1",

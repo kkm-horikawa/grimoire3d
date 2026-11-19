@@ -33,6 +33,12 @@ The approved mockups use a red leather book, a bookshelf, a large-library index,
 
 [Annotated design references](book-experience/review/) use the same filenames as the source mockups. The [image generation prompts](book-experience/PROMPTS.md) record the initial and revised designs.
 
+The [approved library footer](https://github.com/kkm-horikawa/grimoire3d/issues/32#footer-design-proposal) puts attribution after the last item in Shelves and Index. On desktop the optional publisher appears on the left and Grimoire3D on the right. The links stack on phones. See the issue for the three approved mockups and the linked implementation review.
+
+The [approved category and date controls](https://github.com/kkm-horikawa/grimoire3d/issues/34#category-and-sort-design-proposal) sit below the search and view controls. Each appears when the library contains its corresponding metadata. Both views share the selections.
+
+The [approved custom artwork design](https://github.com/kkm-horikawa/grimoire3d/issues/35#long-title-with-a-portrait-image) reserves separate rows for the title and the image inside each cover. The title takes up to three lines and the image fits in the height below it.
+
 ## Browser verification
 
 The following checks were performed on November 19, 2026.

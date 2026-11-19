@@ -59,6 +59,24 @@ function comparePages(a, b) {
   );
 }
 
+function readPublicationDate(index) {
+  const raw = index?.metadata.date;
+  const date = typeof raw === "string" ? raw.trim() : raw;
+  if (date == null || date === "") return undefined;
+
+  if (typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    const parsed = new Date(date);
+    if (
+      Number.isFinite(parsed.getTime()) &&
+      parsed.toISOString().slice(0, 10) === date
+    )
+      return date;
+  }
+  throw new Error(
+    `${index.path}: date must be a valid publication date in YYYY-MM-DD format.`
+  );
+}
+
 function describeBook(pages, folder, fallback) {
   const index = pages.find(
     (page) =>
@@ -81,6 +99,12 @@ function describeBook(pages, folder, fallback) {
     id,
     title,
     cover,
+    category: index?.metadata.category,
+    date: readPublicationDate(index),
+    coverImage: index?.metadata.coverImage && {
+      path: index.path,
+      value: index.metadata.coverImage,
+    },
     chapters: pages.sort(comparePages).map((page) => {
       const group = posix.dirname(page.path);
       const inBook = folder ? page.path.slice(folder.length + 1) : page.path;
@@ -143,6 +167,8 @@ export async function readSettings(cwd) {
     socialImage,
     author,
     magicMode,
+    footer,
+    headFile,
   } = settings;
   if (
     typeof settings !== "object" ||
@@ -180,6 +206,8 @@ export async function readSettings(cwd) {
     socialImage,
     author,
     magicMode,
+    footer: readFooter(footer),
+    headFile,
     siteUrl: siteUrl && normalizeSiteUrl(siteUrl),
   };
 }
@@ -195,6 +223,22 @@ function absoluteWebUrl(value) {
       return url;
   } catch {}
   return undefined;
+}
+
+function readFooter(footer) {
+  if (footer === undefined) return undefined;
+  if (typeof footer?.label !== "string" || !footer.label.trim()) {
+    throw new Error("grimoire.yml: footer.label must be non-empty text.");
+  }
+  const { label, url } = footer;
+  if (url === undefined) return { label: label.trim() };
+  const link = typeof url === "string" ? absoluteWebUrl(url) : undefined;
+  if (!link) {
+    throw new Error(
+      "grimoire.yml: footer.url must be an absolute HTTP(S) URL."
+    );
+  }
+  return { label: label.trim(), url: link.href };
 }
 
 function normalizeSiteUrl(value) {
@@ -305,9 +349,37 @@ export async function readLibrary(cwd, settings) {
     return image || undefined;
   }
   const socialImage = await socialAsset(settings.socialImage, "index.md");
+  const summaries = [];
   const publishedBooks = [];
   const documents = [];
-  for (const { id, title, cover, chapters } of books) {
+  for (const {
+    id,
+    title,
+    cover,
+    category,
+    date,
+    coverImage,
+    chapters,
+  } of books) {
+    let artwork;
+    if (coverImage) {
+      const { path, value } = coverImage;
+      const extension = extname(value.split(/[?#]/, 1)[0]).toLowerCase();
+      if (
+        ![".avif", ".gif", ".jpeg", ".jpg", ".png", ".webp"].includes(extension)
+      ) {
+        throw new Error(
+          `${path}: coverImage must point to an AVIF, GIF, JPEG, PNG, or WebP file.`
+        );
+      }
+      artwork = await loadLink(value, { path }, links, docs, assets, issues);
+      if (!artwork?.startsWith("./content/")) {
+        throw new Error(
+          `${path}: coverImage "${value}" must be a readable local image inside docs/.`
+        );
+      }
+    }
+    summaries.push({ id, title, cover, category, date, coverImage: artwork });
     const pages = [];
     for (const chapter of chapters) {
       const {
@@ -340,6 +412,7 @@ export async function readLibrary(cwd, settings) {
         chapter: chapterId,
         title: chapterTitle,
         hasTitle: chapter.hasTitle,
+        noindex: chapter.metadata.noindex,
         description:
           chapter.metadata.description ||
           chapter.excerpt ||
@@ -364,7 +437,8 @@ export async function readLibrary(cwd, settings) {
       socialImage,
       author: settings.author,
       magicMode: settings.magicMode,
-      books: books.map(({ id, title, cover }) => ({ id, title, cover })),
+      footer: settings.footer,
+      books: summaries,
     },
     books: publishedBooks,
     documents,

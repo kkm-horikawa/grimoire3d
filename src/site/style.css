@@ -98,8 +98,35 @@ a {
 .library {
   position: relative;
   min-height: 100svh;
-  padding: 16px 7.1vw 9svh;
+  padding: 16px 7.1vw 12px;
   background: radial-gradient(ellipse at 50% 60%, #35191b 0%, #1c0712 80%);
+}
+.library-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 16px;
+  margin: 16px clamp(0px, 2.65vw, 48px) 0;
+  padding-block-start: 8px;
+  border-block-start: 1px solid #604841;
+  color: #d1bfa7;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.library-index + .library-footer {
+  width: min(calc(100% - 24px), 980px);
+  margin-inline: auto;
+}
+.library-publisher {
+  margin-inline-end: auto;
+  overflow-wrap: anywhere;
+}
+.library-footer a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.library-footer a:hover {
+  color: #f4e4c7;
 }
 .library-brand {
   position: absolute;
@@ -135,6 +162,39 @@ a {
   gap: 15px;
   width: min(100%, 985px);
   margin: 21px auto 0;
+}
+.catalog-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 208px));
+  gap: 12px;
+  width: min(100%, 985px);
+  margin: 10px auto 0;
+}
+.catalog-option {
+  position: relative;
+  min-width: 0;
+}
+.catalog-option select {
+  appearance: none;
+  width: 100%;
+  min-height: 38px;
+  padding: 0 33px 0 13px;
+  border: 1px solid #80512e;
+  border-radius: 10px;
+  background: #291913;
+  color: #f3e4c9;
+  color-scheme: dark;
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+.catalog-option svg {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: #e5c498;
+  pointer-events: none;
 }
 .shelf-search {
   flex: 1 1 auto;
@@ -809,7 +869,17 @@ a {
 
 @media (max-width: 699px) {
   .library {
-    padding: 15px 12px 32px;
+    padding: 15px 12px 10px;
+  }
+  .library-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin: 24px 12px 0;
+    text-align: center;
+  }
+  .library-publisher {
+    margin-inline-end: 0;
   }
   .library-brand {
     position: relative;
@@ -834,6 +904,13 @@ a {
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 15px;
+  }
+  .catalog-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .catalog-option select {
+    min-height: 44px;
   }
   .shelf-search {
     flex-basis: 100%;
@@ -1578,6 +1655,40 @@ output.book-count {
   margin-block: 0.8em 1em;
 }
 
+}
+
+.volume-face {
+  display: contents;
+}
+.volume-unmarked {
+  position: absolute;
+  inset: 0;
+  mask-image: radial-gradient(ellipse 22% 20% at 51% 58%, #000 70%, transparent 100%);
+  pointer-events: none;
+}
+.volume-unmarked .volume-render {
+  transform: translateY(22%) scaleY(1.55);
+  transform-origin: center top;
+}
+.volume-cover-content {
+  position: absolute;
+  inset: 25% 23% 14% 19%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(4px, 2cqw, 8px);
+  pointer-events: none;
+}
+.volume-cover-content .volume-title {
+  position: static;
+  min-width: 0;
+}
+.volume-cover-image {
+  display: block;
+  justify-self: center;
+  width: 90%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
 }
 
 .volume-title {
