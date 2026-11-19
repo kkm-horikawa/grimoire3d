@@ -96,10 +96,10 @@ dist/
 | Three.js | 0.170+ | 3D rendering engine |
 | React Three Fiber | 9+ | React renderer for Three.js |
 | @react-three/drei | 9+ | Useful 3D helpers |
-| TypeScript | 5.9+ | Type safety |
-| Vite | 7+ | Build tool & dev server |
+| TypeScript | 7 | Type safety |
+| Vite | 8 | Build tool & dev server |
 | Tailwind CSS | 4+ | UI styling (navigation, overlays) |
-| Vitest | 4+ | Testing |
+| Vitest | 5 | Testing |
 | Biome | 2+ | Linting & formatting |
 | Node.js | 22+ | Runtime |
 
@@ -294,7 +294,7 @@ These are intentionally **not** planned for v1.0:
 | Why Three.js over CSS 3D? | Realistic bending, lighting, materials |
 | Why React Three Fiber? | Declarative 3D in React ecosystem |
 | Why React 19? | Latest stable with improved performance |
-| Why Vite 7? | Fast dev server, modern ESM-first |
+| Why Vite 8? | Fast dev server and ESM-first builds |
 | Why Tailwind v4? | CSS-first config, better performance |
 | Why file-based? | Simple mental model like mkdocs |
 | Why Markdown first? | Industry standard for docs |

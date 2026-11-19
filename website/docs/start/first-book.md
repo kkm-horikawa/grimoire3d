@@ -2,18 +2,10 @@
 
 ## Install the CLI
 
-Use Node.js 22 or later. The current npm release predates the CLI. Build and pack a checkout that includes it.
+Use a maintained Node.js 22, 24, or 26 release. Install Grimoire3D from npm in the project where you want to write your book. If the project has no `package.json`, run `npm init -y` first.
 
 ```sh
-npm ci
-npm run build
-npm pack
-```
-
-Install the resulting archive from the project where you want to write your book. Run `npm init -y` first if the project has no `package.json`.
-
-```sh
-npm install -D /path/to/grimoire3d-0.0.0.tgz
+npm install --save-dev grimoire3d
 ```
 
 ## Add Markdown

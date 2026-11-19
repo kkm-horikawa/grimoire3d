@@ -6,8 +6,8 @@ Thank you for your interest in contributing!
 
 ### Prerequisites
 
-- Node.js 22+
-- pnpm 10+ (recommended) or npm
+- An up-to-date Node.js 22, 24, or 26 release
+- npm
 
 ### Clone and Setup
 
@@ -15,19 +15,15 @@ Thank you for your interest in contributing!
 git clone https://github.com/kkm-horikawa/grimoire3d.git
 cd grimoire3d
 
-# Using pnpm (recommended)
-pnpm install
-
-# Or using npm
-npm install
+npm ci
 ```
 
-> **Note**: `npm install` automatically sets up husky pre-commit hooks via the `prepare` script.
+> **Note**: `npm ci` sets up Husky pre-commit hooks via the `prepare` script.
 
 ### Running Development Server
 
 ```bash
-pnpm dev
+npm run dev
 ```
 
 Open http://localhost:5173 in your browser to see the BookViewer demo.
@@ -48,7 +44,7 @@ Run `node ../cli/cli.js build` from `website/` to regenerate the deployment dire
 ### Running Tests
 
 ```bash
-pnpm test
+npm test -- --run
 ```
 
 ### Code Style
@@ -57,16 +53,16 @@ We use [Biome v2](https://biomejs.dev/) for linting and formatting:
 
 ```bash
 # Lint
-pnpm lint
+npm run lint
 
 # Format
-pnpm format
+npm run format
 
 # Check everything (lint + format)
-pnpm check
+npm run check
 
 # Fix everything
-pnpm check:fix
+npm run check:fix
 ```
 
 ## Coding Standards
@@ -80,7 +76,7 @@ pnpm check:fix
 | Quotes | Double quotes `"` |
 | Type hints | Required for public APIs |
 | Docstrings | JSDoc style |
-| TypeScript | 5.9+ with strict mode |
+| TypeScript | 7 with strict mode |
 | React | 19+ with functional components |
 
 ### Naming Conventions
@@ -214,13 +210,13 @@ describe("BookViewer", () => {
 
 ```bash
 # Run all tests
-pnpm test
+npm test -- --run
 
 # Run with coverage
-pnpm test:coverage
+npm test -- --run --coverage
 
 # Run specific test file
-pnpm test tests/components/BookViewer.test.tsx
+npm test -- --run tests/components/BookViewer.test.tsx
 ```
 
 ## Project Structure
