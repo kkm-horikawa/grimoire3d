@@ -1,8 +1,16 @@
 /**
- * Folio - Page-flip animated documentation generator
+ * Grimoire3D - 3D magical book documentation generator
  *
  * @packageDocumentation
  */
 
+import "./styles/main.css";
+
 export { BookViewer } from "./components/BookViewer";
-export type { BookViewerProps, PageContent, FolioConfig } from "./types";
+export type {
+  BookMaterialConfig,
+  BookViewerProps,
+  GrimoireConfig,
+  PageContent,
+  ThemeConfig,
+} from "./types";

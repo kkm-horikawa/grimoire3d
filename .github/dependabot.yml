@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    pull-request-branch-name:
+      template: "chore/dependabot-{package_manager}-{name}"
+    ignore:
+      # Type-check the CLI against the oldest supported Node.js major.
+      - dependency-name: "@types/node"
+        versions: [">=23"]
+    groups:
+      npm-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    pull-request-branch-name:
+      template: "chore/dependabot-{package_manager}-{name}"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

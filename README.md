@@ -1,149 +1,49 @@
-# folio
+# Grimoire3D
 
-[![npm version](https://badge.fury.io/js/folio.svg)](https://badge.fury.io/js/folio)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+Turn Markdown into 3D books you can open and flip through in a browser.
 
-A page-flip animated documentation generator. Write beautiful docs like turning pages of a book.
+[![npm version](https://img.shields.io/npm/v/grimoire3d)](https://www.npmjs.com/package/grimoire3d)
 
-## What is this?
+![A Markdown chapter is added under docs, then opened and paged through from the Grimoire3D bookshelf](docs/book-experience/quick-start.gif)
 
-Folio transforms your Markdown documentation into an interactive book with realistic page-flip animations. Perfect for:
+[Read the documentation](https://kkm-horikawa.github.io/grimoire3d/)
 
-- Project documentation
-- Design specifications
-- Technical notes
-- Portfolios
-- Tutorials
+## Install
 
-## Features
+Use a maintained Node.js 22, 24, or 26 release. Install Grimoire3D from npm in the project where you want to write your books. If the project has no `package.json`, run `npm init -y` first.
 
-- Page-flip animation with 3D effects
-- Markdown rendering
-- HTML support
-- Mermaid diagram support (planned)
-- Multiple themes
-- Static site generation
-- Zero-config setup
-
-## Installation
-
-```bash
-npm install folio
-# or
-pnpm add folio
-# or
-yarn add folio
+```sh
+npm install --save-dev grimoire3d
 ```
 
-## Quick Start
+## Write and preview
 
-### 1. Create your docs directory
-
-```
-my-project/
-├── folio.yml          # Configuration (optional)
-└── docs/
-    ├── index.md       # Cover page
-    ├── 01-overview.md
-    ├── 02-features.md
-    └── assets/
-        └── diagram.png
-```
-
-### 2. Write your content
+Create `docs/field-notes/index.md`.
 
 ```markdown
-<!-- docs/index.md -->
-# My Project
+# Field Notes
 
-Welcome to the documentation.
-
-## Overview
-
-This is an amazing project...
+This is my first 3D book.
 ```
 
-### 3. Start the dev server
+Add Markdown files in the same folder for more chapters. Add folders directly under `docs/` for more books.
 
-```bash
-npx folio serve
+```sh
+npx grimoire3d serve
 ```
 
-### 4. Build for production
+Open the URL printed in the terminal. The preview updates when you save.
 
-```bash
-npx folio build
+![Workflow from Markdown files to a local bookshelf and a static site in dist](docs/book-experience/workflow.avif)
+
+## Build and publish
+
+```sh
+npx grimoire3d build
 ```
 
-## Configuration
+Deploy the contents of `dist/` to any static host, including Cloudflare Pages and GitHub Pages. Use `--out-dir site` to choose a different output directory.
 
-Create a `folio.yml` file in your project root:
+For chapter links, formatting, media, Mermaid, cover styles, locale, and SEO, see the [Grimoire3D documentation](https://kkm-horikawa.github.io/grimoire3d/).
 
-```yaml
-title: "My Project Documentation"
-theme: "vintage-red"  # or "modern-dark", "paper-white"
-pages:
-  - index.md
-  - 01-overview.md
-  - 02-features.md
-# Omit 'pages' to auto-detect all .md files
-```
-
-## Using as a React Component
-
-```tsx
-import { BookViewer } from "folio/components";
-
-const pages = [
-  {
-    id: "cover",
-    title: "Cover",
-    front: <CoverPage />,
-    back: <AboutPage />,
-    tabColor: "#E57373",
-    tabLabel: "Cover",
-  },
-  // ... more pages
-];
-
-function App() {
-  return <BookViewer pages={pages} />;
-}
-```
-
-## Themes
-
-| Theme | Description |
-|-------|-------------|
-| `vintage-red` | Classic red leather book cover |
-| `modern-dark` | Sleek dark mode |
-| `paper-white` | Clean minimal design |
-| `forest-green` | Nature-inspired |
-
-## Roadmap
-
-- [ ] v0.1.0 - MVP with basic page-flip and Markdown support
-- [ ] v0.2.0 - Mermaid diagrams and code highlighting
-- [ ] v0.3.0 - CLI for static site generation
-- [ ] v0.4.0 - Theme customization and plugins
-
-## Documentation
-
-- [Architecture & Design Decisions](docs/ARCHITECTURE.md)
-- [Glossary of Terms](docs/GLOSSARY.md)
-- [Contributing Guide](CONTRIBUTING.md)
-
-## Requirements
-
-- Node.js 22+
-- React 19+
-
-## License
-
-MIT License. See [LICENSE](LICENSE) for details.
-
-## Inspiration
-
-- Vintage technical manuals and recipe books
-- WordPress Gutenberg's Synced Patterns
-- React component libraries
+[Contributing](CONTRIBUTING.md) · [MIT License](LICENSE)

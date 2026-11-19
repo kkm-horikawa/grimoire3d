@@ -1,19 +1,48 @@
-import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import { ChevronLeft, ChevronRight, Lock, Unlock } from "lucide-react";
+import { useMemo, useState } from "react";
 import type { BookViewerProps } from "../types";
+import { BookModel } from "./BookModel";
 
 /**
- * Main book viewer component with page-flip animation
+ * Main book viewer component with Three.js-powered 3D rendering.
+ *
+ * Renders an interactive 3D book with realistic page-flip animations
+ * using React Three Fiber.
+ *
+ * @example
+ * ```tsx
+ * <BookViewer
+ *   pages={pages}
+ *   initialPage={0}
+ *   onPageChange={(index) => console.log(`Page: ${index}`)}
+ * />
+ * ```
  */
 export function BookViewer({
   pages,
   initialPage = 0,
   className = "",
   onPageChange,
+  cameraControls = false,
+  ambientLight = 0.5,
+  showShadows = true,
 }: BookViewerProps) {
   const [currentPage, setCurrentPage] = useState(initialPage);
+  // Reading mode: camera locked, text selection enabled
+  // Explore mode: OrbitControls enabled, page click to flip
+  const [isReadingMode, setIsReadingMode] = useState(true);
+  const [pageLayer, setPageLayer] = useState<HTMLDivElement | null>(null);
+  const pagePortal = useMemo(
+    () => (pageLayer ? { current: pageLayer } : undefined),
+    [pageLayer]
+  );
   const totalPages = pages.length;
 
+  /**
+   * Navigate to the next page.
+   */
   const handleNext = () => {
     if (currentPage < totalPages) {
       const newPage = currentPage + 1;
@@ -22,6 +51,9 @@ export function BookViewer({
     }
   };
 
+  /**
+   * Navigate to the previous page.
+   */
   const handlePrev = () => {
     if (currentPage > 0) {
       const newPage = currentPage - 1;
@@ -30,101 +62,59 @@ export function BookViewer({
     }
   };
 
+  /**
+   * Jump to a specific page.
+   *
+   * @param index - The zero-based page index to navigate to
+   */
   const goToPage = (index: number) => {
-    setCurrentPage(index);
-    onPageChange?.(index);
+    if (index >= 0 && index <= totalPages) {
+      setCurrentPage(index);
+      onPageChange?.(index);
+    }
   };
 
   return (
     <div
-      className={`folio-container w-full h-screen flex flex-col items-center justify-center overflow-hidden relative ${className}`}
+      className={`grimoire-container w-full h-screen flex flex-col items-center justify-center overflow-hidden relative ${className}`}
       style={{ backgroundColor: "#251612" }}
     >
-      {/* Background Ambience */}
-      <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-black via-[#1a0f0c] to-[#0f0806]" />
+      {/* Three.js Canvas */}
+      <div ref={setPageLayer} className="w-full h-full relative">
+        {pagePortal && (
+          <Canvas shadows={showShadows}>
+            {/* Camera */}
+            <PerspectiveCamera makeDefault position={[0, 5, 5]} fov={50} />
 
-      {/* 3D Scene Container */}
-      <div className="relative w-full max-w-5xl aspect-[1.4/1] md:aspect-[2/1] flex items-center justify-center p-4 md:p-12 perspective-2000">
-        {/* Book Wrapper */}
-        <div className="relative w-full h-full transform-style-3d shadow-2xl bg-[#2a1810] rounded-lg">
-          {/* Ring Binder */}
-          <RingBinder />
-
-          {/* Pages */}
-          {pages.map((page, index) => {
-            const isFlipped = index < currentPage;
-            const zIndex = isFlipped ? index : totalPages - index;
-
-            const handlePageClick = () => {
-              if (!isFlipped && index === currentPage) handleNext();
-              if (isFlipped && index === currentPage - 1) handlePrev();
-            };
-
-            const handlePageKeyDown = (e: React.KeyboardEvent) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handlePageClick();
-              }
-            };
-
-            return (
-              <div
-                key={page.id}
-                role="button"
-                tabIndex={0}
-                aria-label={`Page ${index + 1}: ${page.title}`}
-                className="absolute inset-0 w-1/2 h-full left-1/2 origin-left transition-transform duration-700 ease-in-out transform-style-3d cursor-pointer"
-                style={{
-                  zIndex,
-                  transform: isFlipped ? "rotateY(-180deg)" : "rotateY(0deg)",
-                }}
-                onClick={handlePageClick}
-                onKeyDown={handlePageKeyDown}
-              >
-                {/* Front of Page (Right side) */}
-                <div
-                  className="absolute inset-0 w-full h-full backface-hidden rounded-r-lg shadow-inner overflow-hidden border-l border-stone-200"
-                  style={{ backgroundColor: "#FDF6E3" }}
-                >
-                  {page.front}
-                  <div className="absolute bottom-4 right-4 text-[10px] font-mono text-stone-400">
-                    {index * 2 + 1}
-                  </div>
-                  <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black/20 to-transparent pointer-events-none" />
-                </div>
-
-                {/* Back of Page (Left side after flip) */}
-                <div
-                  className="absolute inset-0 w-full h-full backface-hidden rounded-l-lg shadow-inner overflow-hidden border-r border-stone-200"
-                  style={{
-                    backgroundColor: "#FDF6E3",
-                    transform: "rotateY(180deg)",
-                  }}
-                >
-                  {page.back}
-                  <div className="absolute bottom-4 left-4 text-[10px] font-mono text-stone-400">
-                    {index * 2 + 2}
-                  </div>
-                  <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-black/20 to-transparent pointer-events-none" />
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Index Tabs */}
-          {pages.map((page, index) => (
-            <IndexTab
-              key={page.id}
-              page={page}
-              index={index}
-              activeIndex={currentPage}
-              onClick={() => goToPage(index)}
+            {/* Lighting */}
+            <ambientLight intensity={ambientLight} />
+            <directionalLight
+              position={[5, 10, 5]}
+              intensity={1}
+              castShadow={showShadows}
+              shadow-mapSize={[2048, 2048]}
             />
-          ))}
+            <pointLight position={[-5, 5, -5]} intensity={0.3} />
 
-          {/* Back Cover Shadow */}
-          <div className="absolute inset-0 rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.5)] -z-10 bg-[#2a1810]" />
-        </div>
+            {/* Book Model */}
+            <BookModel
+              pages={pages}
+              currentPage={currentPage}
+              onNextPage={handleNext}
+              onPrevPage={handlePrev}
+              isReadingMode={isReadingMode}
+              pagePortal={pagePortal}
+            />
+
+            {/* OrbitControls: always mounted but disabled in reading mode */}
+            <OrbitControls
+              enabled={!isReadingMode || cameraControls}
+              enableRotate={!isReadingMode || cameraControls}
+              enableZoom={!isReadingMode || cameraControls}
+              enablePan={!isReadingMode || cameraControls}
+            />
+          </Canvas>
+        )}
       </div>
 
       {/* Navigation Controls */}
@@ -133,6 +123,7 @@ export function BookViewer({
           type="button"
           onClick={handlePrev}
           disabled={currentPage === 0}
+          aria-label="Previous page"
           className="bg-[#00B0FF] hover:bg-[#40C4FF] disabled:bg-stone-700 disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-xl shadow-[0_4px_0_#0080B0] active:shadow-none active:translate-y-1 transition-all"
         >
           <ChevronLeft size={24} />
@@ -153,82 +144,59 @@ export function BookViewer({
           type="button"
           onClick={handleNext}
           disabled={currentPage === totalPages}
+          aria-label="Next page"
           className="bg-[#00B0FF] hover:bg-[#40C4FF] disabled:bg-stone-700 disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-xl shadow-[0_4px_0_#0080B0] active:shadow-none active:translate-y-1 transition-all"
         >
           <ChevronRight size={24} />
         </button>
       </div>
 
-      {/* Global Styles for 3D */}
-      <style>{`
-        .perspective-2000 {
-          perspective: 2000px;
-        }
-        .transform-style-3d {
-          transform-style: preserve-3d;
-        }
-        .backface-hidden {
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
-        }
-        .scrollbar-thin::-webkit-scrollbar {
-          width: 4px;
-        }
-        .scrollbar-thin::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-          background-color: #d6d3d1;
-          border-radius: 20px;
-        }
-      `}</style>
+      {/* Index Tabs */}
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-40">
+        {pages.map((page, index) => (
+          <button
+            key={page.id}
+            type="button"
+            onClick={() => goToPage(index)}
+            aria-label={`Go to ${page.title}`}
+            className="w-8 md:w-10 h-12 rounded-l-lg flex items-center justify-center text-[10px] font-bold tracking-widest cursor-pointer transition-all duration-300 hover:w-12 shadow-md"
+            style={{
+              backgroundColor:
+                index === currentPage
+                  ? page.tabColor || "#00B0FF"
+                  : page.tabColor || "#E0E0E0",
+              color: index === currentPage ? "#fff" : "#2c1a16",
+              writingMode: "vertical-rl",
+              textOrientation: "mixed",
+              opacity: index <= currentPage ? 1 : 0.6,
+            }}
+          >
+            {page.tabLabel || page.id}
+          </button>
+        ))}
+      </div>
+
+      {/* Mode Toggle Button */}
+      <div className="absolute left-4 top-4 z-40">
+        <button
+          type="button"
+          onClick={() => setIsReadingMode(!isReadingMode)}
+          aria-label={
+            isReadingMode ? "Switch to explore mode" : "Switch to reading mode"
+          }
+          className="bg-stone-800/80 hover:bg-stone-700 text-white p-3 rounded-lg backdrop-blur border border-stone-700 transition-all flex items-center gap-2"
+          title={
+            isReadingMode
+              ? "Explore mode: drag to rotate, scroll to zoom"
+              : "Reading mode: select text, scroll content"
+          }
+        >
+          {isReadingMode ? <Lock size={20} /> : <Unlock size={20} />}
+          <span className="text-xs">
+            {isReadingMode ? "Reading" : "Explore"}
+          </span>
+        </button>
+      </div>
     </div>
-  );
-}
-
-function RingBinder() {
-  return (
-    <div className="absolute left-1/2 top-0 bottom-0 w-8 -ml-4 z-50 flex flex-col justify-evenly py-8 pointer-events-none">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="relative w-full h-8">
-          <div className="absolute top-1/2 left-1/2 -ml-6 -mt-4 w-12 h-8 rounded-full border-4 border-stone-400 shadow-md transform rotate-12" />
-          <div className="absolute top-1/2 left-0 w-3 h-3 bg-[#251612] rounded-full -mt-1.5 ml-1 shadow-inner" />
-          <div className="absolute top-1/2 right-0 w-3 h-3 bg-[#251612] rounded-full -mt-1.5 mr-1 shadow-inner" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-interface IndexTabProps {
-  page: { tabColor?: string; tabLabel?: string; id: string };
-  index: number;
-  activeIndex: number;
-  onClick: () => void;
-}
-
-function IndexTab({ page, index, activeIndex, onClick }: IndexTabProps) {
-  const isFlipped = index < activeIndex;
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="absolute right-0 w-8 md:w-10 h-16 rounded-r-lg flex items-center justify-center text-[10px] font-bold tracking-widest cursor-pointer transition-all duration-500 hover:w-12 shadow-md border-l border-black/10 z-0"
-      style={{
-        top: `${80 + index * 70}px`,
-        backgroundColor: page.tabColor || "#E0E0E0",
-        color: "#2c1a16",
-        writingMode: "vertical-rl",
-        textOrientation: "mixed",
-        transform: isFlipped
-          ? "translateX(-20px) scale(0.9)"
-          : "translateX(100%)",
-        opacity: isFlipped ? 0 : 1,
-        zIndex: 100 - index,
-      }}
-    >
-      {page.tabLabel || page.id}
-    </button>
   );
 }

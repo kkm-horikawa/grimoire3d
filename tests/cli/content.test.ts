@@ -1,0 +1,134 @@
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { readLibrary, readSettings } from "../../cli/content.js";
+
+describe("Markdown in a project", () => {
+  let project: string;
+  beforeEach(async () => {
+    project = await mkdtemp(join(tmpdir(), "grimoire-content-"));
+  });
+  afterEach(async () => {
+    await rm(project, { recursive: true, force: true });
+  });
+
+  async function write(file: string, content: string): Promise<void> {
+    const path = join(project, file);
+    await mkdir(dirname(path), { recursive: true });
+    await writeFile(path, content);
+  }
+
+  it("opens loose Markdown as one book, with the cover first", async () => {
+    await write("docs/10-last.md", "# Last");
+    await write("docs/02-next.md", "# Next");
+    await write("docs/index.md", "# Project Notes");
+    const library = await readLibrary(project, await readSettings(project));
+    expect(library.manifest).toMatchObject({
+      shelf: false,
+      books: [{ title: "Project Notes" }],
+    });
+    expect(
+      library.books[0].pages.map((page: { id: string }) => page.id)
+    ).toEqual(["index", "02-next", "10-last"]);
+  });
+
+  it("keeps English routes for Japanese titles and rewrites local AVIF references", async () => {
+    await write("grimoire.yml", "locale: ja");
+    await write("docs/api-reference/index.md", "# API リファレンス");
+    await write("docs/api-reference/assets/diagram.avif", "sample asset");
+    await write(
+      "docs/api-reference/01-auth.md",
+      "# 認証\n\n![構成](./assets/diagram.avif)\n\n[概要](../field-notes/index.md#概要)"
+    );
+    await write("docs/field-notes/index.md", "# 開発ノート\n\n## 概要");
+    const library = await readLibrary(project, await readSettings(project));
+    expect(library.manifest).toMatchObject({
+      locale: "ja",
+      shelf: true,
+      books: [
+        { id: "api-reference", title: "API リファレンス" },
+        { id: "field-notes", title: "開発ノート" },
+      ],
+    });
+    expect(library.books[0].pages[1]).toMatchObject({
+      id: "01-auth",
+      title: "認証",
+      links: {
+        "./assets/diagram.avif": "./content/api-reference/assets/diagram.avif",
+        "../field-notes/index.md#概要":
+          "#/field-notes/index?anchor=%E6%A6%82%E8%A6%81",
+      },
+    });
+    expect([...library.assets.keys()]).toEqual([
+      "api-reference/assets/diagram.avif",
+    ]);
+  });
+  it("keeps each Markdown chapter together while starting new H2 pages", async () => {
+    await write("docs/release-notes/index.md", "# Release notes");
+    await write(
+      "docs/release-notes/v1.4.md",
+      "# v1.4\n\n## Added\n\n### Animated GIF\n\n[Next](./v1.5.md#migration)\n\n## Fixed"
+    );
+    await write(
+      "docs/release-notes/v1.5.md",
+      [
+        "# v1.5",
+        "An introduction.",
+        "## New *features*",
+        "See [assets][docs].",
+        "```md\n## Example in code\n```",
+        "> ## Quoted heading",
+        "## New features",
+        "## Migration",
+        "### Existing links",
+        "[docs]: ./assets/demo.avif",
+      ].join("\n\n")
+    );
+    await write("docs/release-notes/assets/demo.avif", "asset");
+
+    const result = await readLibrary(project, { locale: "en" });
+    const book = result.books[0];
+    expect(result.manifest.books).toEqual([
+      { id: "release-notes", title: "Release notes" },
+    ]);
+    expect(
+      book.pages.map((page: { id: string; section?: { id: string } }) => [
+        page.id,
+        page.section?.id ?? null,
+      ])
+    ).toEqual([
+      ["index", null],
+      ["v1.4", "added"],
+      ["v1.4", "fixed"],
+      ["v1.5", null],
+      ["v1.5", "new-features"],
+      ["v1.5", "new-features-1"],
+      ["v1.5", "migration"],
+    ]);
+    expect(book.pages[1].markdown).toContain("### Animated GIF");
+    expect(book.pages[1].links["./v1.5.md#migration"]).toBe(
+      "#/release-notes/v1.5?anchor=migration"
+    );
+    expect(book.pages[4].markdown).toContain("[docs]: ./assets/demo.avif");
+    expect(book.pages[4].links["./assets/demo.avif"]).toBe(
+      "./content/release-notes/assets/demo.avif"
+    );
+    expect(Object.values(book.pages[6].headingIds)).toEqual([
+      "migration",
+      "existing-links",
+    ]);
+  });
+
+  it("resolves percent-encoded and local Japanese fragments", async () => {
+    await write(
+      "docs/index.md",
+      "# 本\n\n[移行へ](#%E7%A7%BB%E8%A1%8C)\n\n移行の説明です。\n\n## 移行\n\n### 既存リンク"
+    );
+    const { books } = await readLibrary(project, { locale: "ja" });
+    expect(books[0].pages[0].links["#%E7%A7%BB%E8%A1%8C"]).toBe(
+      "#/_root/index?anchor=%E7%A7%BB%E8%A1%8C"
+    );
+    expect(books[0].pages[1].section?.id).toBe("移行");
+  });
+});

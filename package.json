@@ -1,11 +1,8 @@
 {
-  "name": "folio",
-  "version": "0.0.0",
-  "description": "Page-flip animated documentation generator - Write beautiful docs like turning pages of a book",
+  "name": "grimoire3d",
+  "version": "0.1.0",
+  "description": "3D magical book documentation generator - Transform your docs into an interactive grimoire",
   "type": "module",
-  "bin": {
-    "folio": "./dist/cli/index.js"
-  },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -17,22 +14,23 @@
     "./components": {
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.js"
-    }
+    },
+    "./styles.css": "./dist/grimoire3d.css"
   },
   "files": [
     "dist",
-    "templates"
+    "cli"
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build && tsc --emitDeclarationOnly --declaration --noEmit false --outDir dist && vite build --config vite.site.config.ts",
     "preview": "vite preview",
-    "lint": "biome lint src",
-    "lint:fix": "biome lint --write src",
-    "format": "biome format --write src",
-    "format:check": "biome format src",
-    "check": "biome check src",
-    "check:fix": "biome check --write src",
+    "lint": "biome lint src cli",
+    "lint:fix": "biome lint --write src cli",
+    "format": "biome format --write src cli",
+    "format:check": "biome format src cli",
+    "check": "biome check src cli",
+    "check:fix": "biome check --write src cli",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
@@ -46,47 +44,75 @@
     "mermaid",
     "page-flip",
     "book",
-    "react"
+    "react",
+    "3d",
+    "grimoire",
+    "webgl"
   ],
   "author": "kkm-horikawa",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kkm-horikawa/folio.git"
+    "url": "git+https://github.com/kkm-horikawa/grimoire3d.git"
   },
   "bugs": {
-    "url": "https://github.com/kkm-horikawa/folio/issues"
+    "url": "https://github.com/kkm-horikawa/grimoire3d/issues"
   },
-  "homepage": "https://github.com/kkm-horikawa/folio#readme",
+  "homepage": "https://github.com/kkm-horikawa/grimoire3d#readme",
   "engines": {
     "node": ">=22.0.0"
   },
-  "dependencies": {
+  "peerDependencies": {
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "lucide-react": "^0.555.0"
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@react-spring/three": "^10.1.2",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
+    "dompurify": "3.4.18",
+    "html-to-image": "^1.11.13",
+    "lucide-react": "^1.76.0",
+    "mdast-util-from-markdown": "^2.1.0",
+    "mdast-util-gfm": "3.1.0",
+    "mermaid": "12.3.0",
+    "micromark-extension-gfm": "3.0.0",
+    "mime-types": "^3.0.2",
+    "react-markdown": "^10.1.0",
+    "remark-directive": "4.0.0",
+    "remark-gfm": "^4.0.1",
+    "three": "^0.187.0",
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.0.0",
-    "@tailwindcss/vite": "^4.1.13",
-    "@testing-library/dom": "^10.0.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@types/node": "^22.10.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@biomejs/biome": "^2.6.8",
+    "@tailwindcss/vite": "^4.3.5",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^8.0.0",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.187.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "@vitest/coverage-v8": "^5.1.1",
     "husky": "^9.1.7",
-    "jsdom": "^26.0.0",
-    "lint-staged": "^15.2.10",
-    "tailwindcss": "^4.1.13",
-    "typescript": "^5.9.0",
-    "vite": "^7.0.0",
-    "vitest": "^4.0.0"
+    "jsdom": "^31.0.1",
+    "lint-staged": "^17.6.1",
+    "preact": "11.2.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.1"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,json}": [
       "biome check --write"
     ]
+  },
+  "bin": {
+    "grimoire3d": "./cli/cli.js"
   }
 }

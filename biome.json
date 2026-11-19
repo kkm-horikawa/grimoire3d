@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.8/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,7 +7,16 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["src/**", "tests/**", "*.json", "*.ts", "!dist/**", "!node_modules/**", "!coverage/**"]
+    "includes": [
+      "src/**",
+      "cli/**",
+      "tests/**",
+      "*.json",
+      "*.ts",
+      "!dist",
+      "!node_modules",
+      "!coverage"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -25,7 +34,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "a11y": {
         "useSemanticElements": "warn"
       },
@@ -51,9 +60,13 @@
   },
   "css": {
     "parser": {
-      "cssModules": true
+      "cssModules": true,
+      "tailwindDirectives": true
     },
     "linter": {
+      "enabled": false
+    },
+    "formatter": {
       "enabled": false
     }
   }

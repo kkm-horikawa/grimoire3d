@@ -10,8 +10,18 @@ export default defineConfig({
     setupFiles: ["./tests/setup.ts"],
     include: ["tests/**/*.{test,spec}.{ts,tsx}"],
     coverage: {
-      reporter: ["text", "json", "html"],
-      exclude: ["node_modules/", "tests/setup.ts"],
+      provider: "v8",
+      reporter: ["text", "json", "html", "lcov"],
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: [
+        "node_modules/",
+        "tests/setup.ts",
+        "src/main.tsx",
+        "src/index.ts",
+        "src/types/**",
+        "src/components/BookModel.tsx",
+        "**/*.d.ts",
+      ],
     },
   },
   resolve: {

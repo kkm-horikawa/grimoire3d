@@ -1,6 +1,9 @@
 name: Publish to npm
 
 on:
+  push:
+    branches:
+      - develop
   release:
     types: [published]
 
@@ -11,39 +14,45 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "26"
           registry-url: "https://registry.npmjs.org"
+          cache: npm
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
+      - name: Update npm for Trusted Publishing
+        run: npm install -g npm@12.2.3 && npm --version
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+      - name: Verify release tag
+        if: github.event_name == 'release'
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: test "$RELEASE_TAG" = "v$(node -p "require('./package.json').version")"
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm ci
 
       - name: Build
-        run: pnpm build
+        run: npm run build
 
-      - name: Publish to npm
-        run: pnpm publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Dev version: triggered by push to develop
+      - name: Set dev version
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          SHORT_SHA=${GITHUB_SHA::7}
+          DEV_VERSION="${BASE_VERSION}-dev.${SHORT_SHA}"
+          echo "Publishing dev version: ${DEV_VERSION}"
+          npm version "$DEV_VERSION" --no-git-tag-version
+
+      - name: Publish dev version (Trusted Publishing)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        run: npm publish --access public --tag dev
+
+      # Production version: triggered by release
+      - name: Publish production version (Trusted Publishing)
+        if: github.event_name == 'release'
+        run: npm publish --access public --tag latest
