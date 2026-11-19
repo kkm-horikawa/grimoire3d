@@ -1,3 +1,5 @@
+import type { LibraryPublisher } from "../../cli/library-footer";
+
 export type Locale = "en" | "ja";
 
 export interface BookSummary {
@@ -12,6 +14,7 @@ export interface Library {
   shelf: boolean;
   magicMode?: boolean;
   siteUrl?: string;
+  footer?: LibraryPublisher;
   books: BookSummary[];
 }
 

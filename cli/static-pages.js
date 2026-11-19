@@ -6,6 +6,7 @@ import Markdown, { defaultUrlTransform } from "react-markdown";
 import remarkDirective from "remark-directive";
 import remarkGfm from "remark-gfm";
 import { coverOptions, selectCover } from "./cover-options.js";
+import { LibraryFooter } from "./library-footer.js";
 import { remarkGrimoire } from "./markup.js";
 import { readerPath, readLegacyRoute } from "./routes.js";
 import { videoEmbed } from "./video-url.js";
@@ -282,6 +283,7 @@ function staticShelf(site, prefix, assets, label) {
   <div class="library-heading${site.books.length > 6 ? " library-heading-sticky" : ""}"><h1>${label}</h1></div>
   <div class="shelf resting-shelf${site.books.length > 6 ? " shelf-many" : ""}"${books.length >= 3 && books.length <= 4 ? ' data-mobile-rows="2"' : ""}><div class="shelf-art" data-initial-shelf aria-hidden="true"></div><div class="shelf-grid">${covers}</div></div>
   ${site.books.length > 12 ? `<details><summary>${button}</summary>${linkList(site.books.map((book) => ({ title: book.title, href: prefix + readerPath(book.id) })))}</details>` : ""}
+  ${renderToStaticMarkup(element(LibraryFooter, { publisher: site.footer }))}
   </main>`;
 }
 

@@ -19,6 +19,9 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
         "siteUrl: https://example.com/projects/grimoire",
         "magicMode: true",
         "author: Editorial team",
+        "footer:",
+        '  label: "Research & Development"',
+        "  url: https://example.com/team/",
       ].join("\n")
     );
     await writeFile(
@@ -58,6 +61,13 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
       books: [{ cover: "teal" }],
     });
     await writeStaticPages(join(root, "template"), join(root, "site"), library);
+    const shelf = await readFile(join(root, "site/index.html"), "utf8");
+    expect(shelf).toContain(
+      '<a class="library-publisher" href="https://example.com/team/">Research &amp; Development</a>'
+    );
+    expect(shelf).toContain(
+      '<a href="https://github.com/kkm-horikawa/grimoire3d">Grimoire3D</a>'
+    );
     const guide = await readFile(
       join(root, "site/read/notes/guide/index.html"),
       "utf8"
@@ -76,6 +86,7 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
       '<a href="https://youtu.be/M7lc1UVf-VE">Example</a>'
     );
     expect(guide).not.toContain("<iframe");
+    expect(guide).not.toContain("library-footer");
     const cover = await readFile(
       join(root, "site/read/notes/index/index.html"),
       "utf8"
