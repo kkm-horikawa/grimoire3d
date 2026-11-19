@@ -28,6 +28,7 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { contentType, lookup } from "mime-types";
 import { readLibrary, readSettings } from "./content.js";
+import { readHeadFile } from "./head-file.js";
 import { previewHead, writeStaticPages } from "./static-pages.js";
 
 const template = fileURLToPath(new URL("../dist/site/", import.meta.url));
@@ -80,7 +81,7 @@ function serializedLibrary(library) {
   ]);
 }
 
-async function writeStaticSite(cwd, outDir, library) {
+async function writeStaticSite(cwd, outDir, library, headMarkup) {
   const output = resolve(cwd, outDir);
   const { locale } = library.manifest;
   const exists = await existingOutput(output, locale);
@@ -102,7 +103,7 @@ async function writeStaticSite(cwd, outDir, library) {
       await mkdir(dirname(path), { recursive: true });
       await copyFile(source, path);
     }
-    await writeStaticPages(template, staging, library);
+    await writeStaticPages(template, staging, library, headMarkup);
     await writeFile(join(staging, marker), json(await listFiles(staging)));
     if (exists) await rename(output, backup);
     try {
@@ -325,7 +326,8 @@ async function main() {
     const output = await writeStaticSite(
       cwd,
       values["out-dir"] ?? settings.outDir ?? "dist",
-      library
+      library,
+      await readHeadFile(cwd, settings.headFile)
     );
     const label = settings.locale === "ja" ? "書き出し先" : "Built to";
     console.log(`${label}: ${basename(output)}/ (${output})`);

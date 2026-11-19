@@ -144,6 +144,7 @@ export async function readSettings(cwd) {
     author,
     magicMode,
     footer,
+    headFile,
   } = settings;
   if (
     typeof settings !== "object" ||
@@ -182,6 +183,7 @@ export async function readSettings(cwd) {
     author,
     magicMode,
     footer: readFooter(footer),
+    headFile,
     siteUrl: siteUrl && normalizeSiteUrl(siteUrl),
   };
 }

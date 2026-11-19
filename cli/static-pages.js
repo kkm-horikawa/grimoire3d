@@ -185,8 +185,8 @@ function initialBookMarkup(book, chapter, locale) {
   };
 }
 
-function replaceShell(template, site, head, prefix, body, reader) {
-  return template
+function replaceShell(template, site, head, prefix, body, reader, headMarkup) {
+  const html = template
     .replace('<html lang="en">', `<html lang="${site.locale}">`)
     .replace(
       /<script type="module"[^>]*src="([^"]+)"[^>]*><\/script>/,
@@ -205,6 +205,12 @@ function replaceShell(template, site, head, prefix, body, reader) {
       () => `<title>${escapeHtml(head.title)}</title>\n${head.metadata}`
     )
     .replace('<div id="root"></div>', () => `<div id="root">${body}</div>`);
+  return headMarkup
+    ? html.replace(
+        /<head>(\s*<meta charset="[^"]+"\s*\/?>)?/i,
+        (start) => `${start}\n${headMarkup}\n`
+      )
+    : html;
 }
 
 function startAfterArtwork(entry, reader) {
@@ -336,7 +342,12 @@ function staticChapter({ site, book, page, prefix, assets, libraryLabel }) {
   </main>`;
 }
 
-export async function writeStaticPages(templateDir, destination, library) {
+export async function writeStaticPages(
+  templateDir,
+  destination,
+  library,
+  headMarkup = ""
+) {
   const template = await readFile(join(templateDir, "index.html"), "utf8");
   const site = library.manifest;
   const books = new Map(library.books.map((book) => [book.id, book]));
@@ -417,7 +428,8 @@ export async function writeStaticPages(templateDir, destination, library) {
         head,
         prefix,
         body(prefix),
-        book ? reader : undefined
+        book ? reader : undefined,
+        headMarkup
       )
     );
     if (head.canonical) urls.push(head.canonical);

@@ -25,6 +25,29 @@ The build produces standalone HTML for every chapter, including the text, naviga
 
 Set `siteUrl` to get canonical URLs and a sitemap. Set `socialImage` to an absolute HTTP(S) URL or an image path relative to `docs/`. At the domain root the build also emits `robots.txt` pointing to the sitemap.
 
+## Google Tag Manager and additional head tags
+
+To include the same tags on the library and each book and chapter page, add this setting to `grimoire.yml`.
+
+```yaml
+headFile: head.html
+```
+
+Create `head.html` next to `grimoire.yml`.
+
+```html
+<!-- Paste the head snippet from your Google Tag Manager installation dialog here. -->
+
+<!-- To verify site ownership, replace your-token and uncomment the next line. -->
+<!-- <meta name="google-site-verification" content="your-token"> -->
+```
+
+Follow [Google's web container setup](https://support.google.com/tagmanager/answer/14847097?hl=en) to get the snippet for your site. The file contains individual `script`, `meta`, `link`, or `style` tags. Scripts in it run on the published site with the same privileges as the rest of the page, so use snippets from sources you trust.
+
+Run `npx grimoire3d build` to insert the fragment. To test the tags before publishing, serve the built output and open a library or chapter URL. The live `serve` preview skips the fragment so ordinary editing does not send analytics traffic.
+
+The build reports and rejects tags Grimoire3D manages, such as `<title>`, the canonical link, and its description and Open Graph fields. Use the site and chapter settings for those values. Without a `headFile` setting, the site uses its built-in head.
+
 ## Chapter metadata
 
 Supply `title`, `description`, or `socialImage` in a chapter's YAML front matter. A chapter-level image path is relative to that chapter.
