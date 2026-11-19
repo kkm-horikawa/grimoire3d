@@ -2,24 +2,18 @@
 
 Turn Markdown into 3D books you can open and flip through in a browser.
 
+[![npm version](https://img.shields.io/npm/v/grimoire3d)](https://www.npmjs.com/package/grimoire3d)
+
 ![A Markdown chapter is added under docs, then opened and paged through from the Grimoire3D bookshelf](docs/book-experience/quick-start.gif)
 
 [Read the documentation](https://kkm-horikawa.github.io/grimoire3d/)
 
 ## Install
 
-Use Node.js 22 or later. The current npm release predates the CLI. From a checkout of this source, build the installable archive.
+Use a maintained Node.js 22, 24, or 26 release. Install Grimoire3D from npm in the project where you want to write your books. If the project has no `package.json`, run `npm init -y` first.
 
 ```sh
-npm ci
-npm run build
-npm pack
-```
-
-In the project where you want your books, install that archive. Run `npm init -y` first if it has no `package.json`.
-
-```sh
-npm install -D /path/to/grimoire3d-0.0.0.tgz
+npm install --save-dev grimoire3d
 ```
 
 ## Write and preview
