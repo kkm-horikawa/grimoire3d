@@ -28,7 +28,7 @@ export default defineConfig({
       },
       formats: ["es"],
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: (id) =>
         external.some(
           (dependency) => id === dependency || id.startsWith(`${dependency}/`)

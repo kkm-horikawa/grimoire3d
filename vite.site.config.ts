@@ -23,7 +23,7 @@ export default defineConfig({
   build: {
     outDir: resolve(import.meta.dirname, "dist/site"),
     emptyOutDir: true,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         manualChunks(id) {
           if (id.endsWith("/three/build/three.core.js")) return "three-core";
