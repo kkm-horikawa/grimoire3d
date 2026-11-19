@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it } from "vitest";
 import { readLibrary, readSettings } from "../../cli/content.js";
+import { readHeadFile } from "../../cli/head-file.js";
 import { writeStaticPages } from "../../cli/static-pages.js";
 
 it("publishes readable chapter HTML and canonical URLs under a site subpath", async () => {
@@ -18,15 +19,20 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
         "description: Site summary",
         "siteUrl: https://example.com/projects/grimoire",
         "magicMode: true",
+        "headFile: head.html",
         "author: Editorial team",
         "footer:",
         '  label: "Research & Development"',
         "  url: https://example.com/team/",
       ].join("\n")
     );
+    const verification =
+      '<meta name="google-site-verification" content="example">';
+    const snippet = '<script>window.dataLayer = [{query: "$&"}];</script>';
+    await writeFile(join(root, "head.html"), `${verification}\n${snippet}`);
     await writeFile(
       join(root, "template/index.html"),
-      '<html lang="en"><head><title>Default</title><script type="module" src="./assets/app.js"></script></head><body><div id="root"></div></body></html>'
+      '<html lang="en"><head><meta charset="UTF-8"><title>Default</title><script type="module" src="./assets/app.js"></script></head><body><div id="root"></div></body></html>'
     );
     await writeFile(
       join(root, "docs/notes/index.md"),
@@ -60,7 +66,12 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
       magicMode: true,
       books: [{ cover: "teal" }],
     });
-    await writeStaticPages(join(root, "template"), join(root, "site"), library);
+    await writeStaticPages(
+      join(root, "template"),
+      join(root, "site"),
+      library,
+      await readHeadFile(root, settings.headFile)
+    );
     const shelf = await readFile(join(root, "site/index.html"), "utf8");
     expect(shelf).toContain(
       '<a class="library-publisher" href="https://example.com/team/">Research &amp; Development</a>'
@@ -92,6 +103,19 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
       "utf8"
     );
     expect(cover).toContain("../../../read/notes/guide/#publish");
+    const book = await readFile(
+      join(root, "site/read/notes/index.html"),
+      "utf8"
+    );
+    for (const html of [shelf, book, cover, guide]) {
+      expect(html.split(verification)).toHaveLength(2);
+      expect(html.split(snippet)).toHaveLength(2);
+      expect(html.indexOf(verification)).toBeGreaterThan(
+        html.indexOf("<meta charset")
+      );
+      expect(html.indexOf(snippet)).toBeLessThan(html.indexOf("</head>"));
+      expect(html.match(/rel="canonical"/g)).toHaveLength(1);
+    }
     const sitemap = await readFile(join(root, "site/sitemap.xml"), "utf8");
     expect(sitemap).toContain(
       "<loc>https://example.com/projects/grimoire/read/notes/guide/</loc>"
