@@ -29,14 +29,14 @@
       if (started) return;
       started = true;
       for (const event of events) window.removeEventListener(event,start,true);
-      const reader = "../../../assets/BookReader-D6Y6-YiA.js";
+      const reader = "../../../assets/BookReader-5pM5wP2A.js";
       if (reader) {
         const preload = document.createElement("link");
         preload.rel = "modulepreload";
         preload.href = reader;
         document.head.append(preload);
       }
-      void import("../../../assets/index-c2f4iI83.js");
+      void import("../../../assets/index-CiI39UEW.js");
     }
     const art = [...document.querySelectorAll("link[data-first-art]")].find(link => matchMedia(link.media).matches);
     if (!art || !matchMedia("(max-width: 699px)").matches) start();
@@ -51,7 +51,7 @@
     }
     </script>
     <link rel="modulepreload" crossorigin href="../../../assets/jsxRuntime-WpZ1bTm4.js">
-    <link rel="stylesheet" crossorigin href="../../../assets/index-aLXzUwjX.css">
+    <link rel="stylesheet" crossorigin href="../../../assets/index-BTjyXmrh.css">
   </head>
   <body>
     <div id="root"><main class="reader static-reader">
