@@ -1,7 +1,7 @@
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { ChevronLeft, ChevronRight, Lock, Unlock } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { BookViewerProps } from "../types";
 import { BookModel } from "./BookModel";
 
@@ -33,6 +33,11 @@ export function BookViewer({
   // Reading mode: camera locked, text selection enabled
   // Explore mode: OrbitControls enabled, page click to flip
   const [isReadingMode, setIsReadingMode] = useState(true);
+  const [pageLayer, setPageLayer] = useState<HTMLDivElement | null>(null);
+  const pagePortal = useMemo(
+    () => (pageLayer ? { current: pageLayer } : undefined),
+    [pageLayer]
+  );
   const totalPages = pages.length;
 
   /**
@@ -75,38 +80,41 @@ export function BookViewer({
       style={{ backgroundColor: "#251612" }}
     >
       {/* Three.js Canvas */}
-      <div className="w-full h-full">
-        <Canvas shadows={showShadows}>
-          {/* Camera */}
-          <PerspectiveCamera makeDefault position={[0, 5, 5]} fov={50} />
+      <div ref={setPageLayer} className="w-full h-full relative">
+        {pagePortal && (
+          <Canvas shadows={showShadows}>
+            {/* Camera */}
+            <PerspectiveCamera makeDefault position={[0, 5, 5]} fov={50} />
 
-          {/* Lighting */}
-          <ambientLight intensity={ambientLight} />
-          <directionalLight
-            position={[5, 10, 5]}
-            intensity={1}
-            castShadow={showShadows}
-            shadow-mapSize={[2048, 2048]}
-          />
-          <pointLight position={[-5, 5, -5]} intensity={0.3} />
+            {/* Lighting */}
+            <ambientLight intensity={ambientLight} />
+            <directionalLight
+              position={[5, 10, 5]}
+              intensity={1}
+              castShadow={showShadows}
+              shadow-mapSize={[2048, 2048]}
+            />
+            <pointLight position={[-5, 5, -5]} intensity={0.3} />
 
-          {/* Book Model */}
-          <BookModel
-            pages={pages}
-            currentPage={currentPage}
-            onNextPage={handleNext}
-            onPrevPage={handlePrev}
-            isReadingMode={isReadingMode}
-          />
+            {/* Book Model */}
+            <BookModel
+              pages={pages}
+              currentPage={currentPage}
+              onNextPage={handleNext}
+              onPrevPage={handlePrev}
+              isReadingMode={isReadingMode}
+              pagePortal={pagePortal}
+            />
 
-          {/* OrbitControls: always mounted but disabled in reading mode */}
-          <OrbitControls
-            enabled={!isReadingMode || cameraControls}
-            enableRotate={!isReadingMode || cameraControls}
-            enableZoom={!isReadingMode || cameraControls}
-            enablePan={!isReadingMode || cameraControls}
-          />
-        </Canvas>
+            {/* OrbitControls: always mounted but disabled in reading mode */}
+            <OrbitControls
+              enabled={!isReadingMode || cameraControls}
+              enableRotate={!isReadingMode || cameraControls}
+              enableZoom={!isReadingMode || cameraControls}
+              enablePan={!isReadingMode || cameraControls}
+            />
+          </Canvas>
+        )}
       </div>
 
       {/* Navigation Controls */}
