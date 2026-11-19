@@ -61,4 +61,17 @@ socialImage: ./assets/deploy.avif
 # Deployment
 ```
 
+### Keep a chapter out of search results
+
+Set `noindex: true` in the chapter's front matter.
+
+```markdown
+---
+noindex: true
+---
+# Review notes
+```
+
+The generated chapter remains readable by URL, and its HTML tells search engines to leave the page out of search results. Its URL is also left out of the sitemap. If this is the book's first chapter, URLs that open directly to that chapter get the same directive. A site with only opted-out URLs skips sitemap generation.
+
 Share the URL for a chapter or a specific heading, for example `/read/publishing/metadata/#chapter-metadata`. Existing links that start with `#/` also work.

@@ -22,10 +22,12 @@ function escapeHtml(value) {
   );
 }
 
+const noindexMeta = '<meta name="robots" content="noindex">';
+
 export function previewHead(manifest) {
   return [
     '<meta name="grimoire-preview" content="live">',
-    '<meta name="robots" content="noindex">',
+    noindexMeta,
     manifest.description &&
       `<meta name="description" content="${escapeHtml(manifest.description)}">`,
   ]
@@ -49,6 +51,7 @@ function pageHead(site, page, route, prefix) {
   const metadata = [
     `<meta name="grimoire-static" content="${prefix}">`,
     canonical && `<link rel="canonical" href="${escapeHtml(canonical)}">`,
+    page.noindex && noindexMeta,
     description &&
       `<meta name="description" content="${escapeHtml(description)}">`,
     site.author && `<meta name="author" content="${escapeHtml(site.author)}">`,
@@ -446,15 +449,23 @@ export async function writeStaticPages(
         headMarkup
       )
     );
-    if (head.canonical) urls.push(head.canonical);
+    if (head.canonical && !page.noindex) urls.push(head.canonical);
   }
-  await write(site, [], (prefix) =>
-    staticShelf(site, prefix, assets, libraryLabel)
+  // A single-book site opens the first chapter at the site root as well.
+  const firstChapter = chapters.get(site.books[0]?.id)?.[0];
+  await write(
+    { ...site, noindex: !site.shelf && firstChapter?.noindex },
+    [],
+    (prefix) => staticShelf(site, prefix, assets, libraryLabel)
   );
   for (const book of site.books) {
     const pages = chapters.get(book.id) ?? [];
     await write(
-      { title: book.title, description: pages[0]?.description },
+      {
+        title: book.title,
+        description: pages[0]?.description,
+        noindex: pages[0]?.noindex,
+      },
       ["read", book.id],
       (prefix) =>
         `<main class="static-reading"><nav><a href="${prefix}">${libraryLabel}</a></nav><h1>${escapeHtml(book.title)}</h1>${linkList(
@@ -480,7 +491,7 @@ export async function writeStaticPages(
       );
     }
   }
-  if (site.siteUrl) {
+  if (urls.length) {
     await writeFile(
       join(destination, "sitemap.xml"),
       `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url) => `  <url><loc>${escapeHtml(url)}</loc></url>`).join("\n")}\n</urlset>\n`
