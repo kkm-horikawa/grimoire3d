@@ -216,7 +216,7 @@ function simpleEffect(paper: PaperArea, node: HTMLElement): void {
     );
     return;
   }
-  if (node.matches("code")) {
+  if (node.localName === "code") {
     if (node.closest("pre")) return;
     const frame = effectBox(
       paper,
@@ -291,9 +291,9 @@ export function playSpellInk(stage: HTMLElement): () => void {
         drawInk(
           paper,
           node,
-          node.matches("mark")
+          node.localName === "mark"
             ? "mark"
-            : node.matches("u")
+            : node.localName === "u"
               ? "underline"
               : "cross"
         );
