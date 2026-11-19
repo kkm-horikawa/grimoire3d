@@ -32,6 +32,19 @@ pnpm dev
 
 Open http://localhost:5173 in your browser to see the BookViewer demo.
 
+### Previewing and building the documentation
+
+The public library is built by Grimoire3D from `website/docs/`. Edit the Markdown there and use the CLI to preview or build it.
+
+```sh
+npm ci
+npm run build
+cd website
+node ../cli/cli.js serve
+```
+
+Run `node ../cli/cli.js build` from `website/` to regenerate the deployment directory at `website/dist/`. The GitHub Pages site publishes the built files from the root of `gh-pages`. Add an empty `.nojekyll` file to the deployment copy when updating that branch.
+
 ### Running Tests
 
 ```bash

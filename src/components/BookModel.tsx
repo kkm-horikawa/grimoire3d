@@ -1,7 +1,7 @@
 import { animated, useSpring } from "@react-spring/three";
 import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import type { ReactNode } from "react";
+import type { ReactNode, RefObject } from "react";
 import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { PageContent } from "../types";
@@ -25,12 +25,15 @@ interface BookModelProps {
   onNextPage?: () => void;
   onPrevPage?: () => void;
   isReadingMode?: boolean;
+  pagePortal?: RefObject<HTMLElement>;
 }
 
 interface Page3DProps {
   index: number;
   totalPages: number;
   isFlipped: boolean;
+  isExposed: boolean;
+  pagePortal?: RefObject<HTMLElement>;
   frontContent?: ReactNode;
   backContent?: ReactNode;
   onFlipForward: () => void;
@@ -89,6 +92,8 @@ function Page3D({
   index,
   totalPages,
   isFlipped,
+  isExposed,
+  pagePortal,
   frontContent,
   backContent,
   onFlipForward,
@@ -172,6 +177,8 @@ function Page3D({
 
   // Center position of the page (for Html placement)
   const pageCenterX = PAGE_WIDTH / 2;
+  // The Html layer does not share WebGL's depth buffer. Keep covered content mounted.
+  const contentDisplay = isExposed ? undefined : "none";
 
   return (
     <animated.group position-z={zPos} rotation-y={rotation}>
@@ -192,11 +199,17 @@ function Page3D({
 
       {/* Front content (visible when page is facing right, not yet flipped past 50%) */}
       {!showBackContent && (
-        <Html position={[pageCenterX, 0, 0.01]} transform distanceFactor={3.5}>
+        <Html
+          portal={pagePortal}
+          position={[pageCenterX, 0, 0.01]}
+          transform
+          distanceFactor={3.5}
+        >
           {/* biome-ignore lint/a11y/noStaticElementInteractions: 3D content click */}
           {/* biome-ignore lint/a11y/useKeyWithClickEvents: 3D content click */}
           <div
             className={`page-content-inner ${isReadingMode ? "reading-mode" : "explore-mode"}`}
+            style={{ display: contentDisplay }}
             onClick={isReadingMode ? undefined : onFlipForward}
           >
             {frontContent}
@@ -208,6 +221,7 @@ function Page3D({
       {/* Back content (visible when page is flipped past 50%) */}
       {showBackContent && (
         <Html
+          portal={pagePortal}
           position={[pageCenterX, 0, -0.01]}
           rotation={[0, Math.PI, 0]}
           transform
@@ -217,6 +231,7 @@ function Page3D({
           {/* biome-ignore lint/a11y/useKeyWithClickEvents: 3D content click */}
           <div
             className={`page-content-inner ${isReadingMode ? "reading-mode" : "explore-mode"}`}
+            style={{ display: contentDisplay }}
             onClick={isReadingMode ? undefined : onFlipBackward}
           >
             {backContent}
@@ -286,6 +301,7 @@ export function BookModel({
   onNextPage,
   onPrevPage,
   isReadingMode = true,
+  pagePortal,
 }: BookModelProps) {
   const groupRef = useRef<THREE.Group>(null);
 
@@ -308,6 +324,8 @@ export function BookModel({
           index={index}
           totalPages={pages.length}
           isFlipped={index < currentPage}
+          isExposed={index === currentPage || index === currentPage - 1}
+          pagePortal={pagePortal}
           frontContent={page.front}
           backContent={page.back}
           onFlipForward={() => onNextPage?.()}

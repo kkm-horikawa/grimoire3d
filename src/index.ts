@@ -4,6 +4,8 @@
  * @packageDocumentation
  */
 
+import "./styles/main.css";
+
 export { BookViewer } from "./components/BookViewer";
 export type {
   BookMaterialConfig,

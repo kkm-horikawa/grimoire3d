@@ -1,151 +1,55 @@
-# grimoire3d
+# Grimoire3D
 
-[![npm version](https://badge.fury.io/js/grimoire3d.svg)](https://badge.fury.io/js/grimoire3d)
-[![CI](https://github.com/kkm-horikawa/grimoire3d/actions/workflows/ci.yml/badge.svg)](https://github.com/kkm-horikawa/grimoire3d/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/kkm-horikawa/grimoire3d/branch/develop/graph/badge.svg)](https://codecov.io/gh/kkm-horikawa/grimoire3d)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+Turn Markdown into 3D books you can open and flip through in a browser.
 
-A 3D magical book documentation generator. Transform your docs into an interactive grimoire with realistic page-flip animations.
+![A Markdown chapter is added under docs, then opened and paged through from the Grimoire3D bookshelf](docs/book-experience/quick-start.gif)
 
-## What is this?
+[Read the documentation](https://kkm-horikawa.github.io/grimoire3d/)
 
-Grimoire3D transforms your Markdown documentation into an interactive 3D book. Perfect for:
+## Install
 
-- Project documentation
-- Design specifications
-- Technical notes
-- Portfolios
-- Tutorials
+Use Node.js 22 or later. The current npm release predates the CLI. From a checkout of this source, build the installable archive.
 
-## Features
-
-- Realistic 3D page-flip animation
-- Markdown rendering
-- HTML support
-- Mermaid diagram support (planned)
-- Multiple themes
-- Static site generation
-- Zero-config setup
-
-## Installation
-
-```bash
-npm install grimoire3d
-# or
-pnpm add grimoire3d
-# or
-yarn add grimoire3d
+```sh
+npm ci
+npm run build
+npm pack
 ```
 
-## Quick Start
+In the project where you want your books, install that archive. Run `npm init -y` first if it has no `package.json`.
 
-### 1. Create your docs directory
-
-```
-my-project/
-├── grimoire.yml       # Configuration (optional)
-└── docs/
-    ├── index.md       # Cover page
-    ├── 01-overview.md
-    ├── 02-features.md
-    └── assets/
-        └── diagram.png
+```sh
+npm install -D /path/to/grimoire3d-0.0.0.tgz
 ```
 
-### 2. Write your content
+## Write and preview
+
+Create `docs/field-notes/index.md`.
 
 ```markdown
-<!-- docs/index.md -->
-# My Project
+# Field Notes
 
-Welcome to the documentation.
-
-## Overview
-
-This is an amazing project...
+This is my first 3D book.
 ```
 
-### 3. Start the dev server
+Add Markdown files in the same folder for more chapters. Add folders directly under `docs/` for more books.
 
-```bash
+```sh
 npx grimoire3d serve
 ```
 
-### 4. Build for production
+Open the URL printed in the terminal. The preview updates when you save.
 
-```bash
+![Workflow from Markdown files to a local bookshelf and a static site in dist](docs/book-experience/workflow.avif)
+
+## Build and publish
+
+```sh
 npx grimoire3d build
 ```
 
-## Configuration
+Deploy the contents of `dist/` to any static host, including Cloudflare Pages and GitHub Pages. Use `--out-dir site` to choose a different output directory.
 
-Create a `grimoire.yml` file in your project root:
+For chapter links, formatting, media, Mermaid, cover styles, locale, and SEO, see the [Grimoire3D documentation](https://kkm-horikawa.github.io/grimoire3d/).
 
-```yaml
-title: "My Project Documentation"
-theme: "vintage-red"  # or "modern-dark", "paper-white"
-pages:
-  - index.md
-  - 01-overview.md
-  - 02-features.md
-# Omit 'pages' to auto-detect all .md files
-```
-
-## Using as a React Component
-
-```tsx
-import { BookViewer } from "grimoire3d/components";
-
-const pages = [
-  {
-    id: "cover",
-    title: "Cover",
-    front: <CoverPage />,
-    back: <AboutPage />,
-    tabColor: "#E57373",
-    tabLabel: "Cover",
-  },
-  // ... more pages
-];
-
-function App() {
-  return <BookViewer pages={pages} />;
-}
-```
-
-## Themes
-
-| Theme | Description |
-|-------|-------------|
-| `vintage-red` | Classic red leather book cover |
-| `modern-dark` | Sleek dark mode |
-| `paper-white` | Clean minimal design |
-| `forest-green` | Nature-inspired |
-
-## Roadmap
-
-- [ ] v0.1.0 - MVP with basic page-flip and Markdown support
-- [ ] v0.2.0 - Mermaid diagrams and code highlighting
-- [ ] v0.3.0 - CLI for static site generation
-- [ ] v0.4.0 - Theme customization and plugins
-
-## Documentation
-
-- [Architecture & Design Decisions](docs/ARCHITECTURE.md)
-- [Glossary of Terms](docs/GLOSSARY.md)
-- [Contributing Guide](CONTRIBUTING.md)
-
-## Requirements
-
-- Node.js 22+
-- React 19+
-
-## License
-
-MIT License. See [LICENSE](LICENSE) for details.
-
-## Inspiration
-
-- Ancient grimoires and magical tomes
-- Vintage technical manuals
-- React component libraries
+[Contributing](CONTRIBUTING.md) · [MIT License](LICENSE)

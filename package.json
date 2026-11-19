@@ -14,22 +14,23 @@
     "./components": {
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.js"
-    }
+    },
+    "./styles.css": "./dist/grimoire3d.css"
   },
   "files": [
     "dist",
-    "templates"
+    "cli"
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build && tsc --emitDeclarationOnly --declaration --noEmit false --outDir dist && vite build --config vite.site.config.ts",
     "preview": "vite preview",
-    "lint": "biome lint src",
-    "lint:fix": "biome lint --write src",
-    "format": "biome format --write src",
-    "format:check": "biome format src",
-    "check": "biome check src",
-    "check:fix": "biome check --write src",
+    "lint": "biome lint src cli",
+    "lint:fix": "biome lint --write src cli",
+    "format": "biome format --write src cli",
+    "format:check": "biome format src cli",
+    "check": "biome check src cli",
+    "check:fix": "biome check --write src cli",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
@@ -69,8 +70,19 @@
     "@react-spring/three": "^10.0.3",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.2",
+    "dompurify": "3.4.18",
+    "html-to-image": "^1.11.13",
     "lucide-react": "^0.555.0",
-    "three": "^0.182.0"
+    "mdast-util-from-markdown": "^2.1.0",
+    "mdast-util-gfm": "3.1.0",
+    "mermaid": "12.3.0",
+    "micromark-extension-gfm": "3.0.0",
+    "mime-types": "^3.0.2",
+    "react-markdown": "^10.1.0",
+    "remark-directive": "4.0.0",
+    "remark-gfm": "^4.0.1",
+    "three": "^0.182.0",
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",
@@ -87,6 +99,7 @@
     "husky": "^9.1.7",
     "jsdom": "^26.0.0",
     "lint-staged": "^15.2.10",
+    "preact": "11.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwindcss": "^4.1.13",
@@ -98,5 +111,8 @@
     "*.{ts,tsx,js,jsx,json}": [
       "biome check --write"
     ]
+  },
+  "bin": {
+    "grimoire3d": "./cli/cli.js"
   }
 }

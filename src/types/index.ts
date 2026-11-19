@@ -128,6 +128,8 @@ export interface BookMaterialConfig {
 export interface GrimoireConfig {
   /** Document title displayed in the browser tab */
   title: string;
+  /** Language for reader and library controls */
+  locale?: "en" | "ja";
   /** Theme name or custom theme object */
   theme?: string | ThemeConfig;
   /** Pages configuration - array of file paths or "auto" for auto-detection */
