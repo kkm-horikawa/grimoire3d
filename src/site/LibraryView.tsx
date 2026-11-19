@@ -9,6 +9,7 @@ import {
   useMemo,
   useRef,
 } from "react";
+import { LibraryFooter } from "../../cli/library-footer.js";
 import { type CoverOrigin, motionQuery } from "./BookTransition";
 import { coverFor } from "./covers";
 import { bookHref, initialShelfArt } from "./navigation";
@@ -446,6 +447,7 @@ export function LibraryView({
           )}
         </div>
       )}
+      {!canShowMore && <LibraryFooter publisher={library.footer} />}
     </main>
   );
 }

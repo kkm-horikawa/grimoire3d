@@ -33,6 +33,8 @@ The approved mockups use a red leather book, a bookshelf, a large-library index,
 
 [Annotated design references](book-experience/review/) use the same filenames as the source mockups. The [image generation prompts](book-experience/PROMPTS.md) record the initial and revised designs.
 
+The [approved library footer](https://github.com/kkm-horikawa/grimoire3d/issues/32#footer-design-proposal) puts attribution after the last item in Shelves and Index. On desktop the optional publisher appears on the left and Grimoire3D on the right. The links stack on phones. See the issue for the three approved mockups and the linked implementation review.
+
 ## Browser verification
 
 The following checks were performed on November 19, 2026.

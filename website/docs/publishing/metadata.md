@@ -10,7 +10,14 @@ author: Documentation Team
 socialImage: assets/share.avif
 locale: en
 magicMode: true
+footer:
+  label: Engineering Team
+  url: https://example.com/engineering/
 ```
+
+## Library footer
+
+Set `footer.label` to show a publisher, team, or project name at the end of the bookshelf and index. Set `footer.url` to link that name to an absolute HTTP(S) address. Omit the URL for a plain label. The footer also links to the Grimoire3D repository.
 
 ## Titles and social cards
 

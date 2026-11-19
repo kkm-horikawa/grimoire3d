@@ -33,6 +33,26 @@ describe("Markdown in a project", () => {
     ).toEqual(["index", "02-next", "10-last"]);
   });
 
+  it("accepts a footer label without a link", async () => {
+    await write("grimoire.yml", 'footer: {label: " Documentation Team " }');
+    await write("docs/handbook/index.md", "# Handbook");
+    const { manifest } = await readLibrary(
+      project,
+      await readSettings(project)
+    );
+    expect(manifest.footer).toEqual({ label: "Documentation Team" });
+  });
+
+  it("reports invalid publisher links and missing labels in site settings", async () => {
+    await write(
+      "grimoire.yml",
+      'footer: {label: Team, url: "ftp://example.com"}'
+    );
+    await expect(readSettings(project)).rejects.toThrow("footer.url");
+    await write("grimoire.yml", 'footer: {url: "https://example.com/"}');
+    await expect(readSettings(project)).rejects.toThrow("footer.label");
+  });
+
   it("keeps English routes for Japanese titles and rewrites local AVIF references", async () => {
     await write("grimoire.yml", "locale: ja");
     await write("docs/api-reference/index.md", "# API リファレンス");

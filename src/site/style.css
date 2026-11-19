@@ -98,8 +98,35 @@ a {
 .library {
   position: relative;
   min-height: 100svh;
-  padding: 16px 7.1vw 9svh;
+  padding: 16px 7.1vw 12px;
   background: radial-gradient(ellipse at 50% 60%, #35191b 0%, #1c0712 80%);
+}
+.library-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 16px;
+  margin: 16px clamp(0px, 2.65vw, 48px) 0;
+  padding-block-start: 8px;
+  border-block-start: 1px solid #604841;
+  color: #d1bfa7;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.library-index + .library-footer {
+  width: min(calc(100% - 24px), 980px);
+  margin-inline: auto;
+}
+.library-publisher {
+  margin-inline-end: auto;
+  overflow-wrap: anywhere;
+}
+.library-footer a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.library-footer a:hover {
+  color: #f4e4c7;
 }
 .library-brand {
   position: absolute;
@@ -809,7 +836,17 @@ a {
 
 @media (max-width: 699px) {
   .library {
-    padding: 15px 12px 32px;
+    padding: 15px 12px 10px;
+  }
+  .library-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin: 24px 12px 0;
+    text-align: center;
+  }
+  .library-publisher {
+    margin-inline-end: 0;
   }
   .library-brand {
     position: relative;

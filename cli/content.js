@@ -143,6 +143,7 @@ export async function readSettings(cwd) {
     socialImage,
     author,
     magicMode,
+    footer,
   } = settings;
   if (
     typeof settings !== "object" ||
@@ -180,6 +181,7 @@ export async function readSettings(cwd) {
     socialImage,
     author,
     magicMode,
+    footer: readFooter(footer),
     siteUrl: siteUrl && normalizeSiteUrl(siteUrl),
   };
 }
@@ -195,6 +197,22 @@ function absoluteWebUrl(value) {
       return url;
   } catch {}
   return undefined;
+}
+
+function readFooter(footer) {
+  if (footer === undefined) return undefined;
+  if (typeof footer?.label !== "string" || !footer.label.trim()) {
+    throw new Error("grimoire.yml: footer.label must be non-empty text.");
+  }
+  const { label, url } = footer;
+  if (url === undefined) return { label: label.trim() };
+  const link = typeof url === "string" ? absoluteWebUrl(url) : undefined;
+  if (!link) {
+    throw new Error(
+      "grimoire.yml: footer.url must be an absolute HTTP(S) URL."
+    );
+  }
+  return { label: label.trim(), url: link.href };
 }
 
 function normalizeSiteUrl(value) {
@@ -364,6 +382,7 @@ export async function readLibrary(cwd, settings) {
       socialImage,
       author: settings.author,
       magicMode: settings.magicMode,
+      footer: settings.footer,
       books: books.map(({ id, title, cover }) => ({ id, title, cover })),
     },
     books: publishedBooks,
