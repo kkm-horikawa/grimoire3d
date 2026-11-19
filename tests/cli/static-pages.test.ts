@@ -36,8 +36,9 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
     );
     await writeFile(
       join(root, "docs/notes/index.md"),
-      "---\ncover: teal\ncategory: Field work\n---\n# Notes\n\n[Guide](./guide.md#publish)"
+      "---\ncover: teal\ncategory: Field work\ncoverImage: ./cover.webp\n---\n# Notes\n\n[Guide](./guide.md#publish)"
     );
+    await writeFile(join(root, "docs/notes/cover.webp"), "sample cover");
     await writeFile(
       join(root, "docs/notes/guide.md"),
       [
@@ -74,6 +75,10 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
     );
     const shelf = await readFile(join(root, "site/index.html"), "utf8");
     expect(shelf).not.toContain("data-initial-shelf");
+    expect(shelf).toContain('aria-label="Notes"');
+    expect(shelf).toContain(
+      '<span class="volume-cover-content"><span class="volume-title">Notes</span><img class="volume-cover-image" src="./content/notes/cover.webp"'
+    );
     expect(shelf).toContain(
       '<a class="library-publisher" href="https://example.com/team/">Research &amp; Development</a>'
     );

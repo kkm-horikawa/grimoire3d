@@ -37,6 +37,8 @@ The [approved library footer](https://github.com/kkm-horikawa/grimoire3d/issues/
 
 The [approved category and date controls](https://github.com/kkm-horikawa/grimoire3d/issues/34#category-and-sort-design-proposal) sit below the search and view controls. Each appears when the library contains its corresponding metadata. Both views share the selections.
 
+The [approved custom artwork design](https://github.com/kkm-horikawa/grimoire3d/issues/35#long-title-with-a-portrait-image) reserves separate rows for the title and the image inside each cover. The title takes up to three lines and the image fits in the height below it.
+
 ## Browser verification
 
 The following checks were performed on November 19, 2026.

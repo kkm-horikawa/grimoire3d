@@ -63,6 +63,50 @@ describe("Markdown in a project", () => {
     }
   );
 
+  it("copies cover photos relative to the book index into the library", async () => {
+    await write(
+      "docs/notes/index.md",
+      '---\ncover: teal\ncoverImage: "./assets/mountain view.webp"\n---\n# Field Notes'
+    );
+    await write("docs/notes/assets/mountain view.webp", "sample image");
+    await write(
+      "docs/notes/chapter.md",
+      "---\ncoverImage: ignored.png\n---\n# Chapter"
+    );
+    await write("docs/reference/index.md", "# Reference");
+    const result = await readLibrary(project, { locale: "en" });
+    expect(JSON.parse(JSON.stringify(result.manifest.books))).toEqual([
+      {
+        id: "notes",
+        title: "Field Notes",
+        cover: "teal",
+        coverImage: "./content/notes/assets/mountain%20view.webp",
+      },
+      { id: "reference", title: "Reference" },
+    ]);
+    expect([...result.assets.keys()]).toEqual([
+      "notes/assets/mountain view.webp",
+    ]);
+  });
+
+  it.each([
+    "https://example.com/art.jpg",
+    "../../outside.webp",
+    "missing.png",
+    "art.svg",
+  ])(
+    "reports an invalid cover image with its book index (%s)",
+    async (path) => {
+      await write(
+        "docs/notes/index.md",
+        `---\ncoverImage: "${path}"\n---\n# Notes`
+      );
+      await expect(readLibrary(project, { locale: "en" })).rejects.toThrow(
+        "notes/index.md: coverImage"
+      );
+    }
+  );
+
   it("accepts a footer label without a link", async () => {
     await write("grimoire.yml", 'footer: {label: " Documentation Team " }');
     await write("docs/handbook/index.md", "# Handbook");

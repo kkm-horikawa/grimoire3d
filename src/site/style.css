@@ -1657,6 +1657,40 @@ output.book-count {
 
 }
 
+.volume-face {
+  display: contents;
+}
+.volume-unmarked {
+  position: absolute;
+  inset: 0;
+  mask-image: radial-gradient(ellipse 22% 20% at 51% 58%, #000 70%, transparent 100%);
+  pointer-events: none;
+}
+.volume-unmarked .volume-render {
+  transform: translateY(22%) scaleY(1.55);
+  transform-origin: center top;
+}
+.volume-cover-content {
+  position: absolute;
+  inset: 25% 23% 14% 19%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(4px, 2cqw, 8px);
+  pointer-events: none;
+}
+.volume-cover-content .volume-title {
+  position: static;
+  min-width: 0;
+}
+.volume-cover-image {
+  display: block;
+  justify-self: center;
+  width: 90%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+
 .volume-title {
   position: absolute;
   inset: 25% 23% auto 19%;
