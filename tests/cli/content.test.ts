@@ -33,6 +33,100 @@ describe("Markdown in a project", () => {
     ).toEqual(["index", "02-next", "10-last"]);
   });
 
+  it("lists category and publication date from the book index in the library", async () => {
+    await write(
+      "docs/notes/index.md",
+      '---\ncategory: " 実験記録 "\ndate: 2024-02-29\n---\n# Notes'
+    );
+    await write(
+      "docs/notes/chapter.md",
+      "---\ncategory: Chapter-only\ndate: 2026-11-19\n---\n# Chapter"
+    );
+    await write("docs/reference/index.md", "# Reference");
+    const { manifest } = await readLibrary(
+      project,
+      await readSettings(project)
+    );
+    expect(JSON.parse(JSON.stringify(manifest.books))).toEqual([
+      { id: "notes", title: "Notes", category: "実験記録", date: "2024-02-29" },
+      { id: "reference", title: "Reference" },
+    ]);
+  });
+
+  it.each(["2026-02-29", "2026-2-09", "2026-11-19T00:00:00Z"])(
+    "reports an invalid publication date and its book index (%s)",
+    async (date) => {
+      await write("docs/notes/index.md", `---\ndate: "${date}"\n---\n# Notes`);
+      await expect(readLibrary(project, { locale: "en" })).rejects.toThrow(
+        "notes/index.md: date must be a valid publication date in YYYY-MM-DD format."
+      );
+    }
+  );
+
+  it("copies cover photos relative to the book index into the library", async () => {
+    await write(
+      "docs/notes/index.md",
+      '---\ncover: teal\ncoverImage: "./assets/mountain view.webp"\n---\n# Field Notes'
+    );
+    await write("docs/notes/assets/mountain view.webp", "sample image");
+    await write(
+      "docs/notes/chapter.md",
+      "---\ncoverImage: ignored.png\n---\n# Chapter"
+    );
+    await write("docs/reference/index.md", "# Reference");
+    const result = await readLibrary(project, { locale: "en" });
+    expect(JSON.parse(JSON.stringify(result.manifest.books))).toEqual([
+      {
+        id: "notes",
+        title: "Field Notes",
+        cover: "teal",
+        coverImage: "./content/notes/assets/mountain%20view.webp",
+      },
+      { id: "reference", title: "Reference" },
+    ]);
+    expect([...result.assets.keys()]).toEqual([
+      "notes/assets/mountain view.webp",
+    ]);
+  });
+
+  it.each([
+    "https://example.com/art.jpg",
+    "../../outside.webp",
+    "missing.png",
+    "art.svg",
+  ])(
+    "reports an invalid cover image with its book index (%s)",
+    async (path) => {
+      await write(
+        "docs/notes/index.md",
+        `---\ncoverImage: "${path}"\n---\n# Notes`
+      );
+      await expect(readLibrary(project, { locale: "en" })).rejects.toThrow(
+        "notes/index.md: coverImage"
+      );
+    }
+  );
+
+  it("accepts a footer label without a link", async () => {
+    await write("grimoire.yml", 'footer: {label: " Documentation Team " }');
+    await write("docs/handbook/index.md", "# Handbook");
+    const { manifest } = await readLibrary(
+      project,
+      await readSettings(project)
+    );
+    expect(manifest.footer).toEqual({ label: "Documentation Team" });
+  });
+
+  it("reports invalid publisher links and missing labels in site settings", async () => {
+    await write(
+      "grimoire.yml",
+      'footer: {label: Team, url: "ftp://example.com"}'
+    );
+    await expect(readSettings(project)).rejects.toThrow("footer.url");
+    await write("grimoire.yml", 'footer: {url: "https://example.com/"}');
+    await expect(readSettings(project)).rejects.toThrow("footer.label");
+  });
+
   it("keeps English routes for Japanese titles and rewrites local AVIF references", async () => {
     await write("grimoire.yml", "locale: ja");
     await write("docs/api-reference/index.md", "# API リファレンス");

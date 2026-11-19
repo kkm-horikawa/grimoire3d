@@ -5,7 +5,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import Markdown, { defaultUrlTransform } from "react-markdown";
 import remarkDirective from "remark-directive";
 import remarkGfm from "remark-gfm";
+import { BookCover } from "./book-cover.js";
 import { coverOptions, selectCover } from "./cover-options.js";
+import { LibraryFooter } from "./library-footer.js";
 import { remarkGrimoire } from "./markup.js";
 import { readerPath, readLegacyRoute } from "./routes.js";
 import { videoEmbed } from "./video-url.js";
@@ -20,10 +22,12 @@ function escapeHtml(value) {
   );
 }
 
+const noindexMeta = '<meta name="robots" content="noindex">';
+
 export function previewHead(manifest) {
   return [
     '<meta name="grimoire-preview" content="live">',
-    '<meta name="robots" content="noindex">',
+    noindexMeta,
     manifest.description &&
       `<meta name="description" content="${escapeHtml(manifest.description)}">`,
   ]
@@ -47,6 +51,7 @@ function pageHead(site, page, route, prefix) {
   const metadata = [
     `<meta name="grimoire-static" content="${prefix}">`,
     canonical && `<link rel="canonical" href="${escapeHtml(canonical)}">`,
+    page.noindex && noindexMeta,
     description &&
       `<meta name="description" content="${escapeHtml(description)}">`,
     site.author && `<meta name="author" content="${escapeHtml(site.author)}">`,
@@ -184,8 +189,8 @@ function initialBookMarkup(book, chapter, locale) {
   };
 }
 
-function replaceShell(template, site, head, prefix, body, reader) {
-  return template
+function replaceShell(template, site, head, prefix, body, reader, headMarkup) {
+  const html = template
     .replace('<html lang="en">', `<html lang="${site.locale}">`)
     .replace(
       /<script type="module"[^>]*src="([^"]+)"[^>]*><\/script>/,
@@ -204,6 +209,12 @@ function replaceShell(template, site, head, prefix, body, reader) {
       () => `<title>${escapeHtml(head.title)}</title>\n${head.metadata}`
     )
     .replace('<div id="root"></div>', () => `<div id="root">${body}</div>`);
+  return headMarkup
+    ? html.replace(
+        /<head>(\s*<meta charset="[^"]+"\s*\/?>)?/i,
+        (start) => `${start}\n${headMarkup}\n`
+      )
+    : html;
 }
 
 function startAfterArtwork(entry, reader) {
@@ -255,6 +266,10 @@ function assetNamed(assets, prefix, name, ext = ".avif") {
 
 function staticShelf(site, prefix, assets, label) {
   const books = site.books.slice(0, 12);
+  // Enhance the entire bookshelf together when adding catalog controls or custom art.
+  const reuseShelfArt = !site.books.some(
+    (book) => book.category || book.date || book.coverImage
+  );
   const button = site.locale === "ja" ? "目録" : "Index";
   const titleStyle = (finish) =>
     finish.lettering
@@ -275,13 +290,23 @@ function staticShelf(site, prefix, assets, label) {
         `cover-${finish.base}-mobile`
       );
       const style = `--cover-filter:${finish.filter};${titleStyle(finish)}`;
-      return `<div class="shelf-cell"><a class="volume" href="${prefix + escapeHtml(readerPath(book.id))}" aria-label="${escapeHtml(book.title)}" style="${style}">${cover ? `<picture>${mobileCover ? `<source media="(max-width: 699px)" srcset="${mobileCover}">` : ""}<img class="volume-render" src="${prefix}assets/${cover}" width="600" height="760" alt="" fetchpriority="low"${index > 2 ? ' loading="lazy"' : ""}></picture>` : ""}<span class="volume-title">${escapeHtml(book.title)}</span></a></div>`;
+      const face = renderToStaticMarkup(
+        element(BookCover, {
+          title: book.title,
+          src: cover && `${prefix}assets/${cover}`,
+          compact: mobileCover,
+          artwork: book.coverImage && prefix + book.coverImage.slice(2),
+          loading: index < 3 ? "eager" : "lazy",
+        })
+      );
+      return `<div class="shelf-cell"><a class="volume" href="${prefix + escapeHtml(readerPath(book.id))}" aria-label="${escapeHtml(book.title)}" style="${style}">${face}</a></div>`;
     })
     .join("");
   return `<main class="library"><header class="library-brand brand">${escapeHtml(site.title)}</header>
   <div class="library-heading${site.books.length > 6 ? " library-heading-sticky" : ""}"><h1>${label}</h1></div>
-  <div class="shelf resting-shelf${site.books.length > 6 ? " shelf-many" : ""}"${books.length >= 3 && books.length <= 4 ? ' data-mobile-rows="2"' : ""}><div class="shelf-art" data-initial-shelf aria-hidden="true"></div><div class="shelf-grid">${covers}</div></div>
+  <div class="shelf resting-shelf${site.books.length > 6 ? " shelf-many" : ""}"${books.length >= 3 && books.length <= 4 ? ' data-mobile-rows="2"' : ""}><div class="shelf-art"${reuseShelfArt ? " data-initial-shelf" : ""} aria-hidden="true"></div><div class="shelf-grid">${covers}</div></div>
   ${site.books.length > 12 ? `<details><summary>${button}</summary>${linkList(site.books.map((book) => ({ title: book.title, href: prefix + readerPath(book.id) })))}</details>` : ""}
+  ${renderToStaticMarkup(element(LibraryFooter, { publisher: site.footer }))}
   </main>`;
 }
 
@@ -334,7 +359,12 @@ function staticChapter({ site, book, page, prefix, assets, libraryLabel }) {
   </main>`;
 }
 
-export async function writeStaticPages(templateDir, destination, library) {
+export async function writeStaticPages(
+  templateDir,
+  destination,
+  library,
+  headMarkup = ""
+) {
   const template = await readFile(join(templateDir, "index.html"), "utf8");
   const site = library.manifest;
   const books = new Map(library.books.map((book) => [book.id, book]));
@@ -415,18 +445,27 @@ export async function writeStaticPages(templateDir, destination, library) {
         head,
         prefix,
         body(prefix),
-        book ? reader : undefined
+        book ? reader : undefined,
+        headMarkup
       )
     );
-    if (head.canonical) urls.push(head.canonical);
+    if (head.canonical && !page.noindex) urls.push(head.canonical);
   }
-  await write(site, [], (prefix) =>
-    staticShelf(site, prefix, assets, libraryLabel)
+  // A single-book site opens the first chapter at the site root as well.
+  const firstChapter = chapters.get(site.books[0]?.id)?.[0];
+  await write(
+    { ...site, noindex: !site.shelf && firstChapter?.noindex },
+    [],
+    (prefix) => staticShelf(site, prefix, assets, libraryLabel)
   );
   for (const book of site.books) {
     const pages = chapters.get(book.id) ?? [];
     await write(
-      { title: book.title, description: pages[0]?.description },
+      {
+        title: book.title,
+        description: pages[0]?.description,
+        noindex: pages[0]?.noindex,
+      },
       ["read", book.id],
       (prefix) =>
         `<main class="static-reading"><nav><a href="${prefix}">${libraryLabel}</a></nav><h1>${escapeHtml(book.title)}</h1>${linkList(
@@ -452,7 +491,7 @@ export async function writeStaticPages(templateDir, destination, library) {
       );
     }
   }
-  if (site.siteUrl) {
+  if (urls.length) {
     await writeFile(
       join(destination, "sitemap.xml"),
       `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url) => `  <url><loc>${escapeHtml(url)}</loc></url>`).join("\n")}\n</urlset>\n`

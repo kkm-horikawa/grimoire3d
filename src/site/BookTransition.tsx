@@ -1,4 +1,5 @@
 import { type JSX, useLayoutEffect, useRef } from "react";
+import { BookCover } from "../../cli/book-cover.js";
 import { coverPerspective, spreadReveal } from "./bookHinge";
 import { coverFor } from "./covers";
 
@@ -6,6 +7,7 @@ export interface CoverOrigin {
   id: string;
   title: string;
   cover?: string;
+  artwork?: string;
   src: string;
   rect: DOMRect;
 }
@@ -220,10 +222,12 @@ export function BookTransition({
                 height: rect.height,
               }}
             >
-              <img className="volume-render" src={origin.src} alt="" />
-              <span className="volume-title" ref={title}>
-                {origin.title}
-              </span>
+              <BookCover
+                title={origin.title}
+                src={origin.src}
+                artwork={origin.artwork}
+                titleRef={title}
+              />
             </div>
           </div>
           <div className="book-transition-inside" ref={inside} />
