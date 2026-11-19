@@ -262,6 +262,8 @@ function assetNamed(assets, prefix, name, ext = ".avif") {
 
 function staticShelf(site, prefix, assets, label) {
   const books = site.books.slice(0, 12);
+  // Catalog controls move the shelf when the interactive library starts.
+  const reuseShelfArt = !site.books.some((book) => book.category || book.date);
   const button = site.locale === "ja" ? "目録" : "Index";
   const titleStyle = (finish) =>
     finish.lettering
@@ -287,7 +289,7 @@ function staticShelf(site, prefix, assets, label) {
     .join("");
   return `<main class="library"><header class="library-brand brand">${escapeHtml(site.title)}</header>
   <div class="library-heading${site.books.length > 6 ? " library-heading-sticky" : ""}"><h1>${label}</h1></div>
-  <div class="shelf resting-shelf${site.books.length > 6 ? " shelf-many" : ""}"${books.length >= 3 && books.length <= 4 ? ' data-mobile-rows="2"' : ""}><div class="shelf-art" data-initial-shelf aria-hidden="true"></div><div class="shelf-grid">${covers}</div></div>
+  <div class="shelf resting-shelf${site.books.length > 6 ? " shelf-many" : ""}"${books.length >= 3 && books.length <= 4 ? ' data-mobile-rows="2"' : ""}><div class="shelf-art"${reuseShelfArt ? " data-initial-shelf" : ""} aria-hidden="true"></div><div class="shelf-grid">${covers}</div></div>
   ${site.books.length > 12 ? `<details><summary>${button}</summary>${linkList(site.books.map((book) => ({ title: book.title, href: prefix + readerPath(book.id) })))}</details>` : ""}
   ${renderToStaticMarkup(element(LibraryFooter, { publisher: site.footer }))}
   </main>`;

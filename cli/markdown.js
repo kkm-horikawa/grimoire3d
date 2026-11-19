@@ -127,6 +127,11 @@ export function readMarkdown(source) {
         typeof metadata.socialImage === "string"
           ? metadata.socialImage.trim()
           : undefined,
+      category:
+        typeof metadata.category === "string"
+          ? metadata.category.trim() || undefined
+          : undefined,
+      date: metadata.date,
     },
     excerpt: [...excerpt].slice(0, 170).join(""),
     markdown,

@@ -74,6 +74,8 @@ function App({
   const [shelfState, setShelfState] = useState<ShelfState>({
     mode: "shelves",
     query: "",
+    category: "",
+    newestFirst: false,
     scroll: 0,
     focus: "",
     shown: shelfBatchSize,

@@ -39,3 +39,19 @@ cover: teal
 ---
 # Release Notes
 ```
+
+## Categories and publication dates
+
+Use the book's `index.md` front matter to group it with related books or give it a publication date.
+
+```markdown
+---
+category: Experiments
+date: "2026-11-19"
+---
+# Field Notes
+```
+
+Both fields are optional. Use any category name and a date in `YYYY-MM-DD` format. The category selector appears if at least one book has a category. The sort selector appears if at least one book has a publication date.
+
+The selectors work with title search and carry across Shelves and Index. **Newest first** lists dated books first, with same-day books in title order and undated books at the end. **Default order** restores folder order on the shelves and title order in the index. Chapter order comes from the files in each book.

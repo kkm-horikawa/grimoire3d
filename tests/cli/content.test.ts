@@ -33,6 +33,36 @@ describe("Markdown in a project", () => {
     ).toEqual(["index", "02-next", "10-last"]);
   });
 
+  it("lists category and publication date from the book index in the library", async () => {
+    await write(
+      "docs/notes/index.md",
+      '---\ncategory: " 実験記録 "\ndate: 2024-02-29\n---\n# Notes'
+    );
+    await write(
+      "docs/notes/chapter.md",
+      "---\ncategory: Chapter-only\ndate: 2026-11-19\n---\n# Chapter"
+    );
+    await write("docs/reference/index.md", "# Reference");
+    const { manifest } = await readLibrary(
+      project,
+      await readSettings(project)
+    );
+    expect(JSON.parse(JSON.stringify(manifest.books))).toEqual([
+      { id: "notes", title: "Notes", category: "実験記録", date: "2024-02-29" },
+      { id: "reference", title: "Reference" },
+    ]);
+  });
+
+  it.each(["2026-02-29", "2026-2-09", "2026-11-19T00:00:00Z"])(
+    "reports an invalid publication date and its book index (%s)",
+    async (date) => {
+      await write("docs/notes/index.md", `---\ndate: "${date}"\n---\n# Notes`);
+      await expect(readLibrary(project, { locale: "en" })).rejects.toThrow(
+        "notes/index.md: date must be a valid publication date in YYYY-MM-DD format."
+      );
+    }
+  );
+
   it("accepts a footer label without a link", async () => {
     await write("grimoire.yml", 'footer: {label: " Documentation Team " }');
     await write("docs/handbook/index.md", "# Handbook");
