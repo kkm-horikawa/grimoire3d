@@ -59,6 +59,24 @@ function comparePages(a, b) {
   );
 }
 
+function readPublicationDate(index) {
+  const raw = index?.metadata.date;
+  const date = typeof raw === "string" ? raw.trim() : raw;
+  if (date == null || date === "") return undefined;
+
+  if (typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    const parsed = new Date(date);
+    if (
+      Number.isFinite(parsed.getTime()) &&
+      parsed.toISOString().slice(0, 10) === date
+    )
+      return date;
+  }
+  throw new Error(
+    `${index.path}: date must be a valid publication date in YYYY-MM-DD format.`
+  );
+}
+
 function describeBook(pages, folder, fallback) {
   const index = pages.find(
     (page) =>
@@ -81,6 +99,8 @@ function describeBook(pages, folder, fallback) {
     id,
     title,
     cover,
+    category: index?.metadata.category,
+    date: readPublicationDate(index),
     chapters: pages.sort(comparePages).map((page) => {
       const group = posix.dirname(page.path);
       const inBook = folder ? page.path.slice(folder.length + 1) : page.path;
@@ -385,7 +405,13 @@ export async function readLibrary(cwd, settings) {
       author: settings.author,
       magicMode: settings.magicMode,
       footer: settings.footer,
-      books: books.map(({ id, title, cover }) => ({ id, title, cover })),
+      books: books.map(({ id, title, cover, category, date }) => ({
+        id,
+        title,
+        cover,
+        category,
+        date,
+      })),
     },
     books: publishedBooks,
     documents,

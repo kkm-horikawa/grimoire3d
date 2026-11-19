@@ -1,4 +1,4 @@
-import { BookOpen, ChevronRight, Search, X } from "lucide-react";
+import { BookOpen, ChevronDown, ChevronRight, Search, X } from "lucide-react";
 import {
   type CSSProperties,
   type JSX,
@@ -20,6 +20,8 @@ export const shelfBatchSize = 12;
 export interface ShelfState {
   mode: "shelves" | "index";
   query: string;
+  category: string;
+  newestFirst: boolean;
   scroll: number;
   focus: string;
   shown: number;
@@ -95,7 +97,7 @@ export function LibraryView({
   onLocateVolume,
 }: LibraryViewProps): JSX.Element {
   const { locale, books } = library;
-  const { mode, query, scroll, focus, shown } = state;
+  const { mode, query, category, newestFirst, scroll, focus, shown } = state;
   const search = useRef<HTMLInputElement>(null);
   const root = useRef<HTMLElement>(null);
   const origins = useRef(new Map<string, DOMRect>());
@@ -107,7 +109,8 @@ export function LibraryView({
   const visible = useRef(new Set<HTMLAnchorElement>());
   const shelfArtSlot = useRef<HTMLDivElement>(null);
   const looking = normalize(query);
-  const restingShelf = mode === "shelves" && !looking;
+  const filtering = Boolean(looking || category);
+  const restingShelf = mode === "shelves" && !filtering;
   useLayoutEffect(() => {
     const slot = shelfArtSlot.current;
     const art = initialShelfArt;
@@ -116,20 +119,41 @@ export function LibraryView({
     return () => art.remove();
   }, [restingShelf]);
   const large = books.length > 6;
+  const categories = useMemo(() => {
+    const names = books.flatMap((book) =>
+      book.category ? [book.category] : []
+    );
+    return [...new Set(names)].sort((left, right) =>
+      left.localeCompare(right, locale)
+    );
+  }, [books, locale]);
+  const hasCategories = categories.length > 0;
+  const hasDates = books.some((book) => book.date);
   const results = useMemo(() => {
-    const matches = looking
+    const matches = filtering
       ? books.filter(
           (book) =>
-            normalize(book.title).includes(looking) ||
-            normalize(book.id).includes(looking)
+            (!category || book.category === category) &&
+            (!looking ||
+              normalize(book.title).includes(looking) ||
+              normalize(book.id).includes(looking))
         )
       : books;
-    return mode === "index"
-      ? [...matches].sort((left, right) =>
-          left.title.localeCompare(right.title, locale, { numeric: true })
-        )
-      : matches;
-  }, [books, locale, looking, mode]);
+    if (newestFirst) {
+      return [...matches].sort(
+        (left, right) =>
+          (right.date ?? "").localeCompare(left.date ?? "", "en") ||
+          left.title.localeCompare(right.title, locale, { numeric: true }) ||
+          left.id.localeCompare(right.id, locale)
+      );
+    }
+    if (mode === "index") {
+      return [...matches].sort((left, right) =>
+        left.title.localeCompare(right.title, locale, { numeric: true })
+      );
+    }
+    return matches;
+  }, [books, category, filtering, locale, looking, mode, newestFirst]);
   const shownResults = useMemo(
     () => (mode === "shelves" ? results.slice(0, shown) : results),
     [mode, results, shown]
@@ -267,6 +291,21 @@ export function LibraryView({
     window.scrollTo(0, 0);
   }
 
+  function updateCatalogOptions(
+    nextCategory: string,
+    useNewest: boolean
+  ): void {
+    onState({
+      ...state,
+      category: nextCategory,
+      newestFirst: useNewest,
+      shown: shelfBatchSize,
+      scroll: 0,
+      focus: "",
+    });
+    window.scrollTo(0, 0);
+  }
+
   function openVolume(
     book: BookSummary,
     event: MouseEvent<HTMLAnchorElement>
@@ -296,7 +335,7 @@ export function LibraryView({
   }
 
   return (
-    <main className="library" ref={root} data-searching={Boolean(looking)}>
+    <main className="library" ref={root} data-searching={filtering}>
       <header className="library-brand brand">
         <BookOpen aria-hidden size={25} />
         {library.title}
@@ -307,7 +346,7 @@ export function LibraryView({
         }
       >
         <h1>{text.library}</h1>
-        {large && (
+        {(large || hasCategories || hasDates) && (
           <div className="library-tools">
             <search className="search-region">
               <form
@@ -372,15 +411,56 @@ export function LibraryView({
             </div>
           </div>
         )}
+        {(hasCategories || hasDates) && (
+          <div className="catalog-options">
+            {hasCategories && (
+              <div className="catalog-option">
+                <select
+                  aria-label={text.category}
+                  value={category}
+                  onChange={(event) =>
+                    updateCatalogOptions(event.target.value, newestFirst)
+                  }
+                >
+                  <option value="">{text.allCategories}</option>
+                  {categories.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown aria-hidden size={16} />
+              </div>
+            )}
+            {hasDates && (
+              <div className="catalog-option">
+                <select
+                  aria-label={text.sort}
+                  value={newestFirst ? "newest" : "default"}
+                  onChange={(event) =>
+                    updateCatalogOptions(
+                      category,
+                      event.target.value === "newest"
+                    )
+                  }
+                >
+                  <option value="default">{text.defaultOrder}</option>
+                  <option value="newest">{text.newestFirst}</option>
+                </select>
+                <ChevronDown aria-hidden size={16} />
+              </div>
+            )}
+          </div>
+        )}
       </div>
-      {looking && (
+      {filtering && (
         <output className="book-count">
           {results.length === 0 ? text.zero : text.matches(results.length)}
         </output>
       )}
       {mode === "index" ? (
         <>
-          {!looking && (
+          {!filtering && (
             <p className="book-count index-count">{text.count(books.length)}</p>
           )}
           <ul className="library-index">
@@ -418,7 +498,7 @@ export function LibraryView({
           data-mobile-rows={
             books.length >= 3 && books.length <= 4 ? "2" : undefined
           }
-          className={`shelf ${large ? "shelf-many" : ""} ${restingShelf ? "resting-shelf" : ""} ${looking ? "shelf-searching" : ""} ${looking && results.length === 1 ? "shelf-one-match" : ""}`}
+          className={`shelf ${large ? "shelf-many" : ""} ${restingShelf ? "resting-shelf" : ""} ${filtering ? "shelf-searching" : ""} ${filtering && results.length === 1 ? "shelf-one-match" : ""}`}
         >
           {restingShelf &&
             (initialShelfArt ? (
