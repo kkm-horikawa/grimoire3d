@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="./assets/favicon-C9YRygge.png" />
+    <title>Grimoire3D Documentation</title>
+<meta name="grimoire-static" content="./">
+<link rel="canonical" href="https://kkm-horikawa.github.io/grimoire3d/">
+<meta name="description" content="Turn Markdown into a 3D bookshelf. Learn how to write chapters, embed media and diagrams, and publish a static Grimoire3D site.">
+<meta name="author" content="Grimoire3D">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Grimoire3D Documentation">
+<meta property="og:site_name" content="Grimoire3D Documentation">
+<meta property="og:description" content="Turn Markdown into a 3D bookshelf. Learn how to write chapters, embed media and diagrams, and publish a static Grimoire3D site.">
+<meta property="og:url" content="https://kkm-horikawa.github.io/grimoire3d/">
+<meta property="og:image" content="https://kkm-horikawa.github.io/grimoire3d/content/assets/share.jpg">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Grimoire3D Documentation","url":"https://kkm-horikawa.github.io/grimoire3d/","inLanguage":"en","description":"Turn Markdown into a 3D bookshelf. Learn how to write chapters, embed media and diagrams, and publish a static Grimoire3D site."}</script>
+<script type="application/json" id="grimoire-initial">{"library":{"locale":"en","shelf":true,"title":"Grimoire3D Documentation","description":"Turn Markdown into a 3D bookshelf. Learn how to write chapters, embed media and diagrams, and publish a static Grimoire3D site.","siteUrl":"https://kkm-horikawa.github.io/grimoire3d/","socialImage":"./content/assets/share.jpg","author":"Grimoire3D","magicMode":true,"books":[{"id":"publishing","title":"Publishing","cover":"blue"},{"id":"start","title":"Getting Started","cover":"red"},{"id":"writing","title":"Writing Books","cover":"green"}]}}</script>
+<link rel="preload" as="image" data-first-art fetchpriority="high" media="(min-width: 700px)" href="./assets/alcove-cyX4Tv3E.avif">
+<link rel="preload" as="image" data-first-art fetchpriority="high" media="(481px <= width < 700px)" href="./assets/mobile-cabinet-BUr9vtlo.avif">
+<link rel="preload" as="image" data-first-art fetchpriority="high" media="(max-width: 480px)" href="./assets/mobile-cabinet-sm-pauJUfRH.avif">
+    <script type="module">
+    const events = ["pointerdown","keydown"];
+    let started = false;
+    function start() {
+      if (started) return;
+      started = true;
+      for (const event of events) window.removeEventListener(event,start,true);
+      const reader = "";
+      if (reader) {
+        const preload = document.createElement("link");
+        preload.rel = "modulepreload";
+        preload.href = reader;
+        document.head.append(preload);
+      }
+      void import("./assets/index-8E35cdp1.js");
+    }
+    const art = [...document.querySelectorAll("link[data-first-art]")].find(link => matchMedia(link.media).matches);
+    if (!art || !matchMedia("(max-width: 699px)").matches) start();
+    else {
+      for (const event of events) window.addEventListener(event,start,{capture:true,once:true});
+      const image = new Image();
+      const painted = () => requestAnimationFrame(() => requestAnimationFrame(start));
+      // The CSS background owns the decode. Wait for its bytes without decoding another bitmap.
+      image.addEventListener("load", painted, { once:true });
+      image.addEventListener("error", painted, { once:true });
+      image.src = art.href;
+    }
+    </script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Co4uOkuH.css">
+  </head>
+  <body>
+    <div id="root"><main class="library"><header class="library-brand brand">Grimoire3D Documentation</header>
+  <div class="library-heading"><h1>Library</h1></div>
+  <div class="shelf resting-shelf" data-mobile-rows="2"><div class="shelf-art" data-initial-shelf aria-hidden="true"></div><div class="shelf-grid"><div class="shelf-cell"><a class="volume" href="./read/publishing/" aria-label="Publishing" style="--cover-filter:brightness(1);"><picture><source media="(max-width: 699px)" srcset="./assets/cover-blue-mobile-YcuYIg0I.avif"><img class="volume-render" src="./assets/cover-blue-Bh8Xp4T5.avif" width="600" height="760" alt="" fetchpriority="low"></picture><span class="volume-title">Publishing</span></a></div><div class="shelf-cell"><a class="volume" href="./read/start/" aria-label="Getting Started" style="--cover-filter:brightness(1);"><picture><source media="(max-width: 699px)" srcset="./assets/cover-red-mobile-DHOCz3wI.avif"><img class="volume-render" src="./assets/cover-red-qvZEk3PI.avif" width="600" height="760" alt="" fetchpriority="low"></picture><span class="volume-title">Getting Started</span></a></div><div class="shelf-cell"><a class="volume" href="./read/writing/" aria-label="Writing Books" style="--cover-filter:brightness(1);"><picture><source media="(max-width: 699px)" srcset="./assets/cover-green-mobile-BNTgNt7v.avif"><img class="volume-render" src="./assets/cover-green-By13JjUx.avif" width="600" height="760" alt="" fetchpriority="low"></picture><span class="volume-title">Writing Books</span></a></div></div></div>
+  
+  </main></div>
+  </body>
+</html>

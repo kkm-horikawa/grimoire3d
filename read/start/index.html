@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../../assets/favicon-C9YRygge.png" />
+    <title>Getting Started · Grimoire3D Documentation</title>
+<meta name="grimoire-static" content="../../">
+<link rel="canonical" href="https://kkm-horikawa.github.io/grimoire3d/read/start/">
+<meta name="description" content="Install the Grimoire3D CLI and open your first Markdown book.">
+<meta name="author" content="Grimoire3D">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Getting Started · Grimoire3D Documentation">
+<meta property="og:site_name" content="Grimoire3D Documentation">
+<meta property="og:description" content="Install the Grimoire3D CLI and open your first Markdown book.">
+<meta property="og:url" content="https://kkm-horikawa.github.io/grimoire3d/read/start/">
+<meta property="og:image" content="https://kkm-horikawa.github.io/grimoire3d/content/assets/share.jpg">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Getting Started","url":"https://kkm-horikawa.github.io/grimoire3d/read/start/","inLanguage":"en","description":"Install the Grimoire3D CLI and open your first Markdown book."}</script>
+<script type="application/json" id="grimoire-initial">{"library":{"locale":"en","shelf":true,"title":"Grimoire3D Documentation","description":"Turn Markdown into a 3D bookshelf. Learn how to write chapters, embed media and diagrams, and publish a static Grimoire3D site.","siteUrl":"https://kkm-horikawa.github.io/grimoire3d/","socialImage":"./content/assets/share.jpg","author":"Grimoire3D","magicMode":true,"books":[{"id":"publishing","title":"Publishing","cover":"blue"},{"id":"start","title":"Getting Started","cover":"red"},{"id":"writing","title":"Writing Books","cover":"green"}]},"book":{"id":"start","title":"Getting Started","cover":"red","pages":[{"id":"index","title":"Getting Started","markdown":"# Getting Started\n\nGrimoire3D turns Markdown files into books you can open and flip through in a browser. This library was built with the same CLI.\n\nStart with [your first book](./first-book.md). Then learn [how to organize a library](../writing/index.md) or [publish it](../publishing/index.md).\n","headingIds":{"0":"getting-started"},"links":{"./first-book.md":"#/start/first-book","../writing/index.md":"#/writing/index","../publishing/index.md":"#/publishing/index"}},{"id":"first-book","title":"Your first book","markdown":"# Your first book\n\n## Install the CLI\n\nUse Node.js 22 or later. The current npm release predates the CLI. Build and pack a checkout that includes it.\n\n```sh\nnpm ci\nnpm run build\nnpm pack\n```\n\nInstall the resulting archive from the project where you want to write your book. Run `npm init -y` first if the project has no `package.json`.\n\n```sh\nnpm install -D /path/to/grimoire3d-0.0.0.tgz\n```\n\n","headingIds":{"0":"your-first-book","19":"install-the-cli"},"section":{"id":"install-the-cli","title":"Install the CLI"},"links":{},"preparedHtml":"\u003ch1 id=\"your-first-book\">Your first book\u003c/h1>\n\u003ch2 id=\"install-the-cli\">Install the CLI\u003c/h2>\n\u003cp>Use Node.js 22 or later. The current npm release predates the CLI. Build and pack a checkout that includes it.\u003c/p>\n\u003cpre>\u003ccode class=\"language-sh\">npm ci\nnpm run build\nnpm pack\n\u003c/code>\u003c/pre>\n\u003cp>Install the resulting archive from the project where you want to write your book. Run \u003ccode>npm init -y\u003c/code> first if the project has no \u003ccode>package.json\u003c/code>.\u003c/p>\n\u003cpre>\u003ccode class=\"language-sh\">npm install -D /path/to/grimoire3d-0.0.0.tgz\n\u003c/code>\u003c/pre>"},{"id":"first-book","title":"Your first book","markdown":"## Add Markdown\n\nCreate `docs/index.md` in your project.\n\n```markdown\n# Field Notes\n\nThis is my first 3D book.\n```\n\nAdd `docs/01-setup.md` to write another chapter. To create a bookshelf, put each book in its own folder directly under `docs/`. Give each folder an `index.md` with the title of the book.\n\n","headingIds":{"0":"add-markdown"},"section":{"id":"add-markdown","title":"Add Markdown"},"links":{}},{"id":"first-book","title":"Your first book","markdown":"## Preview the book\n\n```sh\nnpx grimoire3d serve\n```\n\nOpen the URL shown in the terminal. The preview updates when you add, save, or remove a Markdown file. Use `--port 3001` if port 3000 is in use.\n\n","headingIds":{"0":"preview-the-book"},"section":{"id":"preview-the-book","title":"Preview the book"},"links":{}},{"id":"first-book","title":"Your first book","markdown":"## Navigate the library\n\nChoose a cover to open its book. Use the arrows on screen or the Left and Right arrow keys to turn the page. On a phone, swipe left for the next page or right for the previous one.\n\nOpen **Contents** to jump to a chapter or section. Long pages scroll vertically within the paper. In a large library, use the title search or switch from **Shelves** to **Index**.\n","headingIds":{"0":"navigate-the-library"},"section":{"id":"navigate-the-library","title":"Navigate the library"},"links":{}}]}}</script>
+<link rel="preload" as="image" data-first-art fetchpriority="high" media="(min-width: 700px)" href="../../assets/resting-red-D0hLpMpz.avif">
+<link rel="preload" as="image" data-first-art fetchpriority="high" media="(481px <= width < 700px)" href="../../assets/mobile-paper-DF0CuLes.avif">
+<link rel="preload" as="image" data-first-art fetchpriority="high" media="(max-width: 480px)" href="../../assets/mobile-paper-sm-77eJHX6h.avif">
+    <script type="module">
+    const events = ["pointerdown","keydown"];
+    let started = false;
+    function start() {
+      if (started) return;
+      started = true;
+      for (const event of events) window.removeEventListener(event,start,true);
+      const reader = "../../assets/BookReader-DqI80zVd.js";
+      if (reader) {
+        const preload = document.createElement("link");
+        preload.rel = "modulepreload";
+        preload.href = reader;
+        document.head.append(preload);
+      }
+      void import("../../assets/index-8E35cdp1.js");
+    }
+    const art = [...document.querySelectorAll("link[data-first-art]")].find(link => matchMedia(link.media).matches);
+    if (!art || !matchMedia("(max-width: 699px)").matches) start();
+    else {
+      for (const event of events) window.addEventListener(event,start,{capture:true,once:true});
+      const image = new Image();
+      const painted = () => requestAnimationFrame(() => requestAnimationFrame(start));
+      // The CSS background owns the decode. Wait for its bytes without decoding another bitmap.
+      image.addEventListener("load", painted, { once:true });
+      image.addEventListener("error", painted, { once:true });
+      image.src = art.href;
+    }
+    </script>
+    <link rel="stylesheet" crossorigin href="../../assets/index-Co4uOkuH.css">
+  </head>
+  <body>
+    <div id="root"><main class="static-reading"><nav><a href="../../">Library</a></nav><h1>Getting Started</h1><ul><li><a href="../../read/start/index/">Getting Started</a></li><li><a href="../../read/start/first-book/">Your first book</a></li></ul></main></div>
+  </body>
+</html>

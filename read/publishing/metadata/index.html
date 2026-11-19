@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../../../assets/favicon-C9YRygge.png" />
+    <title>Site settings and SEO · Grimoire3D Documentation</title>
+<meta name="grimoire-static" content="../../../">
+<link rel="canonical" href="https://kkm-horikawa.github.io/grimoire3d/read/publishing/metadata/">
+<meta name="description" content="Place grimoire.yml next to docs/.">
+<meta name="author" content="Grimoire3D">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Site settings and SEO · Grimoire3D Documentation">
+<meta property="og:site_name" content="Grimoire3D Documentation">
+<meta property="og:description" content="Place grimoire.yml next to docs/.">
+<meta property="og:url" content="https://kkm-horikawa.github.io/grimoire3d/read/publishing/metadata/">
+<meta property="og:image" content="https://kkm-horikawa.github.io/grimoire3d/content/assets/share.jpg">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Site settings and SEO","mainEntityOfPage":"https://kkm-horikawa.github.io/grimoire3d/read/publishing/metadata/","url":"https://kkm-horikawa.github.io/grimoire3d/read/publishing/metadata/","inLanguage":"en","description":"Place grimoire.yml next to docs/.","image":"https://kkm-horikawa.github.io/grimoire3d/content/assets/share.jpg","author":{"@type":"Person","name":"Grimoire3D"}}</script>
+<script type="application/json" id="grimoire-initial">{"library":{"locale":"en","shelf":true,"title":"Grimoire3D Documentation","description":"Turn Markdown into a 3D bookshelf. Learn how to write chapters, embed media and diagrams, and publish a static Grimoire3D site.","siteUrl":"https://kkm-horikawa.github.io/grimoire3d/","socialImage":"./content/assets/share.jpg","author":"Grimoire3D","magicMode":true,"books":[{"id":"publishing","title":"Publishing","cover":"blue"},{"id":"start","title":"Getting Started","cover":"red"},{"id":"writing","title":"Writing Books","cover":"green"}]},"book":{"id":"publishing","title":"Publishing","cover":"blue","pages":[{"id":"index","title":"Publishing","markdown":"# Publishing\n\n## Build a static site\n\nRun this from the directory containing `docs/`.\n\n```sh\nnpx grimoire3d build\n```\n\nThe output is `dist/` by default. To choose a different output directory, use `--out-dir site` or set `outDir: site` in `grimoire.yml`. The CLI protects existing files in an unrelated output directory.\n\n","headingIds":{"0":"publishing","14":"build-a-static-site"},"section":{"id":"build-a-static-site","title":"Build a static site"},"links":{"./metadata.md":"#/publishing/metadata"}},{"id":"index","title":"Publishing","markdown":"## Upload the output\n\nPublish the contents of the output directory with a static host such as Cloudflare Pages or GitHub Pages. This documentation uses GitHub Pages. Upload the complete output so chapter URLs, styles, images, and video work together. Chapter URLs have their own HTML files, so direct links work on a host that serves directory indexes.\n\nFor a site under a subpath, such as a GitHub Pages project at `https://example.github.io/handbook/`, include that path in `siteUrl` before you build.\n\n[Configure your site metadata](./metadata.md) before you publish.\n","headingIds":{"0":"upload-the-output"},"section":{"id":"upload-the-output","title":"Upload the output"},"links":{"./metadata.md":"#/publishing/metadata"}},{"id":"metadata","title":"Site settings and SEO","markdown":"# Site settings and SEO\n\nPlace `grimoire.yml` next to `docs/`.\n\n```yaml\ntitle: Engineering Handbook\ndescription: Setup, operations, and release notes for the project.\nsiteUrl: https://docs.example.com/\nauthor: Documentation Team\nsocialImage: assets/share.avif\nlocale: en\nmagicMode: true\n```\n\n","headingIds":{"0":"site-settings-and-seo"},"links":{},"preparedHtml":"\u003ch1 id=\"site-settings-and-seo\">Site settings and SEO\u003c/h1>\n\u003cp>Place \u003ccode>grimoire.yml\u003c/code> next to \u003ccode>docs/\u003c/code>.\u003c/p>\n\u003cpre>\u003ccode class=\"language-yaml\">title: Engineering Handbook\ndescription: Setup, operations, and release notes for the project.\nsiteUrl: https://docs.example.com/\nauthor: Documentation Team\nsocialImage: assets/share.avif\nlocale: en\nmagicMode: true\n\u003c/code>\u003c/pre>"},{"id":"metadata","title":"Site settings and SEO","markdown":"## Titles and social cards\n\nThe build produces standalone HTML for every chapter, including the text, navigation, page title, description, and Open Graph metadata. Visitors and crawlers can read the articles without JavaScript.\n\nSet `siteUrl` to get canonical URLs and a sitemap. Set `socialImage` to an absolute HTTP(S) URL or an image path relative to `docs/`. At the domain root the build also emits `robots.txt` pointing to the sitemap.\n\n","headingIds":{"0":"titles-and-social-cards"},"section":{"id":"titles-and-social-cards","title":"Titles and social cards"},"links":{},"preparedHtml":"\u003ch2 id=\"titles-and-social-cards\">Titles and social cards\u003c/h2>\n\u003cp>The build produces standalone HTML for every chapter, including the text, navigation, page title, description, and Open Graph metadata. Visitors and crawlers can read the articles without JavaScript.\u003c/p>\n\u003cp>Set \u003ccode>siteUrl\u003c/code> to get canonical URLs and a sitemap. Set \u003ccode>socialImage\u003c/code> to an absolute HTTP(S) URL or an image path relative to \u003ccode>docs/\u003c/code>. At the domain root the build also emits \u003ccode>robots.txt\u003c/code> pointing to the sitemap.\u003c/p>"},{"id":"metadata","title":"Site settings and SEO","markdown":"## Chapter metadata\n\nSupply `title`, `description`, or `socialImage` in a chapter's YAML front matter. A chapter-level image path is relative to that chapter.\n\n```markdown\n---\ntitle: Deployment guide\ndescription: Publish the project to a static web host.\nsocialImage: ./assets/deploy.avif\n---\n# Deployment\n```\n\nShare the URL for a chapter or a specific heading, for example `/read/publishing/metadata/#chapter-metadata`. Existing links that start with `#/` also work.\n","headingIds":{"0":"chapter-metadata"},"section":{"id":"chapter-metadata","title":"Chapter metadata"},"links":{}}]}}</script>
+<link rel="preload" as="image" data-first-art fetchpriority="high" media="(min-width: 700px)" href="../../../assets/resting-blue-DDOT8IQ8.avif">
+<link rel="preload" as="image" data-first-art fetchpriority="high" media="(481px <= width < 700px)" href="../../../assets/mobile-paper-DF0CuLes.avif">
+<link rel="preload" as="image" data-first-art fetchpriority="high" media="(max-width: 480px)" href="../../../assets/mobile-paper-sm-77eJHX6h.avif">
+    <script type="module">
+    const events = ["pointerdown","keydown"];
+    let started = false;
+    function start() {
+      if (started) return;
+      started = true;
+      for (const event of events) window.removeEventListener(event,start,true);
+      const reader = "../../../assets/BookReader-DqI80zVd.js";
+      if (reader) {
+        const preload = document.createElement("link");
+        preload.rel = "modulepreload";
+        preload.href = reader;
+        document.head.append(preload);
+      }
+      void import("../../../assets/index-8E35cdp1.js");
+    }
+    const art = [...document.querySelectorAll("link[data-first-art]")].find(link => matchMedia(link.media).matches);
+    if (!art || !matchMedia("(max-width: 699px)").matches) start();
+    else {
+      for (const event of events) window.addEventListener(event,start,{capture:true,once:true});
+      const image = new Image();
+      const painted = () => requestAnimationFrame(() => requestAnimationFrame(start));
+      // The CSS background owns the decode. Wait for its bytes without decoding another bitmap.
+      image.addEventListener("load", painted, { once:true });
+      image.addEventListener("error", painted, { once:true });
+      image.src = art.href;
+    }
+    </script>
+    <link rel="stylesheet" crossorigin href="../../../assets/index-Co4uOkuH.css">
+  </head>
+  <body>
+    <div id="root"><main class="reader static-reader">
+    <header class="reader-header" data-magic-control="true">
+      <a class="brand" href="../../../">Library</a>
+      <span data-fallback-magic>Spell mode</span>
+      <a class="contents-button" href="../../../read/publishing/">Contents</a>
+    </header>
+    <div class="reader-stage" data-frame="reading" data-binding="blue" style="--leather-edge:#34314c;--leather-filter:hue-rotate(248deg) saturate(.62)">
+      <div class="book-fallback" data-initial-book="publishing" aria-hidden="true"><div class="book-resting" style="background-image:url('../../../assets/resting-blue-DDOT8IQ8.avif')"></div></div>
+      <div class="book-sheet book-sheet--right static-main-left">
+        <article class="page-text"><h1 id="site-settings-and-seo">Site settings and SEO</h1>
+<p>Place <code>grimoire.yml</code> next to <code>docs/</code>.</p>
+<pre><code class="language-yaml">title: Engineering Handbook
+description: Setup, operations, and release notes for the project.
+siteUrl: https://docs.example.com/
+author: Documentation Team
+socialImage: assets/share.avif
+locale: en
+magicMode: true
+</code></pre>
+<h2 id="titles-and-social-cards">Titles and social cards</h2>
+<p>The build produces standalone HTML for every chapter, including the text, navigation, page title, description, and Open Graph metadata. Visitors and crawlers can read the articles without JavaScript.</p>
+<p>Set <code>siteUrl</code> to get canonical URLs and a sitemap. Set <code>socialImage</code> to an absolute HTTP(S) URL or an image path relative to <code>docs/</code>. At the domain root the build also emits <code>robots.txt</code> pointing to the sitemap.</p>
+<h2 id="chapter-metadata">Chapter metadata</h2>
+<p>Supply <code>title</code>, <code>description</code>, or <code>socialImage</code> in a chapter&#x27;s YAML front matter. A chapter-level image path is relative to that chapter.</p>
+<pre><code class="language-markdown">---
+title: Deployment guide
+description: Publish the project to a static web host.
+socialImage: ./assets/deploy.avif
+---
+# Deployment
+</code></pre>
+<p>Share the URL for a chapter or a specific heading, for example <code>/read/publishing/metadata/#chapter-metadata</code>. Existing links that start with <code>#/</code> also work.</p></article>
+        <span class="folio-number" aria-hidden="true">3</span>
+      </div>
+      <div class="book-sheet book-sheet--right static-neighbor"><article class="page-text"><h2>Titles and social cards</h2>
+<p>The build produces standalone HTML for every chapter, including the text, navigation, page title, description, and Open Graph metadata. Visitors and crawlers can read the articles without JavaScript.</p>
+<p>Set <code>siteUrl</code> to get canonical URLs and a sitemap. Set <code>socialImage</code> to an absolute HTTP(S) URL or an image path relative to <code>docs/</code>. At the domain root the build also emits <code>robots.txt</code> pointing to the sitemap.</p></article><span class="folio-number" aria-hidden="true">4</span></div>
+    </div>
+    <nav class="reader-pagination" aria-label="Contents">
+      <a class="turn-button" href="../../../read/publishing/index/#upload-the-output" aria-label="Previous page">‹</a>
+      <div class="reading-position"><span>Site settings and SEO</span><span>3 / 5</span></div>
+      <a class="turn-button" href="../../../read/publishing/metadata/#titles-and-social-cards" aria-label="Next page">›</a>
+    </nav>
+  </main></div>
+  </body>
+</html>

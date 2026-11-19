@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../../../assets/favicon-C9YRygge.png" />
+    <title>Images, video, and diagrams · Grimoire3D Documentation</title>
+<meta name="grimoire-static" content="../../../">
+<link rel="canonical" href="https://kkm-horikawa.github.io/grimoire3d/read/writing/media/">
+<meta name="description" content="Embed AVIF images, animated GIFs, MP4, YouTube, Vimeo, and interactive Mermaid diagrams in Grimoire3D.">
+<meta name="author" content="Grimoire3D">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Images, video, and diagrams · Grimoire3D Documentation">
+<meta property="og:site_name" content="Grimoire3D Documentation">
+<meta property="og:description" content="Embed AVIF images, animated GIFs, MP4, YouTube, Vimeo, and interactive Mermaid diagrams in Grimoire3D.">
+<meta property="og:url" content="https://kkm-horikawa.github.io/grimoire3d/read/writing/media/">
+<meta property="og:image" content="https://kkm-horikawa.github.io/grimoire3d/content/assets/share.jpg">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Images, video, and diagrams","mainEntityOfPage":"https://kkm-horikawa.github.io/grimoire3d/read/writing/media/","url":"https://kkm-horikawa.github.io/grimoire3d/read/writing/media/","inLanguage":"en","description":"Embed AVIF images, animated GIFs, MP4, YouTube, Vimeo, and interactive Mermaid diagrams in Grimoire3D.","image":"https://kkm-horikawa.github.io/grimoire3d/content/assets/share.jpg","author":{"@type":"Person","name":"Grimoire3D"}}</script>
+<script type="application/json" id="grimoire-initial">{"library":{"locale":"en","shelf":true,"title":"Grimoire3D Documentation","description":"Turn Markdown into a 3D bookshelf. Learn how to write chapters, embed media and diagrams, and publish a static Grimoire3D site.","siteUrl":"https://kkm-horikawa.github.io/grimoire3d/","socialImage":"./content/assets/share.jpg","author":"Grimoire3D","magicMode":true,"books":[{"id":"publishing","title":"Publishing","cover":"blue"},{"id":"start","title":"Getting Started","cover":"red"},{"id":"writing","title":"Writing Books","cover":"green"}]},"book":{"id":"writing","title":"Writing Books","cover":"green","pages":[{"id":"index","title":"Writing Books","markdown":"# Writing Books\n\nA folder directly under `docs/` becomes a book. Each Markdown file in that book is a chapter.\n\n```text\ndocs/\n├── field-notes/\n│   ├── index.md\n│   └── 01-setup.md\n└── release-notes/\n    ├── index.md\n    ├── v1.4.md\n    └── v1.5.md\n```\n\nFiles directly in `docs/` share a book of their own. The bookshelf opens when the project has book folders.\n\n","headingIds":{"0":"writing-books"},"links":{"./media.md#mermaid-diagrams":"#/writing/media?anchor=mermaid-diagrams"}},{"id":"index","title":"Writing Books","markdown":"## Chapters and sections\n\nInside a book, `index.md` comes first. Other chapters follow in filename order, including files in subfolders. For a series such as release notes, keep separate version files in the same folder.\n\nUse H1 for the chapter title. An H2 opens a new page. When the first H2 immediately follows the chapter title, they share the first page. Use H3 for subheadings within a page. The table of contents groups H2 sections and their page numbers under each chapter.\n\n","headingIds":{"0":"chapters-and-sections"},"section":{"id":"chapters-and-sections","title":"Chapters and sections"},"links":{"./media.md#mermaid-diagrams":"#/writing/media?anchor=mermaid-diagrams"}},{"id":"index","title":"Writing Books","markdown":"## Titles, links, and covers\n\nThe H1 in the book's `index.md` names the book. Keep your paths in English and write titles in your readers' language. Set `locale: ja` in `grimoire.yml` to display the reader controls in Japanese.\n\nLink to other chapters with relative Markdown paths and an optional heading anchor. For example, `[Drawings](./media.md#mermaid-diagrams)` opens [the Mermaid section](./media.md#mermaid-diagrams). You can also copy a chapter or section URL directly from the reader.\n\nSet the cover in the book's `index.md` front matter. Available covers are `red`, `green`, `blue`, `plum`, `amber`, `teal`, `black`, `ivory`, `walnut`, and `slate`. Books without a cover setting use a color based on their folder path.\n\n```markdown\n---\ncover: teal\n---\n# Release Notes\n```\n","headingIds":{"0":"titles-links-and-covers"},"section":{"id":"titles-links-and-covers","title":"Titles, links, and covers"},"links":{"./media.md#mermaid-diagrams":"#/writing/media?anchor=mermaid-diagrams"}},{"id":"formatting","title":"Formatting and Spell Mode","markdown":"# Formatting and Spell Mode\n\nGrimoire3D renders headings, lists, block quotes, links, **bold**, *italics*, ~~strikethrough~~, and `inline code`. Use a fenced code block for commands or snippets.\n\n","headingIds":{"0":"formatting-and-spell-mode"},"links":{}},{"id":"formatting","title":"Formatting and Spell Mode","markdown":"## Paper marks\n\n:underline[Underline a term], :highlight[highlight a phrase], or call something out in :red[red ink].\n\n```markdown\n:underline[Underline a term]\n:highlight[highlight a phrase]\n:red[red ink]\n```\n\n> [!WARNING]\n> Keep a copy of your Markdown and media when moving an existing library.\n\nStart a block quote with `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, or `[!CAUTION]` to create a callout.\n\n","headingIds":{"0":"paper-marks"},"section":{"id":"paper-marks","title":"Paper marks"},"links":{}},{"id":"formatting","title":"Formatting and Spell Mode","markdown":"## Tables and matrices\n\nUse GitHub Flavored Markdown table syntax. On a narrow page, the table scrolls horizontally and its first column stays visible for comparison.\n\n| Format | Live preview | Static site | Inline control | Interaction | Content source |\n| --- | --- | --- | --- | --- | --- |\n| AVIF | Yes | Yes | Image | Read | Local or remote |\n| GIF | Yes | Yes | Image | Animate | Local or remote |\n| MP4 | Yes | Yes | Video | Play and seek | Local or remote |\n| Mermaid | Yes | Yes | Diagram | Zoom and pan | Markdown fence |\n\n","headingIds":{"0":"tables-and-matrices"},"section":{"id":"tables-and-matrices","title":"Tables and matrices"},"links":{}},{"id":"formatting","title":"Formatting and Spell Mode","markdown":"## Spell Mode\n\nSet `magicMode: true` in `grimoire.yml` to add a **Spell mode** toggle to the reader. After a page comes to rest, the marker draws a stroke that stays on the paper, bold letters lift and settle, and strikethrough draws across the words.\n\nThe effects play once each time the page comes into view, or when you enable Spell mode on an open page. The reader respects the device's reduced-motion setting.\n","headingIds":{"0":"spell-mode"},"section":{"id":"spell-mode","title":"Spell Mode"},"links":{},"preparedHtml":"\u003ch2 id=\"spell-mode\">Spell Mode\u003c/h2>\n\u003cp>Set \u003ccode>magicMode: true\u003c/code> in \u003ccode>grimoire.yml\u003c/code> to add a \u003cstrong>Spell mode\u003c/strong> toggle to the reader. After a page comes to rest, the marker draws a stroke that stays on the paper, bold letters lift and settle, and strikethrough draws across the words.\u003c/p>\n\u003cp>The effects play once each time the page comes into view, or when you enable Spell mode on an open page. The reader respects the device&#x27;s reduced-motion setting.\u003c/p>"},{"id":"media","title":"Images, video, and diagrams","markdown":"# Images, video, and diagrams\n\nUse Markdown image syntax for still images, animated GIFs, and MP4 files. Resolve local paths from the chapter that uses them. The static build bundles referenced local media.\n\n","headingIds":{"0":"images-video-and-diagrams"},"links":{"../assets/diagram.avif":"./content/assets/diagram.avif","../assets/publishing-flow.gif":"./content/assets/publishing-flow.gif","../assets/publishing-flow.mp4":"./content/assets/publishing-flow.mp4"}},{"id":"media","title":"Images, video, and diagrams","markdown":"## Images and GIFs\n\nUse AVIF, WebP, PNG, JPEG, or GIF. Write an alt description inside the brackets.\n\n```markdown\n![From Markdown to a static site](../assets/diagram.avif)\n![The publishing flow in motion](../assets/publishing-flow.gif)\n```\n\n![From Markdown to a static site](../assets/diagram.avif)\n\n![The publishing flow in motion](../assets/publishing-flow.gif)\n\n","headingIds":{"0":"images-and-gifs"},"section":{"id":"images-and-gifs","title":"Images and GIFs"},"links":{"../assets/diagram.avif":"./content/assets/diagram.avif","../assets/publishing-flow.gif":"./content/assets/publishing-flow.gif","../assets/publishing-flow.mp4":"./content/assets/publishing-flow.mp4"}},{"id":"media","title":"Images, video, and diagrams","markdown":"## MP4\n\nAn MP4 renders as a video player inside the page. Playback pauses when you turn away from it.\n\n```markdown\n![Publishing flow video](../assets/publishing-flow.mp4)\n```\n\n![Publishing flow video](../assets/publishing-flow.mp4)\n\n","headingIds":{"0":"mp4"},"section":{"id":"mp4","title":"MP4"},"links":{"../assets/diagram.avif":"./content/assets/diagram.avif","../assets/publishing-flow.gif":"./content/assets/publishing-flow.gif","../assets/publishing-flow.mp4":"./content/assets/publishing-flow.mp4"}},{"id":"media","title":"Images, video, and diagrams","markdown":"## YouTube and Vimeo\n\nUse the video URL in the same syntax. The embedded player loads when the reader selects it. The source link still works when the video owner restricts embedding.\n\n```markdown\n![YouTube demo](https://www.youtube.com/watch?v=M7lc1UVf-VE)\n![Vimeo demo](https://vimeo.com/76979871)\n```\n\n![YouTube demo](https://www.youtube.com/watch?v=M7lc1UVf-VE)\n\n![Vimeo demo](https://vimeo.com/76979871)\n\n","headingIds":{"0":"youtube-and-vimeo"},"section":{"id":"youtube-and-vimeo","title":"YouTube and Vimeo"},"links":{"../assets/diagram.avif":"./content/assets/diagram.avif","../assets/publishing-flow.gif":"./content/assets/publishing-flow.gif","../assets/publishing-flow.mp4":"./content/assets/publishing-flow.mp4"}},{"id":"media","title":"Images, video, and diagrams","markdown":"## Mermaid diagrams\n\nSet the language of a fenced code block to `mermaid`. Select the diagram to open the viewer, then zoom and drag to explore. You can also pan with the arrow keys and press Escape to return to the page.\n\n```mermaid\nflowchart LR\n  subgraph Source\n    Markdown[Markdown chapters]\n    Settings[Project settings]\n    Art[Images and video]\n  end\n  subgraph Build\n    Books[Sort books and chapters]\n    Paper[Split pages at H2]\n    Links[Resolve links and media]\n  end\n  subgraph Output\n    Library[Library]\n    Chapters[Chapter HTML]\n    Sitemap[Sitemap]\n  end\n  Markdown --> Books --> Paper --> Chapters\n  Art --> Links --> Chapters\n  Settings --> Library\n  Settings --> Sitemap\n  Books --> Library\n```\n","headingIds":{"0":"mermaid-diagrams"},"section":{"id":"mermaid-diagrams","title":"Mermaid diagrams"},"links":{"../assets/diagram.avif":"./content/assets/diagram.avif","../assets/publishing-flow.gif":"./content/assets/publishing-flow.gif","../assets/publishing-flow.mp4":"./content/assets/publishing-flow.mp4"}}]}}</script>
+<link rel="preload" as="image" data-first-art fetchpriority="high" media="(min-width: 700px)" href="../../../assets/resting-green-DkRrV8eX.avif">
+<link rel="preload" as="image" data-first-art fetchpriority="high" media="(481px <= width < 700px)" href="../../../assets/mobile-paper-DF0CuLes.avif">
+<link rel="preload" as="image" data-first-art fetchpriority="high" media="(max-width: 480px)" href="../../../assets/mobile-paper-sm-77eJHX6h.avif">
+    <script type="module">
+    const events = ["pointerdown","keydown"];
+    let started = false;
+    function start() {
+      if (started) return;
+      started = true;
+      for (const event of events) window.removeEventListener(event,start,true);
+      const reader = "../../../assets/BookReader-DqI80zVd.js";
+      if (reader) {
+        const preload = document.createElement("link");
+        preload.rel = "modulepreload";
+        preload.href = reader;
+        document.head.append(preload);
+      }
+      void import("../../../assets/index-8E35cdp1.js");
+    }
+    const art = [...document.querySelectorAll("link[data-first-art]")].find(link => matchMedia(link.media).matches);
+    if (!art || !matchMedia("(max-width: 699px)").matches) start();
+    else {
+      for (const event of events) window.addEventListener(event,start,{capture:true,once:true});
+      const image = new Image();
+      const painted = () => requestAnimationFrame(() => requestAnimationFrame(start));
+      // The CSS background owns the decode. Wait for its bytes without decoding another bitmap.
+      image.addEventListener("load", painted, { once:true });
+      image.addEventListener("error", painted, { once:true });
+      image.src = art.href;
+    }
+    </script>
+    <link rel="stylesheet" crossorigin href="../../../assets/index-Co4uOkuH.css">
+  </head>
+  <body>
+    <div id="root"><main class="reader static-reader">
+    <header class="reader-header" data-magic-control="true">
+      <a class="brand" href="../../../">Library</a>
+      <span data-fallback-magic>Spell mode</span>
+      <a class="contents-button" href="../../../read/writing/">Contents</a>
+    </header>
+    <div class="reader-stage" data-frame="reading" data-binding="green" style="--leather-edge:#424624;--leather-filter:hue-rotate(66deg) saturate(.62)">
+      <div class="book-fallback" data-initial-book="writing" aria-hidden="true"><div class="book-resting" style="background-image:url('../../../assets/resting-green-DkRrV8eX.avif')"></div></div>
+      <div class="book-sheet book-sheet--right">
+        <article class="page-text"><h1 id="images-video-and-diagrams">Images, video, and diagrams</h1>
+<p>Use Markdown image syntax for still images, animated GIFs, and MP4 files. Resolve local paths from the chapter that uses them. The static build bundles referenced local media.</p>
+<h2 id="images-and-gifs">Images and GIFs</h2>
+<p>Use AVIF, WebP, PNG, JPEG, or GIF. Write an alt description inside the brackets.</p>
+<pre><code class="language-markdown">![From Markdown to a static site](../assets/diagram.avif)
+![The publishing flow in motion](../assets/publishing-flow.gif)
+</code></pre>
+<p><img src="../../../content/assets/diagram.avif" alt="From Markdown to a static site" loading="lazy"/></p>
+<p><img src="../../../content/assets/publishing-flow.gif" alt="The publishing flow in motion" loading="lazy"/></p>
+<h2 id="mp4">MP4</h2>
+<p>An MP4 renders as a video player inside the page. Playback pauses when you turn away from it.</p>
+<pre><code class="language-markdown">![Publishing flow video](../assets/publishing-flow.mp4)
+</code></pre>
+<p><video src="../../../content/assets/publishing-flow.mp4" controls="" preload="metadata" playsInline="" aria-label="Publishing flow video"></video></p>
+<h2 id="youtube-and-vimeo">YouTube and Vimeo</h2>
+<p>Use the video URL in the same syntax. The embedded player loads when the reader selects it. The source link still works when the video owner restricts embedding.</p>
+<pre><code class="language-markdown">![YouTube demo](https://www.youtube.com/watch?v=M7lc1UVf-VE)
+![Vimeo demo](https://vimeo.com/76979871)
+</code></pre>
+<p><a href="https://www.youtube.com/watch?v=M7lc1UVf-VE">YouTube demo</a></p>
+<p><a href="https://vimeo.com/76979871">Vimeo demo</a></p>
+<h2 id="mermaid-diagrams">Mermaid diagrams</h2>
+<p>Set the language of a fenced code block to <code>mermaid</code>. Select the diagram to open the viewer, then zoom and drag to explore. You can also pan with the arrow keys and press Escape to return to the page.</p>
+<pre><code class="language-mermaid">flowchart LR
+  subgraph Source
+    Markdown[Markdown chapters]
+    Settings[Project settings]
+    Art[Images and video]
+  end
+  subgraph Build
+    Books[Sort books and chapters]
+    Paper[Split pages at H2]
+    Links[Resolve links and media]
+  end
+  subgraph Output
+    Library[Library]
+    Chapters[Chapter HTML]
+    Sitemap[Sitemap]
+  end
+  Markdown --&gt; Books --&gt; Paper --&gt; Chapters
+  Art --&gt; Links --&gt; Chapters
+  Settings --&gt; Library
+  Settings --&gt; Sitemap
+  Books --&gt; Library
+</code></pre></article>
+        <span class="folio-number" aria-hidden="true">8</span>
+      </div>
+      <div class="book-sheet book-sheet--left static-neighbor"><article class="page-text"><h2>Spell Mode</h2>
+<p>Set <code>magicMode: true</code> in <code>grimoire.yml</code> to add a <strong>Spell mode</strong> toggle to the reader. After a page comes to rest, the marker draws a stroke that stays on the paper, bold letters lift and settle, and strikethrough draws across the words.</p>
+<p>The effects play once each time the page comes into view, or when you enable Spell mode on an open page. The reader respects the device&#x27;s reduced-motion setting.</p></article><span class="folio-number" aria-hidden="true">7</span></div>
+    </div>
+    <nav class="reader-pagination" aria-label="Contents">
+      <a class="turn-button" href="../../../read/writing/formatting/#spell-mode" aria-label="Previous page">‹</a>
+      <div class="reading-position"><span>Images, video, and diagrams</span><span>8 / 12</span></div>
+      <a class="turn-button" href="../../../read/writing/media/#images-and-gifs" aria-label="Next page">›</a>
+    </nav>
+  </main></div>
+  </body>
+</html>
