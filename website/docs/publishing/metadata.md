@@ -77,19 +77,19 @@ The generated chapter remains readable by URL, and its HTML tells search engines
 Share the URL for a chapter or a specific heading, for example `/read/publishing/metadata/#chapter-metadata`. Existing links that start with `#/` also work.
 
 
-## 本のindex.mdの設定例
+## Book index example
 
-`docs/handbook/index.md` の例です。表示名、章の説明、共有画像と読む順番をまとめて指定できます。
+In `docs/handbook/index.md`, combine the title, summary, share image, and reading order in YAML front matter.
 
 ```yaml
 ---
-title: 開発ハンドブック
-description: 導入から公開まで、手順と実例をまとめた開発者向けの本。
+title: Engineering Handbook
+description: Setup, examples, and publishing steps for project developers.
 socialImage: ./assets/share.webp
 noindex: false
 cover: teal
 coverImage: ./assets/cover.webp
-category: 開発ガイド
+category: Engineering
 date: "2026-11-20"
 chapters:
   - setup.md
@@ -98,6 +98,8 @@ chapters:
 ---
 ```
 
-画像は実在するファイルを置き、このindex.mdからの相対パスで指定します。`title` は本と章の表示名、`description` と `socialImage` はこの章の検索・共有用です。他の章にも必要な説明と画像を指定できます。`cover`・`coverImage`・`category`・`date` は本のindex.mdだけで使います。`chapters` は各フォルダのindex.mdで指定できます。
+Add the actual image files and use paths relative to this `index.md`. `title` names the book and its opening chapter; `description` and `socialImage` describe that chapter for search and sharing. Other chapters can supply their own summaries and images.
 
-サイト全体の公開URL・言語・著者は先頭の `grimoire.yml` に置きます。`siteUrl` がcanonical URLとsitemapの基準になります。公開するページは `noindex` を省略するか `false` にし、共有画像と説明を内容に合わせてください。
+Use `cover`, `coverImage`, `category`, and `date` in the book's `index.md`. Use `chapters` in any folder's `index.md` to order its direct children.
+
+Put the site URL, language, and author in `grimoire.yml`. `siteUrl` supplies the base for canonical URLs and the sitemap. For public chapters, omit `noindex` or set it to `false`, and choose a summary and share image that match the content.

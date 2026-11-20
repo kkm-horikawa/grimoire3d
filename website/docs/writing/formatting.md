@@ -1,155 +1,155 @@
 ---
-title: 記法と紙面の見本
-description: 引用、リスト、折りたたみ、数式、用語定義、コード、脚注の書き方と実際の見た目。
+title: Formatting and Spell Mode
+description: Write block quotes, lists, collapsible notes, math, definitions, code, and footnotes, and see how they appear on the paper.
 ---
-# 記法と紙面の見本
+# Formatting and Spell Mode
 
-記述例の直後に、同じMarkdownの実際の表示を載せています。H1が章のタイトル、H2が改ページ、H3がページ内の小見出しです。
+Each syntax example is followed by its rendered result. Use H1 for a chapter title, H2 for a new page, and H3 for a heading within a page.
 
-## 強調と紙面の印
-
-```markdown
-**太字**、*斜体*、~~取り消し線~~、`インラインコード`
-:underline[下線]、:highlight[マーカー]、:red[赤字]
-```
-
-**太字**、*斜体*、~~取り消し線~~、`インラインコード`
-
-:underline[下線]、:highlight[マーカー]、:red[赤字]
-
-本文の明朝体を保ち、マーカーは淡い金色、赤字は落ち着いた朱色になります。
-
-## 引用と出典
+## Paper marks
 
 ```markdown
-> 私を殺さないものは、私を強くする。
->
-> *— フリードリヒ・ニーチェ*
+**Bold**, *italics*, ~~strikethrough~~, `inline code`
+:underline[Underline], :highlight[highlight], :red[red ink]
 ```
 
-> 私を殺さないものは、私を強くする。
+**Bold**, *italics*, ~~strikethrough~~, `inline code`
+
+:underline[Underline], :highlight[highlight], :red[red ink]
+
+Marks keep the paper's serif type. Highlights use pale gold; red ink uses a muted burgundy.
+
+## Block quotes and attribution
+
+```markdown
+> What does not kill me makes me stronger.
 >
-> *— フリードリヒ・ニーチェ*
+> *— Friedrich Nietzsche*
+```
 
-細い金色の左罫線と余白で引用の範囲を示します。背景は付けません。出典は通常の斜体として書けます。引用の入れ子、リンク、複数段落も使えます。
+> What does not kill me makes me stronger.
+>
+> *— Friedrich Nietzsche*
 
-## 注記
+A thin gold rule and inset mark the quoted passage without adding a background. Write the attribution as ordinary italics. Quotes can contain multiple paragraphs, nested quotes, links, and lists.
+
+## Callouts
 
 ```markdown
 > [!NOTE]
-> 元のMarkdownと画像を保存してください。
+> Keep a copy of the original Markdown and images.
 ```
 
 > [!NOTE]
-> 元のMarkdownと画像を保存してください。
+> Keep a copy of the original Markdown and images.
 
-通常の引用と違い、注記にはラベルと淡い背景が付きます。`[!TIP]`、`[!IMPORTANT]`、`[!WARNING]`、`[!CAUTION]` も対応します。ラベルの言語はサイトの `locale` に従います。
+Unlike ordinary quotes, callouts have a label and a shaded background. `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, and `[!CAUTION]` also work. Labels follow the site's `locale` setting.
 
-## 箇条書きと番号付きリスト
+## Lists
 
 ```markdown
-- 最初の項目
-  - 入れ子の補足
-- 次の項目
+- First item
+  - A nested note
+- Next item
 
-9. 原稿を確認する
-10. サイトを公開する
+9. Review the manuscript
+10. Publish the site
 ```
 
-- 最初の項目
-  - 入れ子の補足
-- 次の項目
+- First item
+  - A nested note
+- Next item
 
-9. 原稿を確認する
-10. サイトを公開する
+9. Review the manuscript
+10. Publish the site
 
-点と番号は落ち着いた金色です。入れ子は白抜きの丸になり、折り返しは本文の先頭にそろいます。開始番号はMarkdownに従い、2桁も同じ字下げで読み進められます。
+Bullets and numbers use muted gold. Nested bullets become hollow circles, and wrapped lines align with the item text. Ordered lists keep the starting number written in Markdown, including two-digit numbers.
 
-## チェックリスト
+## Task lists
 
 ```markdown
-- [x] 原稿を書く
-- [ ] 公開する
+- [x] Write the manuscript
+- [ ] Publish the site
 ```
 
-- [x] 原稿を書く
-- [ ] 公開する
+- [x] Write the manuscript
+- [ ] Publish the site
 
-小さな金色の枠とチェックで進捗を表示します。読者が画面で編集するものではなく、書き手がMarkdownの `[x]` を更新します。
+Small gold boxes show the progress recorded in the source. Readers cannot edit them on the page; the author updates `[x]` in Markdown.
 
-## 水平線
+## Horizontal rules
 
 ```markdown
-前の話題。
+The previous topic.
 
 ---
 
-次の話題。
+The next topic.
 ```
 
-前の話題。
+The previous topic.
 
 ---
 
-次の話題。
+The next topic.
 
-細い金色の罫線と中央の小さな菱形で、同じページ内の話題を区切ります。
+A fine gold line with a small central diamond separates topics within the same page.
 
-## 折りたたみ
+## Collapsible notes
 
 ```html
-<details><summary>補足を開く</summary>
+<details><summary>Read the extra notes</summary>
 
-**必要な人向けの説明**をここに書きます。
+**Additional explanation** goes here.
 
 </details>
 ```
 
-<details><summary>補足を開く</summary>
+<details><summary>Read the extra notes</summary>
 
-**必要な人向けの説明**をここに書きます。
+**Additional explanation** goes here.
 
 </details>
 
-三角印と見出しを押すと、字下げした補足が開きます。Tabで移動し、EnterまたはSpaceでも開閉できます。本文の前後に空行を入れるとMarkdownを使えます。最初から開く場合は `<details open>` にします。スクリプトやイベント属性は取り除かれます。
+Select the triangle and heading to reveal an indented note. Use Tab to focus it, then Enter or Space to toggle it. Blank lines around the contents allow Markdown inside. Use `<details open>` to start expanded. Scripts and event attributes are removed.
 
-## 数式
+## Math
 
 ```latex
-本文中の式 $E = mc^2$。
+An inline equation: $E = mc^2$.
 
 $$
 x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 $$
 ```
 
-本文中の式 $E = mc^2$。
+An inline equation: $E = mc^2$.
 
 $$
 x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 $$
 
-`$...$` は本文の行内、`$$` の独立ブロックは中央に組版します。長い式は紙面内で横スクロールできます。公開HTMLにも数式を含めるため、JavaScriptを無効にしても読めます。
+`$...$` stays in the text line. A separate `$$` block is centered. Long display equations scroll horizontally within the paper. Equations are included in the published HTML and remain readable without JavaScript.
 
-## 用語定義リスト
+## Definition lists
 
 ```markdown
-章
-: Markdownファイル単位のまとまり。
+Chapter
+: A group of content from one Markdown file.
 
-ページ
-: H2で区切る紙面。
+Page
+: A sheet separated by an H2 heading.
 ```
 
-章
-: Markdownファイル単位のまとまり。
+Chapter
+: A group of content from one Markdown file.
 
-ページ
-: H2で区切る紙面。
+Page
+: A sheet separated by an H2 heading.
 
-用語を太字にし、説明を一段字下げします。用語集やAPIの言葉の説明に使えます。
+Terms appear in bold, with their definitions indented beneath them. Use this format for a glossary or API terminology.
 
-## コードの色分け
+## Syntax highlighting
 
 ````markdown
 ```typescript
@@ -163,42 +163,42 @@ const title: string = "Grimoire";
 console.log(title);
 ```
 
-コードフェンスに言語名を書くと、キーワードはえんじ、文字列はオリーブ色など、紙面に合う控えめな配色になります。対応しない言語名はそのままのテキストで表示します。`mermaid` は従来どおり図になります。
+Add a language name to a code fence for muted colors that suit the paper: burgundy keywords, olive strings, and darker ink for the rest. Unknown languages remain plain text. A `mermaid` fence still produces a diagram.
 
-## 脚注
-
-```markdown
-元の資料を確認できます[^source]。
-
-[^source]: 原稿と一緒に保存した調査資料。
-```
-
-元の資料を確認できます[^source]。
-
-[^source]: 原稿と一緒に保存した調査資料。
-
-本文の小さな番号からページ末尾の注釈へ移動できます。注釈の「↩」から参照位置へ戻れます。H2でページを分けても、必要な脚注を同じページに表示します。
-
-## 表とリンク
+## Footnotes
 
 ```markdown
-| 形式 | 表示 |
-| --- | --- |
-| Markdown | 本文 |
-| Mermaid | 図 |
+Check the original source[^source].
 
-[メディアの例](./media.md)
+[^source]: Research notes saved with the manuscript.
 ```
 
-| 形式 | 表示 |
+Check the original source[^source].
+
+[^source]: Research notes saved with the manuscript.
+
+Select the small reference number to reach the note at the end of the page. Select its return arrow to go back to the reference. Footnotes remain available on the page that uses them when H2 headings split a chapter into sheets.
+
+## Tables and matrices
+
+```markdown
+| Format | Result |
 | --- | --- |
-| Markdown | 本文 |
-| Mermaid | 図 |
+| Markdown | Text |
+| Mermaid | Diagram |
 
-[メディアの例](./media.md)
+[Media examples](./media.md)
+```
 
-狭いページでは表の中を横スクロールでき、先頭列は固定されます。章への相対リンクや見出しへのアンカーも使えます。
+| Format | Result |
+| --- | --- |
+| Markdown | Text |
+| Mermaid | Diagram |
 
-## 超魔導モード
+[Media examples](./media.md)
 
-`grimoire.yml` の `magicMode: true` で切り替えボタンを表示します。マーカーが引かれ、太字が浮き、取り消し線が描かれます。表示したページで一度再生し、端末の「動きを減らす」設定にも従います。
+On a narrow page, the table scrolls horizontally while its first column stays visible. Relative chapter links and heading anchors also work.
+
+## Spell Mode
+
+Set `magicMode: true` in `grimoire.yml` to show the toggle. Highlights draw across the words, bold text lifts, and strikethrough strokes appear. Effects play once when a page comes into view and respect the device's reduced-motion setting.

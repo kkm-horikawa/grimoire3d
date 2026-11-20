@@ -26,21 +26,21 @@ Create `docs/field-notes/index.md`.
 This is my first 3D book.
 ```
 
-`docs` 直下の各フォルダが1冊、その中のMarkdownが章になります。`docs` 直下に並べたMarkdownは、まとめて別の1冊になります。入れ子のフォルダは同じ本の章グループです。
+Each folder directly under `docs/` becomes a book, and its Markdown files become chapters. Loose Markdown files directly in `docs/` share a separate book. Nested folders form chapter groups within the same book.
 
 ```text
 docs/
-├── index.md                 # docs直下のMarkdownで1冊
+├── index.md                 # Book of loose Markdown files
 ├── notes.md
-└── field-notes/              # 別の1冊
-    ├── index.md              # 本の導入・設定
+└── field-notes/              # Another book
+    ├── index.md              # Introduction and book settings
     ├── setup.md
-    └── examples/             # 同じ本の章グループ
+    └── examples/             # Chapter group in the same book
         ├── index.md
         └── cli.md
 ```
 
-各 `index.md` のYAMLに `chapters: [setup.md, examples/]` と書くと、導入の後を指定順に並べられます。未指定の章は後ろにファイル名順で続きます。本が7冊以上、またはカテゴリー・公開日を設定すると検索欄が表示されます。
+Set `chapters: [setup.md, examples/]` in each folder's `index.md` front matter to choose what follows its introduction. Unlisted chapters follow in natural filename order. Title search appears with seven or more books, or whenever a book has a category or publication date.
 
 ```sh
 npx grimoire3d serve
@@ -58,6 +58,6 @@ npx grimoire3d build
 
 Deploy the contents of `dist/` to any static host, including Cloudflare Pages and GitHub Pages. Use `--out-dir site` to choose a different output directory.
 
-引用、リスト、チェックリスト、折りたたみ、数式、用語定義、コードの色分け、脚注に対応します。[記述例と実際の表示](https://kkm-horikawa.github.io/grimoire3d/read/writing/formatting/)と、[SEO・YAML設定例](https://kkm-horikawa.github.io/grimoire3d/read/publishing/metadata/)を公式ドキュメントで確認できます。
+Block quotes, lists, task lists, collapsible notes, math, definition lists, syntax highlighting, and footnotes are supported. See the [syntax and rendered examples](https://kkm-horikawa.github.io/grimoire3d/read/writing/formatting/) and [site settings and SEO examples](https://kkm-horikawa.github.io/grimoire3d/read/publishing/metadata/).
 
 [Contributing](CONTRIBUTING.md) · [MIT License](LICENSE)
