@@ -16,6 +16,7 @@ import {
 import { videoEmbed } from "../../cli/video-url.js";
 import { EmbeddedVideo } from "./EmbedPlayer";
 import { resolveHref } from "./navigation";
+import { PaperImage, PaperImageLink } from "./PaperImage";
 import { PaperTable } from "./PaperTable";
 import type { Copy, Locale, Page } from "./types";
 
@@ -86,15 +87,7 @@ function mediaComponents(text: Copy) {
           />
         );
       }
-      return (
-        <img
-          alt={alt ?? ""}
-          src={src}
-          title={title}
-          loading="lazy"
-          decoding="async"
-        />
-      );
+      return <PaperImage alt={alt} src={src} title={title} text={text} />;
     },
     pre: ({ children }: ComponentProps<"pre">): JSX.Element => {
       if (
@@ -144,6 +137,7 @@ export default function PageMarkdown({
   const components = useMemo(
     () => ({
       ...mediaComponents(text),
+      a: PaperImageLink,
       table: ({ children }: ComponentProps<"table">) => (
         <PaperTable label={text.scrollableTable}>{children}</PaperTable>
       ),
