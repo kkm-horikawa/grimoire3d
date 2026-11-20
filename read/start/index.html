@@ -29,14 +29,14 @@
       if (started) return;
       started = true;
       for (const event of events) window.removeEventListener(event,start,true);
-      const reader = "../../assets/BookReader-D8vQBevK.js";
+      const reader = "../../assets/BookReader-DCWs90gY.js";
       if (reader) {
         const preload = document.createElement("link");
         preload.rel = "modulepreload";
         preload.href = reader;
         document.head.append(preload);
       }
-      void import("../../assets/index-Cw6_hAJv.js");
+      void import("../../assets/index-DeHKbPiY.js");
     }
     const art = [...document.querySelectorAll("link[data-first-art]")].find(link => matchMedia(link.media).matches);
     if (!art || !matchMedia("(max-width: 699px)").matches) start();
@@ -51,7 +51,7 @@
     }
     </script>
     <link rel="modulepreload" crossorigin href="../../assets/jsxRuntime-WpZ1bTm4.js">
-    <link rel="stylesheet" crossorigin href="../../assets/index-Bx_B16JQ.css">
+    <link rel="stylesheet" crossorigin href="../../assets/index-ETbk37vV.css">
   </head>
   <body>
     <div id="root"><main class="static-reading"><nav><a href="../../">Library</a></nav><h1>Getting Started</h1><ul><li><a href="../../read/start/index/">Getting Started</a></li><li><a href="../../read/start/first-book/">Your first book</a></li><li><a href="../../read/start/react/">Use BookViewer in React</a></li></ul></main></div>
