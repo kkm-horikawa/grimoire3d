@@ -2022,7 +2022,7 @@ output.book-count {
   border-radius: 999px;
 }
 @media (min-width: 700px) {
-  .static-reader .static-main-left {
+  .static-reader .reader-stage[data-frame="reading"] .static-main-left {
     left: calc(50% - var(--read-paper-width) / 2 + var(--read-padding-x));
   }
 }
@@ -2255,3 +2255,72 @@ html[data-initial-art="shelf"] body {
   object-fit: contain;
   user-select: none;
 }
+
+/* Keep Markdown ornamentation within the paper at every reading width. */
+.page-text blockquote:not(.paper-alert) {
+  margin: 1.2em 0;
+  padding: .1em 0 .1em 1.05em;
+  border-inline-start: 2px solid #987442;
+}
+.page-text blockquote > :last-child { margin-bottom: 0; }
+.page-text :is(ul, ol) { margin: .75em 0 1.1em; padding-inline-start: 1.65em; }
+.page-text li { padding-inline-start: .15em; margin-block: .32em; }
+.page-text li::marker { color: #866132; }
+.page-text ul ul { list-style-type: circle; }
+.page-text li :is(ul, ol) { margin-block: .35em; }
+.page-text li > p { margin-block: .35em; }
+.page-text .contains-task-list { list-style: none; padding-inline-start: .1em; }
+.page-text .task-list-item { padding-inline-start: 1.5em; }
+.page-text .task-list-item > input[type="checkbox"] {
+  appearance: none;
+  display: inline-grid;
+  place-content: center;
+  width: .9em;
+  height: .9em;
+  margin: 0 .6em 0 -1.5em;
+  border: 1px solid #987442;
+  border-radius: 2px;
+  vertical-align: -.04em;
+  color: #75582e;
+  background: transparent;
+  opacity: 1;
+}
+.page-text .task-list-item > input:checked::after { content: "✓"; font-size: .85em; line-height: 1; }
+.page-text hr {
+  position: relative;
+  overflow: visible;
+  margin: 1.6em auto;
+  width: 82%;
+  border: 0;
+  border-top: 1px solid #9874428c;
+}
+.page-text hr::after {
+  content: "◆";
+  position: absolute;
+  inset: -.73em auto auto 50%;
+  padding-inline: .5em;
+  transform: translateX(-50%);
+  color: #987442;
+  background: #f6e5c8;
+  font-size: .65em;
+}
+.page-text details { margin: 1em 0; }
+.page-text summary { border: 0; padding: .2em 0; color: #694d2d; cursor: pointer; font-weight: 600; }
+.page-text details[open] > :not(summary) { margin-inline-start: 1em; }
+.page-text summary:focus-visible { outline: 2px solid #987442; outline-offset: 4px; }
+.page-text dl { margin-block: 1em; }
+.page-text dt { margin-block: .7em .25em; font-weight: 700; }
+.page-text dd { margin-inline: 1.2em 0; }
+.page-text .katex { font-size: 1.06em; }
+.page-text .katex-display { overflow-x: auto; overflow-y: hidden; padding-block: .25em; }
+.page-text .hljs-comment, .page-text .hljs-quote { color: #73634e; font-style: italic; }
+.page-text .hljs-keyword, .page-text .hljs-selector-tag, .page-text .hljs-literal { color: #863d45; }
+.page-text .hljs-string, .page-text .hljs-attr, .page-text .hljs-addition { color: #526035; }
+.page-text .hljs-title, .page-text .hljs-section, .page-text .hljs-type { color: #72522c; }
+.page-text .hljs-number, .page-text .hljs-built_in { color: #684d73; }
+.page-text .hljs-deletion { color: #8e332b; }
+.page-text .footnotes { margin-top: 1.5em; padding-top: .75em; border-top: 1px solid #9874428c; font-size: .85em; }
+.page-text .footnotes ol { padding-inline-start: 1.7em; }
+.page-text [data-footnote-ref] { font-size: .85em; padding-inline: .1em; }
+.page-text [data-footnote-backref] { text-decoration: none; padding: .2em; }
+.page-text .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
