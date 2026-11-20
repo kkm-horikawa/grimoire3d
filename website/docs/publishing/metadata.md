@@ -75,3 +75,29 @@ noindex: true
 The generated chapter remains readable by URL, and its HTML tells search engines to leave the page out of search results. Its URL is also left out of the sitemap. If this is the book's first chapter, URLs that open directly to that chapter get the same directive. A site with only opted-out URLs skips sitemap generation.
 
 Share the URL for a chapter or a specific heading, for example `/read/publishing/metadata/#chapter-metadata`. Existing links that start with `#/` also work.
+
+
+## 本のindex.mdの設定例
+
+`docs/handbook/index.md` の例です。表示名、章の説明、共有画像と読む順番をまとめて指定できます。
+
+```yaml
+---
+title: 開発ハンドブック
+description: 導入から公開まで、手順と実例をまとめた開発者向けの本。
+socialImage: ./assets/share.webp
+noindex: false
+cover: teal
+coverImage: ./assets/cover.webp
+category: 開発ガイド
+date: "2026-11-20"
+chapters:
+  - setup.md
+  - examples/
+  - reference.md
+---
+```
+
+画像は実在するファイルを置き、このindex.mdからの相対パスで指定します。`title` は本と章の表示名、`description` と `socialImage` はこの章の検索・共有用です。他の章にも必要な説明と画像を指定できます。`cover`・`coverImage`・`category`・`date` は本のindex.mdだけで使います。`chapters` は各フォルダのindex.mdで指定できます。
+
+サイト全体の公開URL・言語・著者は先頭の `grimoire.yml` に置きます。`siteUrl` がcanonical URLとsitemapの基準になります。公開するページは `noindex` を省略するか `false` にし、共有画像と説明を内容に合わせてください。

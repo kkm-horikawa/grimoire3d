@@ -8,9 +8,11 @@ import {
   useMemo,
 } from "react";
 import Markdown, { defaultUrlTransform, type ExtraProps } from "react-markdown";
-import remarkDirective from "remark-directive";
-import remarkGfm from "remark-gfm";
-import { remarkGrimoire } from "../../cli/markup.js";
+import {
+  markdownOptions,
+  rehypePlugins,
+  remarkPlugins,
+} from "../../cli/markup.js";
 import { videoEmbed } from "../../cli/video-url.js";
 import { EmbeddedVideo } from "./EmbedPlayer";
 import { resolveHref } from "./navigation";
@@ -34,12 +36,19 @@ function heading(
   return ({
     children,
     node,
+    id: generatedId,
+    className,
   }: ComponentProps<"h1"> & ExtraProps): JSX.Element => {
     const offset = node?.position?.start.offset;
     const id = offset === undefined ? undefined : ids?.[offset];
     return (
       <Tag
-        id={id ?? (typeof children === "string" ? slug(children) : undefined)}
+        className={className}
+        id={
+          id ??
+          generatedId ??
+          (typeof children === "string" ? slug(children) : undefined)
+        }
       >
         {children}
       </Tag>
@@ -149,7 +158,9 @@ export default function PageMarkdown({
   );
   return (
     <Markdown
-      remarkPlugins={[remarkGfm, remarkDirective, [remarkGrimoire, locale]]}
+      remarkPlugins={remarkPlugins(locale)}
+      rehypePlugins={rehypePlugins(page)}
+      remarkRehypeOptions={markdownOptions(locale)}
       components={components}
       urlTransform={(url) => pageUrl(page, url)}
     >
