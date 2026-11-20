@@ -88,6 +88,35 @@ describe("Markdown in a project", () => {
     );
   });
 
+  it("indexes Japanese and English text using the reader's section anchors", async () => {
+    await write(
+      "docs/guide/index.md",
+      "# User Guide\n\nIntroduction to the app.\n\n## Setup\n\nRun **the CLI**.\n\n## 設定\n\nキャッシュを更新するには、設定を開きます。"
+    );
+    await write("docs/reference/index.md", "# Reference\n\nRate limits.");
+    const library = await readLibrary(project, { locale: "en" });
+    expect(library.searchBooks).toMatchObject([
+      {
+        id: "guide",
+        sections: [
+          {
+            chapter: "index",
+            title: "User Guide",
+            text: "Introduction to the app.",
+          },
+          { anchor: "setup", heading: "Setup", text: "Run the CLI." },
+          {
+            anchor: "設定",
+            heading: "設定",
+            text: "キャッシュを更新するには、設定を開きます。",
+          },
+        ],
+      },
+      { id: "reference", sections: [{ text: "Rate limits." }] },
+    ]);
+    expect(Object.values(library.documents[0].headingIds)).toContain("設定");
+  });
+
   it("orders direct chapters and nested folders without changing routes or separate books", async () => {
     await write(
       "docs/index.md",

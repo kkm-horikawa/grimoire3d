@@ -14,6 +14,7 @@ import { LibraryFooter } from "../../cli/library-footer.js";
 import { type CoverOrigin, motionQuery } from "./BookTransition";
 import { coverFor } from "./covers";
 import { assetHref, bookHref, initialShelfArt } from "./navigation";
+import { SearchControl } from "./SearchControl";
 import type { BookSummary, Copy, Library } from "./types";
 
 export const shelfBatchSize = 12;
@@ -338,8 +339,8 @@ export function LibraryView({
         }
       >
         <h1>{text.library}</h1>
-        {(large || hasCategories || hasDates) && (
-          <div className="library-tools">
+        <div className="library-tools">
+          {(large || hasCategories || hasDates) && (
             <search className="search-region">
               <form
                 className="shelf-search"
@@ -379,6 +380,9 @@ export function LibraryView({
                 )}
               </form>
             </search>
+          )}
+          <SearchControl text={text} />
+          {(large || hasCategories || hasDates) && (
             <div className="segment segment-library">
               <button
                 type="button"
@@ -401,8 +405,8 @@ export function LibraryView({
                 {text.index}
               </button>
             </div>
-          </div>
-        )}
+          )}
+        </div>
         {(hasCategories || hasDates) && (
           <div className="catalog-options">
             {hasCategories && (
