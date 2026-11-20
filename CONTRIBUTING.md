@@ -35,11 +35,10 @@ The public library is built by Grimoire3D from `website/docs/`. Edit the Markdow
 ```sh
 npm ci
 npm run build
-cd website
-node ../cli/cli.js serve
+node cli/cli.js serve
 ```
 
-Run `node ../cli/cli.js build` from `website/` to regenerate the deployment directory at `website/dist/`. The GitHub Pages site publishes the built files from the root of `gh-pages`. Add an empty `.nojekyll` file to the deployment copy when updating that branch.
+Run `node cli/cli.js build` from the repository root to regenerate `website/dist/`. The root `grimoire.yml` selects `website/docs/` for both commands. The GitHub Pages site publishes the built files from the root of `gh-pages`. Add an empty `.nojekyll` file to the deployment copy when updating that branch.
 
 ### Running Tests
 

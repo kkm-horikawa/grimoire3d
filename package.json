@@ -1,6 +1,6 @@
 {
   "name": "grimoire3d",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "3D magical book documentation generator - Transform your docs into an interactive grimoire",
   "type": "module",
   "main": "./dist/index.js",
@@ -121,6 +121,7 @@
     ]
   },
   "bin": {
-    "grimoire3d": "./cli/cli.js"
+    "grimoire3d": "./cli/cli.js",
+    "grimo": "./cli/cli.js"
   }
 }

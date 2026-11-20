@@ -18,13 +18,16 @@ const maxZoom = 16;
 
 export function DiagramViewer({
   image,
+  imageLabel,
   text,
   onClose,
 }: {
   image: DiagramArtwork;
+  imageLabel?: string;
   text: Copy;
   onClose: () => void;
 }): JSX.Element {
+  const title = imageLabel ?? text.diagram;
   const dialog = useRef<HTMLDialogElement>(null);
   const canvas = useRef<HTMLElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -145,8 +148,10 @@ export function DiagramViewer({
   return (
     <dialog
       ref={dialog}
-      className="diagram-viewer"
-      aria-label={text.diagram}
+      className={
+        imageLabel ? "diagram-viewer image-lightbox" : "diagram-viewer"
+      }
+      aria-label={title}
       onClose={onClose}
       onKeyDown={(event) => {
         if (event.key === "+" || event.key === "=") changeZoom(zoom * 1.5);
@@ -157,7 +162,7 @@ export function DiagramViewer({
       }}
     >
       <header className="diagram-toolbar">
-        <h2>{text.diagram}</h2>
+        <h2>{title}</h2>
         <div className="diagram-controls" onTouchEnd={activateTouch}>
           <button
             type="button"
@@ -167,7 +172,9 @@ export function DiagramViewer({
           >
             <Minus size={19} aria-hidden="true" />
           </button>
-          <output aria-live="polite">{Math.round(zoom * 100)}%</output>
+          {!imageLabel && (
+            <output aria-live="polite">{Math.round(zoom * 100)}%</output>
+          )}
           <button
             type="button"
             aria-label={text.zoomIn}
@@ -178,10 +185,10 @@ export function DiagramViewer({
           </button>
           <button
             type="button"
-            aria-label={text.diagramFit}
+            aria-label={imageLabel ? text.imageFit : text.diagramFit}
             onClick={() => changeZoom(1)}
           >
-            <Maximize2 size={18} aria-hidden="true" />
+            {imageLabel ? text.fit : <Maximize2 size={18} aria-hidden="true" />}
           </button>
           <button
             type="button"
@@ -195,7 +202,7 @@ export function DiagramViewer({
       <section
         className="diagram-viewport"
         ref={canvas}
-        aria-label={text.diagramPan}
+        aria-label={imageLabel ? text.imagePan : text.diagramPan}
         // biome-ignore lint/a11y/noNoninteractiveTabindex: The scrollable diagram is a keyboard pan target.
         tabIndex={0}
         data-pannable={zoom > 1 || undefined}
@@ -212,7 +219,7 @@ export function DiagramViewer({
         >
           <img
             src={image.src}
-            alt={text.diagram}
+            alt={title}
             draggable={false}
             style={{ width, height }}
           />

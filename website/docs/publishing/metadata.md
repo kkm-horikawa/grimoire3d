@@ -1,9 +1,10 @@
 # Site settings and SEO
 
-Place `grimoire.yml` next to `docs/`.
+Place `grimoire.yml` in the project directory where you run Grimoire3D.
 
 ```yaml
 title: Engineering Handbook
+docsDir: handbook
 description: Setup, operations, and release notes for the project.
 siteUrl: https://docs.example.com/
 author: Documentation Team
@@ -15,6 +16,8 @@ footer:
   url: https://example.com/engineering/
 ```
 
+Both `serve` and `build` read `docs/` directly under the working directory by default. Set `docsDir` to use a different path, or pass `--docs-dir` to override it for one run. Relative paths are resolved from the working directory.
+
 ## Library footer
 
 Set `footer.label` to show a publisher, team, or project name at the end of the bookshelf and index. Set `footer.url` to link that name to an absolute HTTP(S) address. Omit the URL for a plain label. The footer also links to the Grimoire3D repository.
@@ -23,7 +26,9 @@ Set `footer.label` to show a publisher, team, or project name at the end of the 
 
 The build produces standalone HTML for every chapter, including the text, navigation, page title, description, and Open Graph metadata. Visitors and crawlers can read the articles without JavaScript.
 
-Set `siteUrl` to get canonical URLs and a sitemap. Set `socialImage` to an absolute HTTP(S) URL or an image path relative to `docs/`. At the domain root the build also emits `robots.txt` pointing to the sitemap.
+The site title defaults to the name in `package.json` or the project directory name. Use `title` to choose a different site title.
+
+Set `siteUrl` to get canonical URLs and a sitemap. Set `socialImage` to an absolute HTTP(S) URL or an image path relative to the chosen Markdown folder. At the domain root the build also emits `robots.txt` pointing to the sitemap.
 
 ## Google Tag Manager and additional head tags
 
