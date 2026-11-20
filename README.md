@@ -4,15 +4,15 @@ Turn Markdown into 3D books you can open and flip through in a browser.
 
 [![npm version](https://img.shields.io/npm/v/grimoire3d)](https://www.npmjs.com/package/grimoire3d)
 
-![A Markdown chapter is added under docs, then opened and paged through from the Grimoire3D bookshelf](docs/book-experience/quick-start.gif)
-
-[Read the documentation](https://kkm-horikawa.github.io/grimoire3d/)
-
 ## Quick start
 
 Run `npx grimoire3d serve` from your project directory and open the URL it prints. Grimoire3D looks for Markdown in the `docs/` folder directly under that directory by default. Existing Markdown works without a scaffold. See the [configuration guide](https://kkm-horikawa.github.io/grimoire3d/read/publishing/metadata/) when you want to customize the library.
 
 If your Markdown lives in `handbook/`, add `--docs-dir handbook` to either `serve` or `build`.
+
+![A Markdown chapter is added under docs, then opened and paged through from the Grimoire3D bookshelf](docs/book-experience/quick-start.gif)
+
+[Read the documentation](https://kkm-horikawa.github.io/grimoire3d/)
 
 ## Install
 
@@ -34,7 +34,7 @@ Create `docs/field-notes/index.md`.
 This is my first 3D book.
 ```
 
-Each folder directly under `docs/` becomes a book, and its Markdown files become chapters. Loose Markdown files directly in `docs/` share a separate book. Nested folders form chapter groups within the same book.
+Each folder directly under `docs/` becomes a book, and its Markdown files become chapters. Loose Markdown files directly in `docs/` share a separate book. Nested folders form chapter groups by default. Set `book: true` in a nested folder's `index.md` to give it a separate book, and use `category` to place related books under the same shelf plate.
 
 Books use the title or top-level heading in their `index.md`, then the first heading in their `README.md`. The default title is **Overview** for loose files and the folder name for each folder book.
 

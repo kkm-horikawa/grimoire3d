@@ -1,6 +1,6 @@
 # Your first book
 
-## Preview existing Markdown
+## Preview the book
 
 Run `npx grimoire3d serve` from your project directory. Grimoire3D looks for Markdown in the `docs/` folder directly under that directory by default. Existing Markdown works without a scaffold. See the [configuration guide](../publishing/metadata.md) when you want to customize the library.
 
