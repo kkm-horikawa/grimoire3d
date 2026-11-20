@@ -2,7 +2,7 @@
 
 Issue: https://github.com/kkm-horikawa/grimoire3d/issues/52
 
-The README and all Markdown under website/docs now use English throughout: headings, explanations, metadata, rendered syntax examples, and YAML sample values. Internal development records retain the language in which the work was reviewed.
+The README and all Markdown under website/docs now use English throughout: headings, explanations, metadata, rendered syntax examples, and YAML sample values.
 
 The examples still show the Markdown source, its rendered result, and a short explanation of its appearance. Book and chapter paths remain unchanged. Existing English anchors for Paper marks, Tables and matrices, and Spell Mode are retained.
 

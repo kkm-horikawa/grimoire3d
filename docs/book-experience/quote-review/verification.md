@@ -1,30 +1,30 @@
-# 0.3.0の表示確認
+# v0.3.0 rendering checks
 
-2026-11-20、Chromeで静的ビルドを開いて確認。1920×1080、1280×720、390×844を使い、それぞれJavaScript有効・無効で実行した。全6条件で画面全体の横はみ出しとJavaScriptエラーはなかった。
+On November 20, 2026, the static build was opened in Chrome at 1920×1080, 1280×720, and 390×844, with JavaScript on and off. None of the six cases had viewport-wide horizontal overflow or JavaScript errors.
 
-- 通常引用の細い罫線・出典・注記との区別を3サイズで確認。
-- リストの入れ子、9・10の開始番号、チェックリスト、水平線、用語定義、コードの配色を確認。
-- detailsはクリックとEnter・Spaceで開閉。長い内容は紙面内でスクロール。
-- 行内数式と独立数式を区別し、JavaScriptなしでも組版を確認。
-- 脚注の番号と戻るリンクで紙面内を往復し、章のルートが変わらないことを確認。
-- 長い引用と8個の入れ子をスマートフォンで確認。日本語の章パス・日本語の脚注名・同じ脚注への複数参照について、JavaScript有効・無効の両方でEnterによる移動とフォーカスの往復を確認。
-- 公式ドキュメントの実際のMarkdownから、数式、YAML設定例、章順を確認。既存のMermaid図も描画を確認。
-- check、typecheck、coverage付きの全86テスト、buildに成功。従来のThree.js非推奨・大きいbundleの警告は継続。
+- Checked quote rules, attributions, and the distinction from callouts at all three sizes.
+- Checked nested lists, starting numbers 9 and 10, task lists, horizontal rules, definitions, and code colors.
+- Opened details with click, Enter, and Space. Long text scrolled within the paper.
+- Checked inline and display math, including rendering without JavaScript.
+- Followed footnote references and return links without changing the chapter route.
+- Checked long quotes and eight nested quotes on mobile. Japanese chapter paths, Japanese footnote identifiers, and repeated references supported keyboard focus and return navigation with JavaScript on and off.
+- Built the actual public guides and checked equations, YAML settings, chapter order, and the existing Mermaid diagram.
+- Check, typecheck, 86 tests with coverage, and production build passed. Existing Three.js deprecation and large-bundle warnings remained.
 
-## 引用の実画面
+## Quotes
 
-![ノートPC](quote-laptop-annotated.png)
+![Laptop](quote-laptop-annotated.png)
 
-![大型モニター](quote-monitor-annotated.png)
+![Large monitor](quote-monitor-annotated.png)
 
-![スマートフォン](quote-mobile-annotated.png)
+![Mobile](quote-mobile-annotated.png)
 
-## 各記法と公式ドキュメント
+## Markup and public documentation
 
-![数式・定義・コード・脚注](rich-laptop-annotated.png)
+![Math, definitions, code, and footnotes](rich-laptop-annotated.png)
 
-![チェックリスト・区切り・折りたたみ](rich-details-annotated.png)
+![Task lists, separator, and disclosure](rich-details-annotated.png)
 
-![本と章順のYAML](docs-yaml-annotated.png)
+![Book and chapter-order YAML](docs-yaml-annotated.png)
 
-生成案はREADME.mdに記録。実装後の元画像は同フォルダの `*-live.png`、`rich-laptop-live-*.png` に残す。
+The approved proposals are recorded in README.md. Original implementation screenshots are retained as *-live.png and rich-laptop-live-*.png in this directory.
