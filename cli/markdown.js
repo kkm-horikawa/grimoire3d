@@ -189,6 +189,7 @@ export function readMarkdown(source) {
           : undefined,
       date: metadata.date,
       chapters: metadata.chapters,
+      book: metadata.book === true,
       noindex: metadata.noindex === true,
       coverImage:
         typeof metadata.coverImage === "string"

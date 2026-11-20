@@ -41,7 +41,7 @@ function encodePath(path) {
   return path.split("/").map(encodeURIComponent).join("/");
 }
 
-async function readPages(root, directory, nested) {
+async function readPages(root, directory, nested, standalone) {
   const entries = (
     await readdir(join(root, directory), { withFileTypes: true })
   )
@@ -60,6 +60,7 @@ async function readPages(root, directory, nested) {
     path: indexPath,
     ...readMarkdown(await readFile(join(root, indexPath), "utf8")),
   };
+  const ownBook = directory.includes("/") && introduction?.metadata.book;
   const order = introduction?.metadata.chapters;
   const selected = [];
   if (order !== undefined) {
@@ -89,6 +90,7 @@ async function readPages(root, directory, nested) {
     }
   }
   const pages = introduction ? [introduction] : [];
+  if (ownBook) standalone.set(directory, pages);
   for (const entry of [
     ...selected,
     ...entries.filter((entry) => !selected.includes(entry)),
@@ -96,7 +98,7 @@ async function readPages(root, directory, nested) {
     if (entry === index) continue;
     const path = posix.join(directory, entry.name);
     if (entry.isDirectory()) {
-      pages.push(...(await readPages(root, path, true)));
+      pages.push(...(await readPages(root, path, true, standalone)));
     } else {
       pages.push({
         path,
@@ -104,7 +106,7 @@ async function readPages(root, directory, nested) {
       });
     }
   }
-  return pages;
+  return ownBook ? [] : pages;
 }
 
 function readPublicationDate(index) {
@@ -134,7 +136,10 @@ function describeBook(pages, folder, fallback, configuredTitle) {
     (page) =>
       page.path.toLowerCase() === posix.join(folder, "README.md").toLowerCase()
   );
-  const id = folder || rootId;
+  // Reserve a prefix that ordinary top-level folder names cannot use.
+  const id = folder.includes("/")
+    ? `_book-${folder.replaceAll("-", "-h").replaceAll("/", "--")}`
+    : folder || rootId;
   const title =
     index?.metadata.title ||
     index?.heading ||
@@ -399,9 +404,14 @@ export async function readLibrary(
     );
 
   for (const { name } of entries) {
-    const pages = await readPages(docs, name, true);
+    const standalone = new Map();
+    const pages = await readPages(docs, name, true, standalone);
     if (pages.length)
       books.push(describeBook(pages, name, titleFromPath(name)));
+    for (const [folder, chapters] of standalone)
+      books.push(
+        describeBook(chapters, folder, titleFromPath(posix.basename(folder)))
+      );
   }
   if (!books.length) throw missingMarkdown(locale, docsDir);
 
