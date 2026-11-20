@@ -463,7 +463,7 @@ a {
 
 .reader {
   min-height: 100svh;
-  overflow: hidden;
+  overflow: clip;
   position: relative;
   display: grid;
   place-items: center;
