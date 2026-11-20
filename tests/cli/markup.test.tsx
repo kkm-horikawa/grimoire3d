@@ -28,6 +28,10 @@ const source = String.raw`# 紙面の記法
 - [x] 準備した
 - [ ] 公開する
 
+| サーバー運用 | 料金 |
+| --- | --- |
+| 不要 | 月額<br>上限あり |
+
 ---
 
 <details open><summary>補足を開く</summary>
@@ -119,6 +123,10 @@ it("renders the same rich Markdown and safe author HTML in the live and publishe
       container.querySelectorAll('input[type="checkbox"][disabled]')
     ).toHaveLength(2);
     expect(container.querySelector("input[checked]")).not.toBeNull();
+    expect(container.querySelector("th")?.textContent).toBe("サーバー運用");
+    expect(container.querySelector("td:last-child")?.innerHTML).toBe(
+      "月額<br>上限あり"
+    );
     expect(container.querySelector("hr")).not.toBeNull();
     expect(container.querySelector("details[open] summary")?.textContent).toBe(
       "補足を開く"

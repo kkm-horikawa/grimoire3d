@@ -651,6 +651,7 @@ a {
   outline: 2px solid #8a2d31;
 }
 .paper-table {
+  --first-column-limit: 42cqi;
   container-type: inline-size;
   max-width: 100%;
   overflow-x: auto;
@@ -659,12 +660,15 @@ a {
   scrollbar-color: #9e704c transparent;
 }
 .paper-table table {
+  /* Let the scroll container absorb overflow instead of squeezing columns. */
+  inline-size: max-content;
   border-collapse: separate;
   border-spacing: 0;
 }
 .paper-table :is(th, td) {
-  max-width: 24ch;
-  overflow-wrap: break-word;
+  /* A whole column must fit beside the pinned first column when scrolled. */
+  max-width: min(24ch, calc(100cqi - var(--first-column-limit)));
+  overflow-wrap: anywhere;
   padding: 0.28em 0.48em;
   border-right: 1px solid #af865c;
   border-bottom: 1px solid #af865c;
@@ -673,7 +677,7 @@ a {
   border-top: 1px solid #af865c;
 }
 .paper-table tr > :first-child {
-  max-width: min(24ch, 42cqi);
+  max-width: min(24ch, var(--first-column-limit));
   border-left: 1px solid #af865c;
 }
 .paper-table[data-overflow] tr > :first-child {
