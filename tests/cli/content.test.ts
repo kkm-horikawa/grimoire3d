@@ -33,6 +33,61 @@ describe("Markdown in a project", () => {
     ).toEqual(["index", "02-next", "10-last"]);
   });
 
+  it("names unconfigured books from README headings without changing chapter order", async () => {
+    await write("package.json", '{"name":"project-notes"}');
+    await write("docs/00-intro.md", "# Introduction");
+    await write("docs/README.md", "## Project documentation");
+    await write("docs/handbook/README.md", "# The team handbook");
+    await write(
+      "docs/handbook/index.md",
+      "---\ntitle: Handbook\n---\n# Welcome"
+    );
+    await write("docs/operations/README.md", "# Operating the service");
+    await write("docs/field-notes/a.md", "# Notes");
+
+    const library = await readLibrary(project, { locale: "en" });
+    expect(library.manifest.title).toBe("project-notes");
+    expect(library.manifest.books.map((book) => book.title)).toEqual([
+      "Project documentation",
+      "field notes",
+      "Handbook",
+      "Operating the service",
+    ]);
+    expect(library.documents.slice(0, 2).map((doc) => doc.chapter)).toEqual([
+      "00-intro",
+      "README",
+    ]);
+  });
+
+  it.each([
+    ["en", "Overview"],
+    ["ja", "概要"],
+  ])("uses a localized loose-book title for %s", async (locale, title) => {
+    await write("docs/intro.md", "# Introduction");
+    const library = await readLibrary(project, { locale });
+    expect(library.manifest.books[0].title).toBe(title);
+    expect(library.manifest.title).toBe(project.split("/").at(-1));
+  });
+
+  it("uses the configured source and lets a command override it", async () => {
+    await write("grimoire.yml", "docsDir: handbook\ntitle: Engineering site");
+    await write("docs/index.md", "# Default");
+    await write("handbook/intro.md", "# Introduction");
+    await write("handbook/README.md", "# README title");
+    await write("elsewhere/index.md", "# Command line");
+    const settings = await readSettings(project);
+
+    const configured = await readLibrary(project, settings);
+    expect(configured.manifest.title).toBe("Engineering site");
+    expect(configured.manifest.books[0].title).toBe("Engineering site");
+
+    const overridden = await readLibrary(project, settings, "elsewhere");
+    expect(overridden.manifest.books[0].title).toBe("Command line");
+    await expect(readLibrary(project, settings, "missing")).rejects.toThrow(
+      "No Markdown in missing."
+    );
+  });
+
   it("orders direct chapters and nested folders without changing routes or separate books", async () => {
     await write(
       "docs/index.md",

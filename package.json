@@ -121,6 +121,7 @@
     ]
   },
   "bin": {
-    "grimoire3d": "./cli/cli.js"
+    "grimoire3d": "./cli/cli.js",
+    "grimo": "./cli/cli.js"
   }
 }

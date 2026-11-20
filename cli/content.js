@@ -1,5 +1,14 @@
 import { readdir, readFile, realpath, stat } from "node:fs/promises";
-import { extname, isAbsolute, join, posix, relative, sep } from "node:path";
+import {
+  basename,
+  extname,
+  isAbsolute,
+  join,
+  posix,
+  relative,
+  resolve,
+  sep,
+} from "node:path";
 import { parse } from "yaml";
 import { coverOptions } from "./cover-options.js";
 import { readMarkdown } from "./markdown.js";
@@ -116,13 +125,22 @@ function readPublicationDate(index) {
   );
 }
 
-function describeBook(pages, folder, fallback) {
+function describeBook(pages, folder, fallback, configuredTitle) {
   const index = pages.find(
     (page) =>
       page.path.toLowerCase() === posix.join(folder, "index.md").toLowerCase()
   );
+  const readme = pages.find(
+    (page) =>
+      page.path.toLowerCase() === posix.join(folder, "README.md").toLowerCase()
+  );
   const id = folder || rootId;
-  const title = index?.metadata.title || index?.heading || fallback;
+  const title =
+    index?.metadata.title ||
+    index?.heading ||
+    configuredTitle ||
+    readme?.firstHeading ||
+    fallback;
   const cover = index?.metadata.cover;
   if (cover && !Object.hasOwn(coverOptions, cover)) {
     throw new Error(
@@ -200,6 +218,7 @@ export async function readSettings(cwd) {
   const {
     locale = "en",
     title,
+    docsDir,
     outDir,
     description,
     siteUrl,
@@ -220,10 +239,13 @@ export async function readSettings(cwd) {
   }
   if (
     (title !== undefined && typeof title !== "string") ||
-    (outDir !== undefined && (typeof outDir !== "string" || !outDir.trim()))
+    [docsDir, outDir].some(
+      (value) =>
+        value !== undefined && (typeof value !== "string" || !value.trim())
+    )
   ) {
     throw new Error(
-      "grimoire.yml: title and outDir must be text / title と outDir は文字列で指定してください。"
+      "grimoire.yml: title, docsDir and outDir must be text / title、docsDir、outDir は文字列で指定してください。"
     );
   }
   if (
@@ -240,6 +262,7 @@ export async function readSettings(cwd) {
   return {
     locale,
     title,
+    docsDir,
     outDir,
     description,
     socialImage,
@@ -336,26 +359,50 @@ async function loadLink(url, page, links, docs, assets, issues) {
   }
 }
 
-export async function readLibrary(cwd, settings) {
+async function projectTitle(cwd) {
+  const filename = join(cwd, "package.json");
+  try {
+    const name = JSON.parse(await readFile(filename, "utf8"))?.name;
+    if (typeof name === "string" && name.trim()) return name.trim();
+  } catch (error) {
+    if (error.code !== "ENOENT" && !(error instanceof SyntaxError)) throw error;
+  }
+  return basename(cwd);
+}
+
+export async function readLibrary(
+  cwd,
+  settings,
+  docsDir = settings.docsDir ?? "docs"
+) {
   const { locale, title } = settings;
-  const docs = await realpath(join(cwd, "docs")).catch((error) => {
-    if (error.code === "ENOENT") throw missingMarkdown(locale);
+  if (!docsDir.trim()) throw new Error("--docs-dir must name a directory.");
+  const docs = await realpath(resolve(cwd, docsDir)).catch((error) => {
+    if (["ENOENT", "ENOTDIR"].includes(error.code))
+      throw missingMarkdown(locale, docsDir);
     throw error;
   });
-  const entries = (await readdir(docs, { withFileTypes: true }))
+  const entries = (
+    await readdir(docs, { withFileTypes: true }).catch((error) => {
+      if (error.code === "ENOTDIR") throw missingMarkdown(locale, docsDir);
+      throw error;
+    })
+  )
     .filter((entry) => entry.isDirectory() && visibleEntry(entry.name))
     .sort((a, b) => sortNames(a.name, b.name));
   const books = [];
   const rootPages = await readPages(docs, "", false);
   if (rootPages.length)
-    books.push(describeBook(rootPages, "", title ?? "Grimoire3D"));
+    books.push(
+      describeBook(rootPages, "", locale === "ja" ? "概要" : "Overview", title)
+    );
 
   for (const { name } of entries) {
     const pages = await readPages(docs, name, true);
     if (pages.length)
       books.push(describeBook(pages, name, titleFromPath(name)));
   }
-  if (!books.length) throw missingMarkdown(locale);
+  if (!books.length) throw missingMarkdown(locale, docsDir);
 
   const shelf = books.some((book) => book.id !== rootId);
   const assets = new Map();
@@ -467,10 +514,11 @@ export async function readLibrary(cwd, settings) {
     publishedBooks.push({ id, title, cover, pages });
   }
   return {
+    docsDirectory: docs,
     manifest: {
       locale,
       shelf,
-      title: title ?? "Grimoire3D",
+      title: title ?? (await projectTitle(cwd)),
       description: settings.description,
       siteUrl: settings.siteUrl,
       socialImage,
@@ -486,10 +534,11 @@ export async function readLibrary(cwd, settings) {
   };
 }
 
-function missingMarkdown(locale) {
+function missingMarkdown(locale, docsDir) {
+  const index = join(docsDir, "index.md");
   return new Error(
     locale === "ja"
-      ? "docs/ に Markdown がありません。docs/index.md に「# 最初の本」と書いてください。"
-      : 'No Markdown in docs/. Start with "# My first book" in docs/index.md.'
+      ? `${docsDir} に Markdown がありません。${index} に「# 最初の本」と書いてください。`
+      : `No Markdown in ${docsDir}. Start with "# My first book" in ${index}.`
   );
 }
