@@ -11,10 +11,13 @@ import {
 } from "react";
 import { BookCover } from "../../cli/book-cover.js";
 import { LibraryFooter } from "../../cli/library-footer.js";
+import { ShelfPlate, shelfGroups } from "../../cli/shelf-groups.js";
 import { type CoverOrigin, motionQuery } from "./BookTransition";
 import { coverFor } from "./covers";
 import { assetHref, bookHref, initialShelfArt } from "./navigation";
+import { SearchControl } from "./SearchControl";
 import type { BookSummary, Copy, Library } from "./types";
+import "./category-shelves.css";
 
 export const shelfBatchSize = 12;
 
@@ -144,10 +147,15 @@ export function LibraryView({
     }
     return matches;
   }, [books, category, filtering, locale, looking, mode, newestFirst]);
-  const shownResults = useMemo(
-    () => (mode === "shelves" ? results.slice(0, shown) : results),
-    [mode, results, shown]
-  );
+  const categorized =
+    mode === "shelves" && results.some((book) => book.category);
+  const shownResults = useMemo(() => {
+    if (mode === "index") return results;
+    const ordered = categorized
+      ? shelfGroups(results).flatMap((group) => group.books)
+      : results;
+    return ordered.slice(0, shown);
+  }, [categorized, mode, results, shown]);
   const canShowMore = mode === "shelves" && shown < results.length;
 
   useEffect(() => {
@@ -326,6 +334,20 @@ export function LibraryView({
     });
   }
 
+  const eagerBooks = new Set(shownResults.slice(0, 3).map(({ id }) => id));
+  function showVolume(book: BookSummary): JSX.Element {
+    return (
+      <div className="shelf-cell" key={book.id}>
+        <Volume
+          book={book}
+          front={eagerBooks.has(book.id)}
+          opening={openingBookId === book.id}
+          onOpen={(event) => openVolume(book, event)}
+        />
+      </div>
+    );
+  }
+
   return (
     <main className="library" ref={root} data-searching={filtering}>
       <header className="library-brand brand">
@@ -338,8 +360,8 @@ export function LibraryView({
         }
       >
         <h1>{text.library}</h1>
-        {(large || hasCategories || hasDates) && (
-          <div className="library-tools">
+        <div className="library-tools">
+          {(large || hasCategories || hasDates) && (
             <search className="search-region">
               <form
                 className="shelf-search"
@@ -379,6 +401,9 @@ export function LibraryView({
                 )}
               </form>
             </search>
+          )}
+          <SearchControl text={text} />
+          {(large || hasCategories || hasDates) && (
             <div className="segment segment-library">
               <button
                 type="button"
@@ -401,8 +426,8 @@ export function LibraryView({
                 {text.index}
               </button>
             </div>
-          </div>
-        )}
+          )}
+        </div>
         {(hasCategories || hasDates) && (
           <div className="catalog-options">
             {hasCategories && (
@@ -488,11 +513,14 @@ export function LibraryView({
       ) : (
         <div
           data-mobile-rows={
-            books.length >= 3 && books.length <= 4 ? "2" : undefined
+            !categorized && books.length >= 3 && books.length <= 4
+              ? "2"
+              : undefined
           }
-          className={`shelf ${large ? "shelf-many" : ""} ${restingShelf ? "resting-shelf" : ""} ${filtering ? "shelf-searching" : ""} ${filtering && results.length === 1 ? "shelf-one-match" : ""}`}
+          className={`shelf ${categorized ? "shelf-categorized shelf-many" : `${large ? "shelf-many" : ""} ${restingShelf ? "resting-shelf" : ""} ${filtering ? "shelf-searching" : ""} ${filtering && results.length === 1 ? "shelf-one-match" : ""}`}`}
         >
           {restingShelf &&
+            !categorized &&
             (initialShelfArt ? (
               <div
                 className="resting-art-slot"
@@ -502,18 +530,23 @@ export function LibraryView({
             ) : (
               <div className="shelf-art" aria-hidden="true" />
             ))}
-          <div className="shelf-grid">
-            {shownResults.map((book, position) => (
-              <div className="shelf-cell" key={book.id}>
-                <Volume
-                  book={book}
-                  front={position < 3}
-                  opening={openingBookId === book.id}
-                  onOpen={(event) => openVolume(book, event)}
-                />
-              </div>
-            ))}
-          </div>
+          {categorized ? (
+            shelfGroups(shownResults).map((group) => {
+              const label = group.category ?? text.otherBooks;
+              return (
+                <section
+                  className="category-shelf shelf-grid"
+                  aria-label={label}
+                  key={group.category ?? ""}
+                >
+                  <ShelfPlate category={label} />
+                  {group.books.map(showVolume)}
+                </section>
+              );
+            })
+          ) : (
+            <div className="shelf-grid">{shownResults.map(showVolume)}</div>
+          )}
           {canShowMore && (
             <div ref={moreShelves} className="more-shelves" aria-hidden />
           )}
