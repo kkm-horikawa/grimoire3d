@@ -36,27 +36,66 @@ async function readPages(root, directory, nested) {
   const entries = (
     await readdir(join(root, directory), { withFileTypes: true })
   )
-    .filter((entry) => visibleEntry(entry.name))
+    .filter(
+      (entry) =>
+        visibleEntry(entry.name) &&
+        ((entry.isDirectory() && nested) ||
+          (entry.isFile() && isMarkdown(entry.name)))
+    )
     .sort((a, b) => sortNames(a.name, b.name));
-  const pages = [];
-  for (const entry of entries) {
+  const index = entries.find(
+    (entry) => entry.isFile() && /^index\.md$/i.test(entry.name)
+  );
+  const indexPath = index && posix.join(directory, index.name);
+  const introduction = index && {
+    path: indexPath,
+    ...readMarkdown(await readFile(join(root, indexPath), "utf8")),
+  };
+  const order = introduction?.metadata.chapters;
+  const selected = [];
+  if (order !== undefined) {
+    if (!Array.isArray(order))
+      throw new Error(
+        `${indexPath}: chapters must be a list of direct Markdown files or folders.`
+      );
+    const seen = new Set();
+    for (const item of order) {
+      const name = typeof item === "string" ? item.replace(/\/$/, "") : "";
+      const entry = entries.find((entry) => entry.name === name);
+      if (
+        !name ||
+        name.includes("/") ||
+        !entry ||
+        (item.endsWith("/") && !entry.isDirectory())
+      )
+        throw new Error(
+          `${indexPath}: chapters entry "${String(item)}" must name a direct Markdown file or folder in this book.`
+        );
+      if (seen.has(name))
+        throw new Error(
+          `${indexPath}: chapters contains duplicate entry "${name}".`
+        );
+      seen.add(name);
+      selected.push(entry);
+    }
+  }
+  const pages = introduction ? [introduction] : [];
+  for (const entry of [
+    ...selected,
+    ...entries.filter((entry) => !selected.includes(entry)),
+  ]) {
+    if (entry === index) continue;
     const path = posix.join(directory, entry.name);
-    if (entry.isDirectory() && nested) {
+    if (entry.isDirectory()) {
       pages.push(...(await readPages(root, path, true)));
-    } else if (entry.isFile() && isMarkdown(entry.name)) {
-      const markdown = await readFile(join(root, path), "utf8");
-      pages.push({ path, ...readMarkdown(markdown) });
+    } else {
+      pages.push({
+        path,
+        ...readMarkdown(await readFile(join(root, path), "utf8")),
+      });
     }
   }
   return pages;
-}
-
-function comparePages(a, b) {
-  // Treat index.md as the first page of its folder, without reordering the folders.
-  return sortNames(
-    a.path.replace(/(^|\/)index\.md$/i, "$1!index.md"),
-    b.path.replace(/(^|\/)index\.md$/i, "$1!index.md")
-  );
 }
 
 function readPublicationDate(index) {
@@ -105,7 +144,7 @@ function describeBook(pages, folder, fallback) {
       path: index.path,
       value: index.metadata.coverImage,
     },
-    chapters: pages.sort(comparePages).map((page) => {
+    chapters: pages.map((page) => {
       const group = posix.dirname(page.path);
       const inBook = folder ? page.path.slice(folder.length + 1) : page.path;
       const file = posix.basename(pageId(page.path));

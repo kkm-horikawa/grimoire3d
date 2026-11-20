@@ -33,6 +33,90 @@ describe("Markdown in a project", () => {
     ).toEqual(["index", "02-next", "10-last"]);
   });
 
+  it("orders direct chapters and nested folders without changing routes or separate books", async () => {
+    await write(
+      "docs/index.md",
+      "---\nchapters: [z.md, a.md]\n---\n# Loose pages"
+    );
+    await write("docs/a.md", "# A");
+    await write("docs/z.md", "# Z");
+    await write(
+      "docs/handbook/index.md",
+      "---\nchapters: [setup.md, examples/, overview.md]\n---\n# Handbook"
+    );
+    await write("docs/handbook/overview.md", "# Overview\n\n[Setup](setup.md)");
+    await write("docs/handbook/setup.md", "# Setup\n\n## First\n\n## Second");
+    await write("docs/handbook/02-extra.md", "# Extra");
+    await write("docs/handbook/10-last.md", "# Last");
+    await write(
+      "docs/handbook/examples/index.md",
+      "---\nchapters: [z.md, a.md]\n---\n# Examples"
+    );
+    await write("docs/handbook/examples/a.md", "# Example A");
+    await write("docs/handbook/examples/z.md", "# Example Z");
+    const { books } = await readLibrary(project, { locale: "en" });
+    expect(books.map((book: { id: string }) => book.id)).toEqual([
+      "_root",
+      "handbook",
+    ]);
+    expect(books[0].pages.map((page: { id: string }) => page.id)).toEqual([
+      "index",
+      "z",
+      "a",
+    ]);
+    expect(books[1].pages.map((page: { id: string }) => page.id)).toEqual([
+      "index",
+      "setup",
+      "setup",
+      "examples/index",
+      "examples/z",
+      "examples/a",
+      "overview",
+      "02-extra",
+      "10-last",
+    ]);
+    expect(books[1].pages[3].group).toBe("Examples");
+    expect(books[1].pages[6].links["setup.md"]).toBe("#/handbook/setup");
+  });
+
+  it.each([
+    "null",
+    "text",
+    "{}",
+    "[missing.md]",
+    "[a.md, a.md]",
+    "[nested, nested/]",
+    "[../a.md]",
+    "[nested/a.md]",
+    "[a.md/]",
+    "[assets/]",
+    "[7]",
+  ])(
+    "reports an unusable chapters setting with its index (%s)",
+    async (chapters) => {
+      await write(
+        "docs/book/index.md",
+        `---\nchapters: ${chapters}\n---\n# Book`
+      );
+      await write("docs/book/a.md", "# A");
+      await write("docs/book/nested/a.md", "# Nested A");
+      await expect(readLibrary(project, { locale: "en" })).rejects.toThrow(
+        "book/index.md: chapters"
+      );
+    }
+  );
+
+  it("does not let a loose-book index pull in a separate book", async () => {
+    await write(
+      "docs/index.md",
+      "---\nchapters: [handbook/]\n---\n# Loose pages"
+    );
+    await write("docs/handbook/index.md", "# Handbook");
+    await expect(readLibrary(project, { locale: "en" })).rejects.toThrow(
+      "index.md: chapters"
+    );
+  });
+
   it("lists category and publication date from the book index in the library", async () => {
     await write(
       "docs/notes/index.md",
