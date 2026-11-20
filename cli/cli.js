@@ -78,6 +78,11 @@ function serializedLibrary(library) {
   return new Map([
     ["library.json", json(library.manifest)],
     ...library.books.map((book) => [`books/${book.id}.json`, json(book)]),
+    ["search/library.json", json(library.searchBooks)],
+    ...library.searchBooks.map((book) => [
+      `search/books/${book.id}.json`,
+      json([book]),
+    ]),
   ]);
 }
 
