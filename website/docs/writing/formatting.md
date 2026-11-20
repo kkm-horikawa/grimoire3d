@@ -1,35 +1,204 @@
-# Formatting and Spell Mode
+---
+title: 記法と紙面の見本
+description: 引用、リスト、折りたたみ、数式、用語定義、コード、脚注の書き方と実際の見た目。
+---
+# 記法と紙面の見本
 
-Grimoire3D renders headings, lists, block quotes, links, **bold**, *italics*, ~~strikethrough~~, and `inline code`. Use a fenced code block for commands or snippets.
+記述例の直後に、同じMarkdownの実際の表示を載せています。H1が章のタイトル、H2が改ページ、H3がページ内の小見出しです。
 
-## Paper marks
-
-:underline[Underline a term], :highlight[highlight a phrase], or call something out in :red[red ink].
+## 強調と紙面の印
 
 ```markdown
-:underline[Underline a term]
-:highlight[highlight a phrase]
-:red[red ink]
+**太字**、*斜体*、~~取り消し線~~、`インラインコード`
+:underline[下線]、:highlight[マーカー]、:red[赤字]
 ```
 
-> [!WARNING]
-> Keep a copy of your Markdown and media when moving an existing library.
+**太字**、*斜体*、~~取り消し線~~、`インラインコード`
 
-Start a block quote with `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, or `[!CAUTION]` to create a callout.
+:underline[下線]、:highlight[マーカー]、:red[赤字]
 
-## Tables and matrices
+本文の明朝体を保ち、マーカーは淡い金色、赤字は落ち着いた朱色になります。
 
-Use GitHub Flavored Markdown table syntax. On a narrow page, the table scrolls horizontally and its first column stays visible for comparison.
+## 引用と出典
 
-| Format | Live preview | Static site | Inline control | Interaction | Content source |
-| --- | --- | --- | --- | --- | --- |
-| AVIF | Yes | Yes | Image | Read | Local or remote |
-| GIF | Yes | Yes | Image | Animate | Local or remote |
-| MP4 | Yes | Yes | Video | Play and seek | Local or remote |
-| Mermaid | Yes | Yes | Diagram | Zoom and pan | Markdown fence |
+```markdown
+> 私を殺さないものは、私を強くする。
+>
+> *— フリードリヒ・ニーチェ*
+```
 
-## Spell Mode
+> 私を殺さないものは、私を強くする。
+>
+> *— フリードリヒ・ニーチェ*
 
-Set `magicMode: true` in `grimoire.yml` to add a **Spell mode** toggle to the reader. After a page comes to rest, the marker draws a stroke that stays on the paper, bold letters lift and settle, and strikethrough draws across the words.
+細い金色の左罫線と余白で引用の範囲を示します。背景は付けません。出典は通常の斜体として書けます。引用の入れ子、リンク、複数段落も使えます。
 
-The effects play once each time the page comes into view, or when you enable Spell mode on an open page. The reader respects the device's reduced-motion setting.
+## 注記
+
+```markdown
+> [!NOTE]
+> 元のMarkdownと画像を保存してください。
+```
+
+> [!NOTE]
+> 元のMarkdownと画像を保存してください。
+
+通常の引用と違い、注記にはラベルと淡い背景が付きます。`[!TIP]`、`[!IMPORTANT]`、`[!WARNING]`、`[!CAUTION]` も対応します。ラベルの言語はサイトの `locale` に従います。
+
+## 箇条書きと番号付きリスト
+
+```markdown
+- 最初の項目
+  - 入れ子の補足
+- 次の項目
+
+9. 原稿を確認する
+10. サイトを公開する
+```
+
+- 最初の項目
+  - 入れ子の補足
+- 次の項目
+
+9. 原稿を確認する
+10. サイトを公開する
+
+点と番号は落ち着いた金色です。入れ子は白抜きの丸になり、折り返しは本文の先頭にそろいます。開始番号はMarkdownに従い、2桁も同じ字下げで読み進められます。
+
+## チェックリスト
+
+```markdown
+- [x] 原稿を書く
+- [ ] 公開する
+```
+
+- [x] 原稿を書く
+- [ ] 公開する
+
+小さな金色の枠とチェックで進捗を表示します。読者が画面で編集するものではなく、書き手がMarkdownの `[x]` を更新します。
+
+## 水平線
+
+```markdown
+前の話題。
+
+---
+
+次の話題。
+```
+
+前の話題。
+
+---
+
+次の話題。
+
+細い金色の罫線と中央の小さな菱形で、同じページ内の話題を区切ります。
+
+## 折りたたみ
+
+```html
+<details><summary>補足を開く</summary>
+
+**必要な人向けの説明**をここに書きます。
+
+</details>
+```
+
+<details><summary>補足を開く</summary>
+
+**必要な人向けの説明**をここに書きます。
+
+</details>
+
+三角印と見出しを押すと、字下げした補足が開きます。Tabで移動し、EnterまたはSpaceでも開閉できます。本文の前後に空行を入れるとMarkdownを使えます。最初から開く場合は `<details open>` にします。スクリプトやイベント属性は取り除かれます。
+
+## 数式
+
+```latex
+本文中の式 $E = mc^2$。
+
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+$$
+```
+
+本文中の式 $E = mc^2$。
+
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+$$
+
+`$...$` は本文の行内、`$$` の独立ブロックは中央に組版します。長い式は紙面内で横スクロールできます。公開HTMLにも数式を含めるため、JavaScriptを無効にしても読めます。
+
+## 用語定義リスト
+
+```markdown
+章
+: Markdownファイル単位のまとまり。
+
+ページ
+: H2で区切る紙面。
+```
+
+章
+: Markdownファイル単位のまとまり。
+
+ページ
+: H2で区切る紙面。
+
+用語を太字にし、説明を一段字下げします。用語集やAPIの言葉の説明に使えます。
+
+## コードの色分け
+
+````markdown
+```typescript
+const title: string = "Grimoire";
+console.log(title);
+```
+````
+
+```typescript
+const title: string = "Grimoire";
+console.log(title);
+```
+
+コードフェンスに言語名を書くと、キーワードはえんじ、文字列はオリーブ色など、紙面に合う控えめな配色になります。対応しない言語名はそのままのテキストで表示します。`mermaid` は従来どおり図になります。
+
+## 脚注
+
+```markdown
+元の資料を確認できます[^source]。
+
+[^source]: 原稿と一緒に保存した調査資料。
+```
+
+元の資料を確認できます[^source]。
+
+[^source]: 原稿と一緒に保存した調査資料。
+
+本文の小さな番号からページ末尾の注釈へ移動できます。注釈の「↩」から参照位置へ戻れます。H2でページを分けても、必要な脚注を同じページに表示します。
+
+## 表とリンク
+
+```markdown
+| 形式 | 表示 |
+| --- | --- |
+| Markdown | 本文 |
+| Mermaid | 図 |
+
+[メディアの例](./media.md)
+```
+
+| 形式 | 表示 |
+| --- | --- |
+| Markdown | 本文 |
+| Mermaid | 図 |
+
+[メディアの例](./media.md)
+
+狭いページでは表の中を横スクロールでき、先頭列は固定されます。章への相対リンクや見出しへのアンカーも使えます。
+
+## 超魔導モード
+
+`grimoire.yml` の `magicMode: true` で切り替えボタンを表示します。マーカーが引かれ、太字が浮き、取り消し線が描かれます。表示したページで一度再生し、端末の「動きを減らす」設定にも従います。
