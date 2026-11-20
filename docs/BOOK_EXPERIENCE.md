@@ -39,6 +39,12 @@ The [approved category and date controls](https://github.com/kkm-horikawa/grimoi
 
 The [approved custom artwork design](https://github.com/kkm-horikawa/grimoire3d/issues/35#long-title-with-a-portrait-image) reserves separate rows for the title and the image inside each cover. The title takes up to three lines and the image fits in the height below it.
 
+The [full-text search layouts](https://github.com/kkm-horikawa/grimoire3d/issues/57) show a dedicated library search and a separate search for the open book. On phones the reader trigger sits to the left of **Contents**. On wider screens it follows **Contents**. The [PR](https://github.com/kkm-horikawa/grimoire3d/pull/62) compares the approved designs with the browser at all three widths.
+
+The [image lightbox design](https://github.com/kkm-horikawa/grimoire3d/issues/58) puts zoom, fit, and close controls above the image. The [PR](https://github.com/kkm-horikawa/grimoire3d/pull/61) records the browser checks and comparisons.
+
+The [approved shelf plate](https://github.com/kkm-horikawa/grimoire3d/issues/59) is a Blender-rendered brass frame with two separate screw images. A category starts with a plate and two books on desktop; continuation rows hold three books. Phones put the plate above rows of two. The [PR](https://github.com/kkm-horikawa/grimoire3d/pull/63) shows long labels and the five-book layout. The [Blender source](../assets/shelf-plate/) is available for revisions.
+
 ## Browser verification
 
 The following checks were performed on November 19, 2026.

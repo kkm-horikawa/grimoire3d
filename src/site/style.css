@@ -1689,7 +1689,7 @@ output.book-count {
 }
 .volume-cover-content {
   position: absolute;
-  inset: 25% 23% 14% 19%;
+  inset: 17% 22% 14% 26%;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: clamp(4px, 2cqw, 8px);
@@ -1710,10 +1710,11 @@ output.book-count {
 
 .volume-title {
   position: absolute;
-  inset: 25% 23% auto 19%;
-  font-size: clamp(12px, 8.3cqw, 27px);
+  inset: 17% 22% auto 26%;
+  padding-block: 0.04em 0.12em;
+  font-size: clamp(11px, 7.2cqw, 26px);
   font-weight: 650;
-  line-height: 1.12;
+  line-height: 1.27;
   color: var(--cover-lettering, #f3d69d);
   text-shadow: var(--cover-title-shadow, 0 2px 2px #2d120c);
   word-break: normal;
