@@ -5,7 +5,7 @@ chapters: [formatting.md, media.md]
 ---
 # Writing Books
 
-Each folder directly under `docs/` becomes a book. Its Markdown files become chapters. Loose Markdown files directly in `docs/` share a separate book. Nested folders stay in the same book, with their `index.md` introducing each chapter group.
+Each folder directly under `docs/` becomes a book. Its Markdown files become chapters. Loose Markdown files directly in `docs/` share a separate book. Nested folders stay in the same book by default, with their `index.md` introducing each chapter group.
 
 ```text
 docs/
@@ -55,7 +55,18 @@ cover: teal
 
 ## Categories and publication dates
 
-Use the book's `index.md` front matter to group it with related books or give it a publication date.
+Use `category` in a book's `index.md` to place it with related books under a labeled shelf plate. The library also lets readers filter by category.
+
+To give a nested folder its own book, set `book: true` in that folder's `index.md`. For example, put the following in `docs/system/data/index.md` to move its chapters into **Data Models**. Give `docs/system/index.md` the same category to place both books on the **System** shelf.
+
+```markdown
+---
+book: true
+title: Data Models
+category: System
+---
+# Data Models
+```
 
 ```markdown
 ---

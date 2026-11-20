@@ -88,6 +88,41 @@ describe("Markdown in a project", () => {
     );
   });
 
+  it("keeps nested folders in the parent unless their index makes them separate books", async () => {
+    await write(
+      "docs/system/index.md",
+      "---\ncategory: System\n---\n# System Guide\n\n[Models](data/records.md#fields)"
+    );
+    await write("docs/system/notes/detail.md", "# Details");
+    await write(
+      "docs/system/data/index.md",
+      "---\nbook: true\ncategory: System\n---\n# Data Models"
+    );
+    await write(
+      "docs/system/data/records.md",
+      "# Records\n\n## Fields\n\n[Parent](../index.md)"
+    );
+    await write("docs/system/data/history/facts.md", "# Facts");
+    const library = await readLibrary(project, { locale: "en" });
+    expect(library.manifest.books).toMatchObject([
+      { id: "system", title: "System Guide", category: "System" },
+      { id: "_book-system--data", title: "Data Models", category: "System" },
+    ]);
+    expect(
+      library.documents.map(({ book, chapter }) => [book, chapter])
+    ).toEqual([
+      ["system", "index"],
+      ["system", "notes/detail"],
+      ["_book-system--data", "index"],
+      ["_book-system--data", "history/facts"],
+      ["_book-system--data", "records"],
+    ]);
+    expect(library.documents[0].links["data/records.md#fields"]).toBe(
+      "#/_book-system--data/records?anchor=fields"
+    );
+    expect(library.documents[4].links["../index.md"]).toBe("#/system/index");
+  });
+
   it("orders direct chapters and nested folders without changing routes or separate books", async () => {
     await write(
       "docs/index.md",

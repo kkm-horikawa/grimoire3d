@@ -8,6 +8,7 @@ import { coverOptions, selectCover } from "./cover-options.js";
 import { LibraryFooter } from "./library-footer.js";
 import { markdownOptions, rehypePlugins, remarkPlugins } from "./markup.js";
 import { readerPath, readLegacyRoute } from "./routes.js";
+import { ShelfPlate, shelfGroups } from "./shelf-groups.js";
 import { videoEmbed } from "./video-url.js";
 
 function escapeHtml(value) {
@@ -266,7 +267,11 @@ function assetNamed(assets, prefix, name, ext = ".avif") {
 }
 
 function staticShelf(site, prefix, assets, label) {
-  const books = site.books.slice(0, 12);
+  const categorized = site.books.some((book) => book.category);
+  const ordered = categorized
+    ? shelfGroups(site.books).flatMap((group) => group.books)
+    : site.books;
+  const books = ordered.slice(0, 12);
   // Enhance the entire bookshelf together when adding catalog controls or custom art.
   const reuseShelfArt = !site.books.some(
     (book) => book.category || book.date || book.coverImage
@@ -276,36 +281,46 @@ function staticShelf(site, prefix, assets, label) {
     finish.lettering
       ? `--cover-lettering:${finish.lettering};--cover-title-shadow:0 1px 1px #fbe9c6b0;`
       : "";
-  const covers = books
-    .map((book, index) => {
-      const finish = coverOptions[selectCover(book.id, book.cover)];
-      const cover = assets.find(
-        (file) =>
-          file.startsWith(`cover-${finish.base}-`) &&
-          !file.startsWith(`cover-${finish.base}-mobile-`) &&
-          file.endsWith(".avif")
-      );
-      const mobileCover = assetNamed(
-        assets,
-        prefix,
-        `cover-${finish.base}-mobile`
-      );
-      const style = `--cover-filter:${finish.filter};${titleStyle(finish)}`;
-      const face = renderToStaticMarkup(
-        element(BookCover, {
-          title: book.title,
-          src: cover && `${prefix}assets/${cover}`,
-          compact: mobileCover,
-          artwork: book.coverImage && prefix + book.coverImage.slice(2),
-          loading: index < 3 ? "eager" : "lazy",
+  function coverMarkup(book) {
+    const finish = coverOptions[selectCover(book.id, book.cover)];
+    const cover = assets.find(
+      (file) =>
+        file.startsWith(`cover-${finish.base}-`) &&
+        !file.startsWith(`cover-${finish.base}-mobile-`) &&
+        file.endsWith(".avif")
+    );
+    const mobileCover = assetNamed(
+      assets,
+      prefix,
+      `cover-${finish.base}-mobile`
+    );
+    const style = `--cover-filter:${finish.filter};${titleStyle(finish)}`;
+    const face = renderToStaticMarkup(
+      element(BookCover, {
+        title: book.title,
+        src: cover && `${prefix}assets/${cover}`,
+        compact: mobileCover,
+        artwork: book.coverImage && prefix + book.coverImage.slice(2),
+        loading: books.indexOf(book) < 3 ? "eager" : "lazy",
+      })
+    );
+    return `<div class="shelf-cell"><a class="volume" href="${prefix + escapeHtml(readerPath(book.id))}" aria-label="${escapeHtml(book.title)}" style="${style}">${face}</a></div>`;
+  }
+  const grid = (items) =>
+    `<div class="shelf-grid">${items.map(coverMarkup).join("")}</div>`;
+  const contents = categorized
+    ? shelfGroups(books)
+        .map((group) => {
+          const category =
+            group.category ??
+            (site.locale === "ja" ? "その他の本" : "Other books");
+          return `<section class="category-shelf shelf-grid" aria-label="${escapeHtml(category)}">${renderToStaticMarkup(element(ShelfPlate, { category }))}${group.books.map(coverMarkup).join("")}</section>`;
         })
-      );
-      return `<div class="shelf-cell"><a class="volume" href="${prefix + escapeHtml(readerPath(book.id))}" aria-label="${escapeHtml(book.title)}" style="${style}">${face}</a></div>`;
-    })
-    .join("");
+        .join("")
+    : `<div class="shelf-art"${reuseShelfArt ? " data-initial-shelf" : ""} aria-hidden="true"></div>${grid(books)}`;
   return `<main class="library"><header class="library-brand brand">${escapeHtml(site.title)}</header>
   <div class="library-heading${site.books.length > 6 ? " library-heading-sticky" : ""}"><h1>${label}</h1></div>
-  <div class="shelf resting-shelf${site.books.length > 6 ? " shelf-many" : ""}"${books.length >= 3 && books.length <= 4 ? ' data-mobile-rows="2"' : ""}><div class="shelf-art"${reuseShelfArt ? " data-initial-shelf" : ""} aria-hidden="true"></div><div class="shelf-grid">${covers}</div></div>
+  <div class="shelf ${categorized ? "shelf-categorized shelf-many" : `resting-shelf${site.books.length > 6 ? " shelf-many" : ""}`}"${!categorized && books.length >= 3 && books.length <= 4 ? ' data-mobile-rows="2"' : ""}>${contents}</div>
   ${site.books.length > 12 ? `<details><summary>${button}</summary>${linkList(site.books.map((book) => ({ title: book.title, href: prefix + readerPath(book.id) })))}</details>` : ""}
   ${renderToStaticMarkup(element(LibraryFooter, { publisher: site.footer }))}
   </main>`;
@@ -420,7 +435,8 @@ export async function writeStaticPages(
     if (!segments.length && site.shelf) {
       const alcove = assetNamed(assets, prefix, "alcove");
       const cabinet =
-        site.books.length === 3 || site.books.length === 4
+        !site.books.some((book) => book.category) &&
+        (site.books.length === 3 || site.books.length === 4)
           ? assetNamed(assets, prefix, "mobile-cabinet")
           : alcove;
       if (alcove)

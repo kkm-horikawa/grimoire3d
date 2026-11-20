@@ -1,0 +1,117 @@
+.shelf.shelf-categorized.shelf-many {
+  margin-top: 24px;
+  max-width: 1510px;
+  min-height: 0;
+  padding: clamp(64px, 8vw, 130px) clamp(24px, 6vw, 105px) 32px;
+  background: linear-gradient(90deg, #1d0c05, #57321e 47%, #251007);
+  border: 8px solid #5b321e;
+  border-radius: clamp(55px, 15vw, 230px) clamp(55px, 15vw, 230px) 20px 20px / clamp(66px, 9vw, 145px) clamp(66px, 9vw, 145px) 20px 20px;
+  box-shadow: inset 0 0 28px #150803, 0 22px 48px #11050b9c;
+}
+.shelf.shelf-categorized.shelf-many::before {
+  inset: 0 0 auto;
+  height: clamp(370px, 40vw, 630px);
+  border: 0;
+  box-shadow: none;
+  background: url("./art/alcove.avif") center top / 100% 100% no-repeat;
+  mask-image: linear-gradient(#000 67%, transparent 84%);
+}
+.shelf-categorized .category-shelf.shelf-grid {
+  --category-column-gap: clamp(14px, 3vw, 35px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px var(--category-column-gap);
+  padding-block: 14px 19px;
+}
+.shelf-categorized .shelf-cell {
+  width: 100%;
+  contain-intrinsic-size: auto 220px;
+}
+.shelf-categorized :is(.shelf-cell, .shelf-label-rail)::after {
+  position: absolute;
+  content: "";
+  inset: auto calc(var(--category-column-gap) / -2) -8px;
+  height: 13px;
+  border-radius: 0;
+  background: linear-gradient(#b2794c, #724320 29%, #4c2b18 70%, #29160c);
+  box-shadow: 0 5px 8px #1b0804;
+  pointer-events: none;
+}
+.shelf.shelf-categorized .volume {
+  width: min(100%, 235px);
+}
+.shelf-label-rail {
+  position: relative;
+  min-width: 0;
+  padding-top: clamp(18px, 3.4vw, 58px);
+}
+.shelf-plate {
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  width: fit-content;
+  min-width: min(100%, 8ch);
+  max-width: 100%;
+  margin: 0;
+  padding: 5px 15px;
+  border: 9.5px solid transparent;
+  border-image: url("./art/shelf-plate.webp") 32 fill / 9.5px stretch;
+  color: #ffe6ae;
+  font-size: clamp(17px, 1.45vw, 25px);
+  font-weight: 650;
+  line-height: 1.18;
+  text-align: center;
+  overflow-wrap: anywhere;
+  filter: drop-shadow(0 2px 2px #0a0402a6);
+}
+.shelf-plate::before,
+.shelf-plate::after {
+  position: absolute;
+  content: "";
+  width: 14px;
+  height: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.shelf-plate::before {
+  inset-inline-start: -3px;
+  background-image: url("./art/shelf-screw-left.webp?no-inline");
+}
+.shelf-plate::after {
+  inset-inline-end: -3px;
+  background-image: url("./art/shelf-screw-right.webp?no-inline");
+}
+@media (max-width: 699px) {
+  .shelf.shelf-categorized.shelf-many {
+    padding: 63px 14px 22px;
+  }
+  .shelf.shelf-categorized.shelf-many::before {
+    height: 435px;
+  }
+  .shelf-categorized .category-shelf.shelf-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 15px;
+    padding-block: 12px 15px;
+  }
+  .shelf-categorized .shelf-cell {
+    contain-intrinsic-size: auto 155px;
+  }
+  .shelf-label-rail {
+    grid-column: 1 / -1;
+    padding-top: 0;
+  }
+  .shelf-categorized .shelf-label-rail::after {
+    display: none;
+  }
+  .shelf-label-rail::before {
+    content: "";
+    position: absolute;
+    inset: calc(50% - 4px) 0 auto;
+    height: 10px;
+    border-radius: 2px;
+    background: linear-gradient(#aa7044, #663819 45%, #3c1d0f);
+    box-shadow: 0 3px 3px #1b0804;
+  }
+}
