@@ -26,7 +26,21 @@ Create `docs/field-notes/index.md`.
 This is my first 3D book.
 ```
 
-Add Markdown files in the same folder for more chapters. Add folders directly under `docs/` for more books.
+`docs` 直下の各フォルダが1冊、その中のMarkdownが章になります。`docs` 直下に並べたMarkdownは、まとめて別の1冊になります。入れ子のフォルダは同じ本の章グループです。
+
+```text
+docs/
+├── index.md                 # docs直下のMarkdownで1冊
+├── notes.md
+└── field-notes/              # 別の1冊
+    ├── index.md              # 本の導入・設定
+    ├── setup.md
+    └── examples/             # 同じ本の章グループ
+        ├── index.md
+        └── cli.md
+```
+
+各 `index.md` のYAMLに `chapters: [setup.md, examples/]` と書くと、導入の後を指定順に並べられます。未指定の章は後ろにファイル名順で続きます。本が7冊以上、またはカテゴリー・公開日を設定すると検索欄が表示されます。
 
 ```sh
 npx grimoire3d serve

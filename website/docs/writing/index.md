@@ -1,6 +1,7 @@
 ---
 cover: green
 description: Organize Markdown files into books with chapters, sections, and stable links.
+chapters: [formatting.md, media.md]
 ---
 # Writing Books
 
@@ -17,11 +18,34 @@ docs/
     └── v1.5.md
 ```
 
-Files directly in `docs/` share a book of their own. The bookshelf opens when the project has book folders.
+`docs` 直下のフォルダがそれぞれ1冊、その中のMarkdownが章になります。`docs` 直下のMarkdownはまとめて別の1冊になります。入れ子のフォルダは同じ本の章グループで、各 `index.md` がグループの導入です。
+
+```text
+docs/
+├── index.md              # docs直下のMarkdownで1冊
+├── notes.md
+└── handbook/             # 別の1冊
+    ├── index.md          # 本の導入
+    ├── setup.md
+    └── examples/         # handbook内のグループ
+        ├── index.md      # グループの導入
+        └── cli.md
+```
+
+本が7冊以上あるとタイトル検索が表示されます。カテゴリーまたは公開日を設定した本があれば、6冊以下でも検索欄を表示します。
 
 ## Chapters and sections
 
-Inside a book, `index.md` comes first. Other chapters follow in filename order, including files in subfolders. For a series such as release notes, keep separate version files in the same folder.
+`index.md` は各フォルダの先頭です。続く順番は、その `index.md` のYAMLで指定できます。
+
+```yaml
+chapters:
+  - setup.md
+  - examples/
+  - reference.md
+```
+
+指定した章・フォルダを先に並べ、未指定の項目は後ろにファイル名の自然順（`2` → `10`）で追加します。`chapters` を省略しても自然順です。フォルダ内は子の `index.md` に従います。対象は同じフォルダの直下だけで、別の本を取り込む指定はできません。存在しない項目・重複・直下以外のパスは、該当する `index.md` を示してビルドを止めます。ファイル名と章のURLは変わりません。
 
 Use H1 for the chapter title. An H2 opens a new page. When the first H2 immediately follows the chapter title, they share the first page. Use H3 for subheadings within a page. The table of contents groups H2 sections and their page numbers under each chapter.
 
