@@ -636,6 +636,20 @@ a {
   width: auto;
   margin: 1em auto;
 }
+.paper-image-open {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 3px;
+  cursor: zoom-in;
+}
+.paper-image-open:focus-visible {
+  outline: 2px solid #8a2d31;
+}
 .paper-table {
   container-type: inline-size;
   max-width: 100%;
@@ -2257,6 +2271,41 @@ html[data-initial-art="shelf"] body {
   max-width: none;
   object-fit: contain;
   user-select: none;
+}
+.image-lightbox {
+  width: min(1100px, 64vw);
+  height: min(64dvh, 650px);
+  padding: clamp(8px, 2vw, 24px);
+  border-color: #c58a53;
+  border-radius: 16px;
+  background: #2b1019;
+}
+.image-lightbox::backdrop {
+  background: #190a129c;
+}
+.image-lightbox .diagram-toolbar {
+  padding: 0 0 12px;
+  border-bottom: 1px solid #6a453d;
+}
+.image-lightbox .diagram-toolbar h2 {
+  flex: 1 1 11ch;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.image-lightbox .diagram-controls button {
+  border-color: #a27042;
+  border-radius: 10px;
+  color: #f5e4c7;
+}
+.image-lightbox .diagram-viewport {
+  margin-top: 12px;
+  background: transparent;
+}
+@media (max-width: 699px) {
+  .image-lightbox {
+    width: calc(100% - 16px);
+    height: 64dvh;
+  }
 }
 
 /* Keep Markdown ornamentation within the paper at every reading width. */

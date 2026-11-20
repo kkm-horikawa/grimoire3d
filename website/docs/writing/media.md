@@ -9,6 +9,8 @@ Use Markdown image syntax for still images, animated GIFs, and MP4 files. Resolv
 
 Use AVIF, WebP, PNG, JPEG, or GIF. Write an alt description inside the brackets.
 
+Click or tap an image in the reader to enlarge it. Zoom in to inspect details, choose **Fit** to see the whole image, or close the viewer to resume reading.
+
 ```markdown
 ![From Markdown to a static site](../assets/diagram.avif)
 ![The publishing flow in motion](../assets/publishing-flow.gif)
