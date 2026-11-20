@@ -121,6 +121,7 @@ export function readMarkdown(source) {
     : "";
   return {
     heading: headings.get(heading)?.title,
+    firstHeading: headings.values().next().value?.title,
     metadata: {
       cover:
         typeof metadata.cover === "string" ? metadata.cover.trim() : undefined,

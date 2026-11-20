@@ -140,8 +140,10 @@ function snapshot(library) {
   };
 }
 
-function serve(cwd, port, initial) {
+function serve(cwd, port, initial, docsDir) {
   let current = snapshot(initial);
+  let watchedDirectory = initial.docsDirectory;
+  let docsWatcher = watch(watchedDirectory, { recursive: true }, schedule);
   let timer;
   let changes = 0;
   const clients = new Set();
@@ -151,8 +153,18 @@ function serve(cwd, port, initial) {
   async function refresh() {
     const revision = ++changes;
     try {
-      const library = await readLibrary(cwd, await readSettings(cwd));
+      const library = await readLibrary(cwd, await readSettings(cwd), docsDir);
       if (revision !== changes) return;
+      if (library.docsDirectory !== watchedDirectory) {
+        const nextWatcher = watch(
+          library.docsDirectory,
+          { recursive: true },
+          schedule
+        );
+        docsWatcher.close();
+        docsWatcher = nextWatcher;
+        watchedDirectory = library.docsDirectory;
+      }
       current = snapshot(library);
       showIssues(library);
     } catch (error) {
@@ -166,12 +178,9 @@ function serve(cwd, port, initial) {
     clearTimeout(timer);
     timer = setTimeout(() => void refresh(), 140);
   }
-  const watchers = [
-    watch(join(cwd, "docs"), { recursive: true }, schedule),
-    watch(cwd, (_event, name) => {
-      if (name === "grimoire.yml") schedule();
-    }),
-  ];
+  const settingsWatcher = watch(cwd, (_event, name) => {
+    if (name === "grimoire.yml") schedule();
+  });
 
   const server = createServer(async (request, response) => {
     try {
@@ -285,7 +294,8 @@ function serve(cwd, port, initial) {
   });
   const stopWatchers = () => {
     clearTimeout(timer);
-    for (const watcher of watchers) watcher.close();
+    docsWatcher.close();
+    settingsWatcher.close();
   };
   server.on("error", (error) => {
     stopWatchers();
@@ -307,12 +317,13 @@ async function main() {
     options: {
       help: { type: "boolean", short: "h" },
       port: { type: "string" },
+      "docs-dir": { type: "string" },
       "out-dir": { type: "string" },
     },
   });
   if (!command || values.help) {
     console.log(
-      "grimoire3d serve [--port 3000]\ngrimoire3d build [--out-dir dist]"
+      "grimoire3d serve [--docs-dir docs] [--port 3000]\ngrimoire3d build [--docs-dir docs] [--out-dir dist]"
     );
     return;
   }
@@ -320,7 +331,8 @@ async function main() {
     throw new Error(`Unknown command: ${command}. See --help.`);
   const cwd = process.cwd();
   const settings = await readSettings(cwd);
-  const library = await readLibrary(cwd, settings);
+  const docsDir = values["docs-dir"];
+  const library = await readLibrary(cwd, settings, docsDir);
   showIssues(library);
   if (command === "build") {
     const output = await writeStaticSite(
@@ -341,7 +353,7 @@ async function main() {
         : "--port must be an integer from 0 to 65535."
     );
   }
-  serve(cwd, port, library);
+  serve(cwd, port, library, docsDir);
 }
 
 main().catch((error) => {

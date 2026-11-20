@@ -8,13 +8,21 @@ Turn Markdown into 3D books you can open and flip through in a browser.
 
 [Read the documentation](https://kkm-horikawa.github.io/grimoire3d/)
 
+## Quick start
+
+Run `npx grimoire3d serve` from your project directory and open the URL it prints. Grimoire3D looks for Markdown in the `docs/` folder directly under that directory by default. Existing Markdown works without a scaffold. See the [configuration guide](https://kkm-horikawa.github.io/grimoire3d/read/publishing/metadata/) when you want to customize the library.
+
+If your Markdown lives in `handbook/`, add `--docs-dir handbook` to either `serve` or `build`.
+
 ## Install
 
-Use a maintained Node.js 22, 24, or 26 release. Install Grimoire3D from npm in the project where you want to write your books. If the project has no `package.json`, run `npm init -y` first.
+Use a maintained Node.js 22, 24, or 26 release. To pin the CLI for your project, add it as a development dependency.
 
 ```sh
 npm install --save-dev grimoire3d
 ```
+
+For a global installation, run `npm install -g grimoire3d`, then use `grimo serve` or `grimo build`.
 
 ## Write and preview
 
@@ -27,6 +35,8 @@ This is my first 3D book.
 ```
 
 Each folder directly under `docs/` becomes a book, and its Markdown files become chapters. Loose Markdown files directly in `docs/` share a separate book. Nested folders form chapter groups within the same book.
+
+Books use the title or top-level heading in their `index.md`, then the first heading in their `README.md`. The default title is **Overview** for loose files and the folder name for each folder book.
 
 ```text
 docs/
