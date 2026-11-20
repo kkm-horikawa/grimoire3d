@@ -100,6 +100,32 @@ function Sheet({
     );
   }, [scrollToAnchor]);
 
+  function followFootnote(event: MouseEvent<HTMLElement>): void {
+    if (!(event.target instanceof Element)) return;
+    const link = event.target.closest<HTMLAnchorElement>(
+      "a[data-footnote-ref], a[data-footnote-backref]"
+    );
+    if (
+      !link ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    const id = decodeURIComponent(new URL(link.href).hash.slice(1));
+    const target = Array.from(
+      article.current?.querySelectorAll<HTMLElement>("[id]") ?? []
+    ).find((element) => element.id === id);
+    if (!target || !article.current) return;
+    event.preventDefault();
+    article.current.scrollTop +=
+      target.getBoundingClientRect().top -
+      article.current.getBoundingClientRect().top;
+    target.focus({ preventScroll: true });
+  }
+
   return (
     <div
       className={`book-sheet book-sheet--${side}`}
@@ -111,16 +137,20 @@ function Sheet({
       {page && (
         <>
           {page.preparedHtml !== undefined ? (
+            // biome-ignore lint/a11y/useKeyWithClickEvents: Native footnote links dispatch click for Enter; this delegates their navigation.
             <article
               ref={article}
+              onClick={followFootnote}
               aria-label={page.section?.title || page.title}
               className="page-text"
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: The static builder renders Markdown to escaped HTML with raw HTML disabled.
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: The static builder sanitizes author HTML before rendering trusted math and code markup.
               dangerouslySetInnerHTML={{ __html: page.preparedHtml }}
             />
           ) : (
+            // biome-ignore lint/a11y/useKeyWithClickEvents: Native footnote links dispatch click for Enter; this delegates their navigation.
             <article
               ref={article}
+              onClick={followFootnote}
               aria-label={page.section?.title || page.title}
               className="page-text"
             >
@@ -566,7 +596,7 @@ export function BookReader({
     if (
       event.target instanceof Element &&
       event.target.closest(
-        "a,button,input,select,textarea,video,iframe,pre,.paper-table,.paper-embed,[contenteditable]"
+        "a,button,summary,input,select,textarea,video,iframe,pre,.paper-table,.paper-embed,[contenteditable]"
       )
     )
       return;

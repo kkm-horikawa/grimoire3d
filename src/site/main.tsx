@@ -26,6 +26,7 @@ import {
   shelfHref,
 } from "./navigation";
 import { type Book, copy, type Library } from "./types";
+import "katex/dist/katex.min.css";
 import "./style.css";
 
 const BookReader = lazy(() =>

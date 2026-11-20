@@ -3,12 +3,10 @@ import { join } from "node:path";
 import { createElement as element } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import Markdown, { defaultUrlTransform } from "react-markdown";
-import remarkDirective from "remark-directive";
-import remarkGfm from "remark-gfm";
 import { BookCover } from "./book-cover.js";
 import { coverOptions, selectCover } from "./cover-options.js";
 import { LibraryFooter } from "./library-footer.js";
-import { remarkGrimoire } from "./markup.js";
+import { markdownOptions, rehypePlugins, remarkPlugins } from "./markup.js";
 import { readerPath, readLegacyRoute } from "./routes.js";
 import { videoEmbed } from "./video-url.js";
 
@@ -105,13 +103,14 @@ function markdownContent(page, locale, prefix, anchors = true) {
   const components = Object.fromEntries(
     ["h1", "h2", "h3", "h4", "h5", "h6"].map((tag) => [
       tag,
-      ({ node, children }) =>
+      ({ node, children, id, className }) =>
         element(
           tag,
           {
+            className,
             id: anchors
-              ? page.headingIds?.[node?.position?.start.offset]
-              : undefined,
+              ? (page.headingIds?.[node?.position?.start.offset] ?? id)
+              : id,
           },
           children
         ),
@@ -137,7 +136,9 @@ function markdownContent(page, locale, prefix, anchors = true) {
       Markdown,
       {
         components,
-        remarkPlugins: [remarkGfm, remarkDirective, [remarkGrimoire, locale]],
+        remarkPlugins: remarkPlugins(locale),
+        rehypePlugins: rehypePlugins(page),
+        remarkRehypeOptions: markdownOptions(locale),
         urlTransform(url) {
           let target = page.links[url];
           try {
@@ -316,7 +317,8 @@ function staticChapter({ site, book, page, prefix, assets, libraryLabel }) {
     book.pages.findIndex((sheet) => sheet.id === page.chapter)
   );
   const left = index % 2 === 0;
-  const paired = book.pages[index + (left ? 1 : -1)];
+  const neighbor = book.pages[index + (left ? 1 : -1)];
+  const paired = neighbor?.id !== page.chapter ? neighbor : undefined;
   const finish = selectCover(
     book.id,
     book.cover ?? (!site.shelf ? "red" : undefined)

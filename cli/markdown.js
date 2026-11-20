@@ -1,7 +1,7 @@
-import { fromMarkdown } from "mdast-util-from-markdown";
-import { gfmFromMarkdown } from "mdast-util-gfm";
-import { gfm } from "micromark-extension-gfm";
+import remarkParse from "remark-parse";
+import { unified } from "unified";
 import { parse } from "yaml";
+import { remarkPlugins } from "./markup.js";
 
 function textOf(node) {
   if (node.type === "image") return node.alt ?? "";
@@ -35,10 +35,7 @@ export function readMarkdown(source) {
   const metadata =
     raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
   const markdown = raw === metadata ? source.slice(front[0].length) : source;
-  const tree = fromMarkdown(markdown, {
-    extensions: [gfm()],
-    mdastExtensions: [gfmFromMarkdown()],
-  });
+  const tree = unified().use(remarkParse).use(remarkPlugins()).parse(markdown);
   const headings = new Map();
   const anchors = new Set();
   const urls = new Set();
@@ -63,8 +60,18 @@ export function readMarkdown(source) {
   );
   const boundaries = [{ start: 0 }];
   let hasChapterContent = false;
+  let detailsDepth = 0;
   for (const node of tree.children) {
-    if (node.type === "heading" && node.depth === 2) {
+    // Markdown headings inside an HTML disclosure belong to that disclosure.
+    if (node.type === "html") {
+      for (const tag of node.value
+        .replace(/<!--[\s\S]*?-->/g, "")
+        .matchAll(/<(\/?)details(?:\s[^>]*|)>/gi)) {
+        detailsDepth = Math.max(0, detailsDepth + (tag[1] ? -1 : 1));
+      }
+    }
+
+    if (node.type === "heading" && node.depth === 2 && detailsDepth === 0) {
       const section = headings.get(node);
       if (hasChapterContent) {
         boundaries.push({ start: node.position.start.offset, section });

@@ -58,6 +58,6 @@ npx grimoire3d build
 
 Deploy the contents of `dist/` to any static host, including Cloudflare Pages and GitHub Pages. Use `--out-dir site` to choose a different output directory.
 
-For chapter links, formatting, media, Mermaid, cover styles, locale, and SEO, see the [Grimoire3D documentation](https://kkm-horikawa.github.io/grimoire3d/).
+引用、リスト、チェックリスト、折りたたみ、数式、用語定義、コードの色分け、脚注に対応します。[記述例と実際の表示](https://kkm-horikawa.github.io/grimoire3d/read/writing/formatting/)と、[SEO・YAML設定例](https://kkm-horikawa.github.io/grimoire3d/read/publishing/metadata/)を公式ドキュメントで確認できます。
 
 [Contributing](CONTRIBUTING.md) · [MIT License](LICENSE)
