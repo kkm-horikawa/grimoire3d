@@ -276,6 +276,11 @@ function staticShelf(site, prefix, assets, label) {
   const reuseShelfArt = !site.books.some(
     (book) => book.category || book.date || book.coverImage
   );
+  const reserveSearch =
+    site.books.length <= 6 &&
+    !site.books.some((book) => book.category || book.date)
+      ? '<div class="library-tools library-tools-reserve" aria-hidden="true"></div>'
+      : "";
   const button = site.locale === "ja" ? "目録" : "Index";
   const titleStyle = (finish) =>
     finish.lettering
@@ -319,7 +324,7 @@ function staticShelf(site, prefix, assets, label) {
         .join("")
     : `<div class="shelf-art"${reuseShelfArt ? " data-initial-shelf" : ""} aria-hidden="true"></div>${grid(books)}`;
   return `<main class="library"><header class="library-brand brand">${escapeHtml(site.title)}</header>
-  <div class="library-heading${site.books.length > 6 ? " library-heading-sticky" : ""}"><h1>${label}</h1></div>
+  <div class="library-heading${site.books.length > 6 ? " library-heading-sticky" : ""}"><h1>${label}</h1>${reserveSearch}</div>
   <div class="shelf ${categorized ? "shelf-categorized shelf-many" : `resting-shelf${site.books.length > 6 ? " shelf-many" : ""}`}"${!categorized && books.length >= 3 && books.length <= 4 ? ' data-mobile-rows="2"' : ""}>${contents}</div>
   ${site.books.length > 12 ? `<details><summary>${button}</summary>${linkList(site.books.map((book) => ({ title: book.title, href: prefix + readerPath(book.id) })))}</details>` : ""}
   ${renderToStaticMarkup(element(LibraryFooter, { publisher: site.footer }))}

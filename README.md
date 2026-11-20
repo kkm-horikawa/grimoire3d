@@ -50,7 +50,9 @@ docs/
         └── cli.md
 ```
 
-Set `chapters: [setup.md, examples/]` in each folder's `index.md` front matter to choose what follows its introduction. Unlisted chapters follow in natural filename order. Title search appears with seven or more books, or whenever a book has a category or publication date.
+Set `chapters: [setup.md, examples/]` in each folder's `index.md` front matter to choose what follows its introduction. Unlisted chapters follow in natural filename order.
+
+Choose **Search text** in the library to search across books, or **Search this book** in the reader to search only the current book. Select a result to open the matching section. The **Find a book** title filter appears with seven or more books, or when a book has a category or publication date.
 
 ```sh
 npx grimoire3d serve

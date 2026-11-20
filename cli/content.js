@@ -187,6 +187,7 @@ function describeBook(pages, folder, fallback, configuredTitle) {
         metadata: page.metadata,
         hasTitle: Boolean(page.heading),
         excerpt: page.excerpt,
+        searchSections: page.searchSections,
         markdown: page.markdown,
         headingIds: page.headingIds,
         urls: page.urls,
@@ -448,6 +449,7 @@ export async function readLibrary(
   const summaries = [];
   const publishedBooks = [];
   const documents = [];
+  const searchBooks = [];
   for (const {
     id,
     title,
@@ -476,6 +478,17 @@ export async function readLibrary(
       }
     }
     summaries.push({ id, title, cover, category, date, coverImage: artwork });
+    searchBooks.push({
+      id,
+      title,
+      sections: chapters.flatMap((chapter) =>
+        chapter.searchSections.map((section) => ({
+          chapter: chapter.id,
+          title: chapter.title,
+          ...section,
+        }))
+      ),
+    });
     const pages = [];
     for (const chapter of chapters) {
       const {
@@ -539,6 +552,7 @@ export async function readLibrary(
     },
     books: publishedBooks,
     documents,
+    searchBooks,
     assets,
     issues: [...new Set(issues)].sort(sortNames),
   };

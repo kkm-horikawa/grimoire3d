@@ -1,3 +1,5 @@
+import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic";
+import { toText } from "hast-util-to-text";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
 import { parse } from "yaml";
@@ -20,6 +22,52 @@ function headingSlug(title) {
 
 function isDefinition(node) {
   return node.type === "definition" || node.type === "footnoteDefinition";
+}
+
+function searchableText(node) {
+  if (node.type === "html")
+    return toText(fromHtmlIsomorphic(node.value, { fragment: true }));
+  if (node.type === "image") return node.alt ?? "";
+  if (node.value !== undefined) return node.value;
+  if (node.type === "break") return " ";
+  const separator = [
+    "paragraph",
+    "heading",
+    "emphasis",
+    "strong",
+    "delete",
+    "link",
+    "textDirective",
+  ].includes(node.type)
+    ? ""
+    : " ";
+  return node.children?.map(searchableText).join(separator) ?? "";
+}
+
+function searchableSections(nodes, headings, chapterHeading) {
+  let heading;
+  let blocks = [];
+  const sections = [];
+  function addSection() {
+    const text = blocks.join(" ").replace(/\s+/g, " ").trim().normalize("NFC");
+    if (heading || text || !sections.length) {
+      sections.push({ anchor: heading?.id, heading: heading?.title, text });
+    }
+    blocks = [];
+  }
+  for (const node of nodes) {
+    if (node === chapterHeading || node.type === "definition") continue;
+    const current = headings.get(node);
+    if (current) {
+      addSection();
+      heading = current;
+    } else {
+      const text = searchableText(node);
+      if (text.trim()) blocks.push(text);
+    }
+  }
+  addSection();
+  return sections;
 }
 
 export function readMarkdown(source) {
@@ -149,6 +197,7 @@ export function readMarkdown(source) {
           : undefined,
     },
     excerpt: [...excerpt].slice(0, 170).join(""),
+    searchSections: searchableSections(tree.children, headings, heading),
     markdown,
     headingIds: Object.fromEntries(
       headingOffsets.map(({ offset, id }) => [offset, id])

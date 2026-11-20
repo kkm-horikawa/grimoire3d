@@ -31,6 +31,7 @@ import {
   turnFaces,
 } from "./pageTurn";
 import { readFrame } from "./projection";
+import { SearchControl } from "./SearchControl";
 import { playSpellInk } from "./spellInk";
 import {
   type Book,
@@ -622,16 +623,30 @@ export function BookReader({
   const rightIndex = wide ? start + 1 : start;
   const right = pages[rightIndex];
   const rightNumber = rightIndex + 1;
+  const searchControl = (
+    <SearchControl key="search" text={text} book={book} disabled={!!turnPlan} />
+  );
+  const contentsControl = (
+    <button
+      key="contents"
+      type="button"
+      ref={contentsButton}
+      className="contents-button"
+      aria-haspopup="dialog"
+      disabled={!!turnPlan}
+      onClick={() => setOpened(true)}
+    >
+      <List size={22} aria-hidden />
+      {text.contents}
+    </button>
+  );
   return (
     <main
       tabIndex={-1}
       data-magic={magic || undefined}
       className={`reader ${opened ? "reader--catalog" : ""}`}
     >
-      <header
-        className="reader-header"
-        data-magic-control={library.magicMode || undefined}
-      >
+      <header className="reader-header reader-header--search">
         {library.shelf ? (
           <a href={shelfHref} className="brand" onClick={onReturn}>
             <ChevronLeft size={23} aria-hidden />
@@ -643,27 +658,21 @@ export function BookReader({
             {library.title}
           </span>
         )}
-        {library.magicMode && (
-          <button
-            className="magic-mode"
-            type="button"
-            aria-pressed={magic}
-            onClick={() => setMagic(!magic)}
-          >
-            <Sparkles size={18} aria-hidden /> {text.magic}
-          </button>
-        )}
-        <button
-          type="button"
-          ref={contentsButton}
-          className="contents-button"
-          aria-haspopup="dialog"
-          disabled={!!turnPlan}
-          onClick={() => setOpened(true)}
-        >
-          <List size={22} aria-hidden />
-          {text.contents}
-        </button>
+        <div className="reader-actions">
+          {library.magicMode && (
+            <button
+              className="magic-mode"
+              type="button"
+              aria-pressed={magic}
+              onClick={() => setMagic(!magic)}
+            >
+              <Sparkles size={18} aria-hidden /> {text.magic}
+            </button>
+          )}
+          {wide
+            ? [contentsControl, searchControl]
+            : [searchControl, contentsControl]}
+        </div>
       </header>
       <div
         className="reader-stage"

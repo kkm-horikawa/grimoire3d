@@ -32,4 +32,6 @@ Add `docs/01-setup.md` to write another chapter. To create a bookshelf, put each
 
 Choose a cover to open its book. Use the arrows on screen or the Left and Right arrow keys to turn the page. On a phone, swipe left for the next page or right for the previous one.
 
-Open **Contents** to jump to a chapter or section. Long pages scroll vertically within the paper. In a large library, use the title search or switch from **Shelves** to **Index**.
+Open **Contents** to jump to a chapter or section. Long pages scroll vertically within the paper. In a large library, use **Find a book** or switch from **Shelves** to **Index**.
+
+Choose **Search text** in the library to search across all books, or **Search this book** in the reader to search the current book. Select a result to open the matching section.
