@@ -1701,7 +1701,7 @@ output.book-count {
 }
 .volume-cover-content {
   position: absolute;
-  inset: 17% 22% 14% 26%;
+  inset: 17% 20% 14% 24%;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: clamp(4px, 2cqw, 8px);
@@ -1721,17 +1721,20 @@ output.book-count {
 }
 
 .volume-title {
+  /* Fit ~9 full-width CJK characters per line inside the inner gold frame
+     without mid-word balanced splits. */
   position: absolute;
-  inset: 17% 22% auto 26%;
+  inset: 17% 20% auto 24%;
   padding-block: 0.04em 0.12em;
-  font-size: clamp(11px, 7.2cqw, 26px);
+  font-size: clamp(9.5px, 5.7cqw, 24px);
   font-weight: 650;
   line-height: 1.27;
+  letter-spacing: -0.02em;
   color: var(--cover-lettering, #f3d69d);
   text-shadow: var(--cover-title-shadow, 0 2px 2px #2d120c);
   word-break: normal;
+  word-break: auto-phrase;
   overflow-wrap: break-word;
-  text-wrap: balance;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
