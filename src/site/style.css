@@ -667,11 +667,16 @@ a {
 }
 .paper-table :is(th, td) {
   /* A whole column must fit beside the pinned first column when scrolled. */
-  max-width: min(24ch, calc(100cqi - var(--first-column-limit)));
+  max-width: min(36ch, calc(100cqi - var(--first-column-limit)));
   overflow-wrap: anywhere;
   padding: 0.28em 0.48em;
   border-right: 1px solid #af865c;
   border-bottom: 1px solid #af865c;
+}
+.paper-table th {
+  /* Keep column headers on one line so labels never wrap mid-word. */
+  max-width: none;
+  white-space: nowrap;
 }
 .paper-table tr:first-child > th {
   border-top: 1px solid #af865c;
@@ -679,6 +684,9 @@ a {
 .paper-table tr > :first-child {
   max-width: min(24ch, var(--first-column-limit));
   border-left: 1px solid #af865c;
+}
+.paper-table tr > th:first-child {
+  max-width: none;
 }
 .paper-table[data-overflow] tr > :first-child {
   position: sticky;
