@@ -114,6 +114,9 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
       "utf8"
     );
     expect(cover).toContain("../../../read/notes/guide/#publish");
+    expect(cover).toContain(
+      '<a class="turn-button" href="../../../read/notes/guide/" aria-label="次のページ">'
+    );
     const book = await readFile(
       join(root, "site/read/notes/index.html"),
       "utf8"
@@ -197,3 +200,41 @@ it.each([
     }
   }
 );
+
+it("omits the first h2 anchor on static next-page links to a chapter opening", async () => {
+  const root = await mkdtemp(join(tmpdir(), "grimoire-turn-anchor-"));
+  try {
+    await mkdir(join(root, "docs/book"), { recursive: true });
+    await mkdir(join(root, "template"));
+    await writeFile(
+      join(root, "template/index.html"),
+      '<html lang="ja"><head><title>Default</title></head><body><div id="root"></div></body></html>'
+    );
+    await writeFile(
+      join(root, "docs/book/index.md"),
+      "---\nchapters:\n  - chapter.md\n---\n# Book\n\nCover."
+    );
+    await writeFile(
+      join(root, "docs/book/chapter.md"),
+      "# Chapter 1\n\n## First\n\nOpening text.\n\n## Second\n\nSecond page."
+    );
+    const library = await readLibrary(root, { locale: "ja" });
+    await writeStaticPages(join(root, "template"), join(root, "site"), library);
+    const cover = await readFile(
+      join(root, "site/read/book/index/index.html"),
+      "utf8"
+    );
+    const chapter = await readFile(
+      join(root, "site/read/book/chapter/index.html"),
+      "utf8"
+    );
+    expect(cover).toContain(
+      '<a class="turn-button" href="../../../read/book/chapter/" aria-label="次のページ">'
+    );
+    expect(chapter).toContain(
+      '<a class="turn-button" href="../../../read/book/chapter/#second" aria-label="次のページ">'
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

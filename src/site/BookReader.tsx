@@ -26,6 +26,7 @@ import { bookHref, initialPaper, navigate, shelfHref } from "./navigation";
 import { captureInk } from "./pageInk";
 import {
   type PreparedTurn,
+  pageTurnAnchor,
   planPageTurn,
   spreadStart,
   turnFaces,
@@ -61,6 +62,33 @@ function useMedia(query: string): boolean {
   return enabled;
 }
 
+function offsetFromRoot(element: HTMLElement): number {
+  let top = 0;
+  let node: HTMLElement | null = element;
+  while (node) {
+    top += node.offsetTop;
+    const parent: HTMLElement | null =
+      node.offsetParent instanceof HTMLElement ? node.offsetParent : null;
+    if (parent) top += parent.clientTop;
+    node = parent;
+  }
+  return top;
+}
+
+/**
+ * Measures an element's vertical offset inside a scroll container in layout
+ * pixels so 3D page-entry transforms do not skew scrollTop.
+ */
+export function layoutOffsetTop(
+  target: HTMLElement,
+  container: HTMLElement
+): number {
+  return Math.max(
+    0,
+    offsetFromRoot(target) - offsetFromRoot(container) - container.clientTop
+  );
+}
+
 function Sheet({
   page,
   number,
@@ -88,9 +116,7 @@ function Sheet({
     ).find((element) => element.id === anchor);
     if (target) {
       // Scroll the paper without shifting the surrounding book.
-      article.current.scrollTop =
-        target.getBoundingClientRect().top -
-        article.current.getBoundingClientRect().top;
+      article.current.scrollTop = layoutOffsetTop(target, article.current);
     }
   }, [anchor]);
   useLayoutEffect(() => scrollToAnchor(), [scrollToAnchor]);
@@ -121,9 +147,7 @@ function Sheet({
     ).find((element) => element.id === id);
     if (!target || !article.current) return;
     event.preventDefault();
-    article.current.scrollTop +=
-      target.getBoundingClientRect().top -
-      article.current.getBoundingClientRect().top;
+    article.current.scrollTop = layoutOffsetTop(target, article.current);
     target.focus({ preventScroll: true });
   }
 
@@ -570,15 +594,18 @@ export function BookReader({
         )
       )
         return;
-      const target =
+      const targetIndex =
         event.key === "ArrowLeft"
-          ? pages[previous]
+          ? previous
           : event.key === "ArrowRight"
-            ? pages[following]
-            : undefined;
+            ? following
+            : -1;
+      const target = pages[targetIndex];
       if (!target) return;
       event.preventDefault();
-      navigate(bookHref(book.id, target.id, target.section?.id));
+      navigate(
+        bookHref(book.id, target.id, pageTurnAnchor(pages, targetIndex))
+      );
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -611,8 +638,12 @@ export function BookReader({
     const x = event.clientX - start.x;
     const y = event.clientY - start.y;
     if (Math.abs(x) < 48 || Math.abs(x) <= 1.4 * Math.abs(y)) return;
-    const target = pages[x < 0 ? following : previous];
-    if (target) navigate(bookHref(book.id, target.id, target.section?.id));
+    const targetIndex = x < 0 ? following : previous;
+    const target = pages[targetIndex];
+    if (target)
+      navigate(
+        bookHref(book.id, target.id, pageTurnAnchor(pages, targetIndex))
+      );
   }
 
   function confirmClose(): void {
@@ -789,7 +820,7 @@ export function BookReader({
             href={bookHref(
               book.id,
               pages[previous].id,
-              pages[previous].section?.id
+              pageTurnAnchor(pages, previous)
             )}
             aria-label={text.previous}
             aria-disabled={!!turnPlan}
@@ -824,7 +855,7 @@ export function BookReader({
             href={bookHref(
               book.id,
               pages[following].id,
-              pages[following].section?.id
+              pageTurnAnchor(pages, following)
             )}
             aria-label={text.next}
             aria-disabled={!!turnPlan}
