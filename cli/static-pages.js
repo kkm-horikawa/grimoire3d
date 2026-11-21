@@ -347,14 +347,17 @@ function staticChapter({ site, book, page, prefix, assets, libraryLabel }) {
   const background = assetNamed(assets, prefix, `resting-${finish}`);
   const label = site.locale === "ja" ? "目次" : "Contents";
   const magic = site.locale === "ja" ? "超魔導" : "Spell mode";
-  const previous = book.pages[index - 1];
-  const next = book.pages[index + 1];
-  function linkTo(sheet, symbol, alt) {
+  function linkTo(targetIndex, symbol, alt) {
+    const sheet = book.pages[targetIndex];
+    const isChapterStart =
+      targetIndex === 0 || book.pages[targetIndex - 1]?.id !== sheet?.id;
     const path =
       sheet &&
       prefix +
         readerPath(book.id, sheet.id) +
-        (sheet.section ? `#${encodeURIComponent(sheet.section.id)}` : "");
+        (!isChapterStart && sheet.section
+          ? `#${encodeURIComponent(sheet.section.id)}`
+          : "");
     return path
       ? `<a class="turn-button" href="${escapeHtml(path)}" aria-label="${alt}">${symbol}</a>`
       : `<button class="turn-button" disabled aria-label="${alt}">${symbol}</button>`;
@@ -374,9 +377,9 @@ function staticChapter({ site, book, page, prefix, assets, libraryLabel }) {
       ${paired ? `<div class="book-sheet book-sheet--${left ? "right" : "left"} static-neighbor"><article class="page-text">${markdownContent(paired, site.locale, prefix, false)}</article><span class="folio-number" aria-hidden="true">${index + (left ? 2 : 0)}</span></div>` : ""}
     </div>
     <nav class="reader-pagination" aria-label="${label}">
-      ${linkTo(previous, "‹", site.locale === "ja" ? "前のページ" : "Previous page")}
+      ${linkTo(index - 1, "‹", site.locale === "ja" ? "前のページ" : "Previous page")}
       <div class="reading-position"><span>${escapeHtml(page.title)}</span><span>${index + 1} / ${book.pages.length}</span></div>
-      ${linkTo(next, "›", site.locale === "ja" ? "次のページ" : "Next page")}
+      ${linkTo(index + 1, "›", site.locale === "ja" ? "次のページ" : "Next page")}
     </nav>
   </main>`;
 }

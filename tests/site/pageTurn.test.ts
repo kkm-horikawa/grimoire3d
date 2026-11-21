@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { planPageTurn, spreadStart } from "../../src/site/pageTurn";
+import {
+  pageTurnAnchor,
+  planPageTurn,
+  spreadStart,
+} from "../../src/site/pageTurn";
 
 describe("turning one physical leaf", () => {
   it("turns page 2 with page 3 printed on its reverse", () => {
@@ -53,5 +57,20 @@ describe("turning one physical leaf", () => {
     });
     expect(backward).toMatchObject({ direction: -1, to: 0 });
     expect(backward?.panels).toEqual(forward?.panels);
+  });
+
+  it("omits the first heading anchor when turning to a chapter opening page", () => {
+    const pages = [
+      { id: "index", section: { id: "intro" } },
+      { id: "chapter-1", section: { id: "first-section" } },
+      { id: "chapter-1", section: { id: "second-section" } },
+      { id: "chapter-2", section: { id: "another-first" } },
+    ];
+    expect(pageTurnAnchor(pages, -1)).toBeUndefined();
+    expect(pageTurnAnchor(pages, 0)).toBeUndefined();
+    expect(pageTurnAnchor(pages, 1)).toBeUndefined();
+    expect(pageTurnAnchor(pages, 2)).toBe("second-section");
+    expect(pageTurnAnchor(pages, 3)).toBeUndefined();
+    expect(pageTurnAnchor(pages, 4)).toBeUndefined();
   });
 });

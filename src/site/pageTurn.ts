@@ -22,6 +22,22 @@ export function spreadStart(index: number, wide: boolean): number {
   return wide ? Math.floor(index / 2) * 2 : index;
 }
 
+/**
+ * Returns the section anchor needed to address a page when turning leaves.
+ *
+ * A chapter's opening sheet already resolves from the chapter id alone, so
+ * omitting its first heading anchor keeps page turns at the top of the h1.
+ */
+export function pageTurnAnchor(
+  pages: readonly { id: string; section?: { id: string } }[],
+  index: number
+): string | undefined {
+  const target = pages[index];
+  if (!target) return undefined;
+  const isChapterStart = index === 0 || pages[index - 1]?.id !== target.id;
+  return isChapterStart ? undefined : target.section?.id;
+}
+
 export function planPageTurn(from: number, to: number): TurnPlan | null {
   const source = spreadStart(from, true);
   const destination = spreadStart(to, true);
