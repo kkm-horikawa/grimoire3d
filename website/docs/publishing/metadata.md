@@ -20,7 +20,9 @@ Both `serve` and `build` read `docs/` directly under the working directory by de
 
 ## Library footer
 
-Set `footer.label` to show a publisher, team, or project name at the end of the bookshelf and index. Set `footer.url` to link that name to an absolute HTTP(S) address. Omit the URL for a plain label. The footer also links to the Grimoire3D repository.
+Set `footer.label` to show a publisher, team, or project name at the end of the bookshelf and index. Set `footer.url` to link that name to an absolute HTTP(S) address or a safe relative path such as `/` or `../`. Omit the URL for a plain label. The footer also links to the Grimoire3D repository.
+
+To publish multiple separate bookshelves from one `grimoire.yml`, see [Multiple bookshelves (Library Hall)](./shelves.md).
 
 ## Titles and social cards
 

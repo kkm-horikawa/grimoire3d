@@ -549,8 +549,8 @@ a {
   color: var(--ink);
   top: 18.1%;
   height: 59%;
-  font-size: clamp(16px, 1.47vw, 26px);
-  line-height: 1.43;
+  font-size: clamp(13px, 0.95vw, 17px);
+  line-height: 1.48;
 }
 .book-sheet--left {
   left: 22.05%;
@@ -576,15 +576,15 @@ a {
 }
 .page-text h1 {
   margin: 0 0 0.82em;
-  font-size: clamp(25px, 2.6vw, 46px);
-  line-height: 1.08;
+  font-size: clamp(19px, 1.75vw, 31px);
+  line-height: 1.14;
   font-style: italic;
   font-weight: 700;
 }
 .page-text h2 {
   margin: 1em 0 0.6em;
-  font-size: clamp(18px, 1.55vw, 30px);
-  line-height: 1.18;
+  font-size: clamp(15px, 1.15vw, 20px);
+  line-height: 1.24;
 }
 .page-text h3,
 .page-text h4,
@@ -1194,7 +1194,7 @@ output.book-count {
 }
 @media (min-width: 700px) and (max-width: 1500px) {
   .book-sheet {
-    font-size: clamp(16px, 1.57vw, 23.5px);
+    font-size: clamp(13px, 1.02vw, 16px);
   }
   .book-sheet--left {
     left: 20.17%;
@@ -1205,7 +1205,7 @@ output.book-count {
     width: 26.5%;
   }
   .book-sheet--left .page-text h1 {
-    font-size: clamp(25px, 2.82vw, 42px);
+    font-size: clamp(19px, 1.85vw, 28px);
   }
   .book-sheet--left .page-text .page-running-head {
     font-size: 0.715em;
@@ -1217,11 +1217,11 @@ output.book-count {
     margin-top: 1.15em;
   }
   .reader-stage .book-sheet--right .page-text > h1:first-child {
-    font-size: clamp(25px, 2.69vw, 40px);
+    font-size: clamp(19px, 1.75vw, 27px);
     margin-top: 0.95em;
   }
   .book-sheet--right .page-text h2 {
-    font-size: clamp(18px, 1.63vw, 24.5px);
+    font-size: clamp(15px, 1.15vw, 18.5px);
   }
   .book-sheet--right .page-text > p {
     font-size: 0.955em;
@@ -1500,7 +1500,7 @@ output.book-count {
     margin-bottom: 1.95em;
   }
   .reader .book-sheet--left .page-text h1 {
-    font-size: 46px;
+    font-size: 31px;
     margin-bottom: 1.23em;
   }
   .book-sheet--left .page-text > p:has(> img:only-child) {
@@ -1584,10 +1584,14 @@ output.book-count {
     padding-top: min(6.45vh, 69px);
   }
   .catalog-header h2 {
-    font-size: clamp(30px, 3.1vw, 49px);
+    font-size: clamp(21px, 2.15vw, 33px);
+  }
+  .catalog-pages {
+    font-size: clamp(13.5px, 1vw, 16px);
   }
   .catalog-pages a {
-    min-height: clamp(44px, 5vh, 52px);
+    min-height: clamp(34px, 3.8vh, 42px);
+    padding: 6px var(--folio-padding) 6px 14px;
   }
 }
 @media (min-width: 700px) and (max-width: 1500px) {
@@ -1642,17 +1646,57 @@ output.book-count {
 }
 
 @media (min-width: 700px) {
+.reader .reader-header {
+  top: 10px;
+}
+.reader .brand {
+  min-height: 36px;
+  gap: 9px;
+  font-size: clamp(13px, 1.05vw, 17px);
+}
+.reader .contents-button {
+  min-height: 36px;
+  gap: 7px;
+  font-size: clamp(13px, 1vw, 16px);
+}
+.reader .reader-search-button,
+.reader .magic-mode {
+  min-height: 36px;
+  padding-inline: 12px;
+  font-size: clamp(12.5px, 0.92vw, 14.5px);
+}
+.reader .reader-header svg {
+  width: 1.15em;
+  height: 1.15em;
+}
+.reader-pagination {
+  column-gap: clamp(12px, 3vw, 60px);
+  width: min(calc(100% - 26px), clamp(280px, 28vw, 460px));
+}
+.turn-button {
+  width: clamp(34px, 2.7vw, 46px);
+  height: clamp(34px, 2.7vw, 46px);
+  border-radius: 9px;
+}
+.turn-button svg {
+  width: 1.25em;
+  height: 1.25em;
+}
+.reading-position {
+  font-size: clamp(13px, 1.15vw, 19px);
+  line-height: 1.12;
+}
 .reader-stage[data-frame="reading"] {
-  --read-padding-x: clamp(23px, 2.8vw, 52px);
-  --read-padding-y: clamp(22px, 3.3vh, 40px);
-  --read-padding-top: calc(var(--read-padding-y) - 8px);
+  --read-padding-x: clamp(20px, 2.3vw, 40px);
+  --read-padding-y: clamp(18px, 2.6vh, 32px);
+  --read-padding-top: calc(var(--read-padding-y) - 6px);
   width: 100%;
-  height: calc(100svh - clamp(115px, 12vh, 144px));
+  height: calc(100svh - clamp(96px, 10.5vh, 120px));
   min-height: 225px;
   aspect-ratio: auto;
 }
 .reader-stage[data-frame="reading"] ~ .reader-pagination {
-  bottom: clamp(7px, 1.15vh, 13px);
+  bottom: clamp(8px, 1.2vh, 14px);
 }
 .reader-stage[data-frame="reading"] .book-fallback {
   inset: 50% auto auto 50%;
@@ -1664,7 +1708,8 @@ output.book-count {
   top: calc(50% - var(--read-paper-height, 75vh) / 2 + var(--read-padding-top));
   height: calc(var(--read-paper-height, 75vh) - var(--read-padding-top) - var(--read-padding-y));
   width: calc(var(--read-paper-width, 86vw) / 2 - var(--read-padding-x) * 2);
-  font-size: clamp(17px, 1.31vw, 23px);
+  font-size: clamp(13.5px, 0.95vw, 16px);
+  line-height: 1.48;
 }
 .reader-stage[data-frame="reading"] .book-sheet--left {
   left: calc(50% - var(--read-paper-width, 86vw) / 2 + var(--read-padding-x));
@@ -1678,10 +1723,19 @@ output.book-count {
 .reader-stage[data-frame="reading"] .page-running-head {
   display: none;
 }
+.reader-stage[data-frame="reading"] .book-sheet .page-text h1 {
+  font-size: clamp(19px, 1.55vw, 27px);
+  line-height: 1.16;
+}
+.reader-stage[data-frame="reading"] .book-sheet .page-text h2 {
+  font-size: clamp(16px, 1.15vw, 20px);
+  line-height: 1.24;
+}
 .reader-stage[data-frame="reading"] .book-sheet .page-text > :is(h1, h2):first-child,
 .reader-stage[data-frame="reading"] .book-sheet .page-running-head + :is(h1, h2) {
   margin-block: 0 0.6em;
-  font-size: clamp(28px, 2.35vw, 44px);
+  font-size: clamp(20px, 1.65vw, 30px);
+  line-height: 1.18;
 }
 .reader-stage[data-frame="reading"] .book-sheet .page-text > p {
   max-width: none;
@@ -1690,6 +1744,10 @@ output.book-count {
 .reader-stage[data-frame="reading"] .book-sheet .page-text pre,
 .reader-stage[data-frame="reading"] .book-sheet .page-text p + pre {
   margin-block: 0.8em 1em;
+  font-size: max(12px, 0.84em);
+}
+.reader-stage[data-frame="reading"] .folio-number {
+  font-size: max(11px, 0.78em);
 }
 
 }
@@ -2049,7 +2107,7 @@ output.book-count {
 }
 
 .static-reader .reader-stage {
-  --read-stage-height: calc(100svh - clamp(115px, 12vh, 144px));
+  --read-stage-height: calc(100svh - clamp(96px, 10.5vh, 120px));
   --read-paper-width: min(86vw, calc(var(--read-stage-height) * 2.2));
   --read-paper-height: min(calc(var(--read-stage-height) * .88), 82vw);
 }
