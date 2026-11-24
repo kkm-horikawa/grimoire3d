@@ -142,4 +142,30 @@ describe("library categories and publication dates", () => {
       "News notes",
     ]);
   });
+
+  it.each([
+    ["3 uncategorized books", 3, false, "shelf resting-shelf"],
+    ["5 uncategorized books", 5, false, "shelf resting-shelf"],
+    ["8 uncategorized books", 8, false, "shelf resting-shelf"],
+    ["categorized books", 4, true, "shelf shelf-categorized"],
+  ])(
+    "uses uniform shelf classes without count-based size divergence for %s",
+    (_label, count, categorized, expectedClass) => {
+      const books: BookSummary[] = Array.from(
+        { length: count },
+        (_, index) => ({
+          id: `book-${index + 1}`,
+          title: `Book ${index + 1}`,
+          ...(categorized
+            ? { category: index < 2 ? "Guides" : "Reference" }
+            : {}),
+        })
+      );
+      const { container } = render(<Demo books={books} />);
+      const shelf = container.querySelector(".shelf");
+      expect(shelf).not.toBeNull();
+      expect(shelf?.className).toBe(expectedClass);
+      expect(shelf?.hasAttribute("data-mobile-rows")).toBe(false);
+    }
+  );
 });
