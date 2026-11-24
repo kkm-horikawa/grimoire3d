@@ -325,7 +325,7 @@ function staticShelf(site, prefix, assets, label) {
     : `<div class="shelf-art"${reuseShelfArt ? " data-initial-shelf" : ""} aria-hidden="true"></div>${grid(books)}`;
   return `<main class="library"><header class="library-brand brand">${escapeHtml(site.title)}</header>
   <div class="library-heading${site.books.length > 6 ? " library-heading-sticky" : ""}"><h1>${label}</h1>${reserveSearch}</div>
-  <div class="shelf ${categorized ? "shelf-categorized shelf-many" : `resting-shelf${site.books.length > 6 ? " shelf-many" : ""}`}"${!categorized && books.length >= 3 && books.length <= 4 ? ' data-mobile-rows="2"' : ""}>${contents}</div>
+  <div class="shelf ${categorized ? "shelf-categorized" : "resting-shelf"}">${contents}</div>
   ${site.books.length > 12 ? `<details><summary>${button}</summary>${linkList(site.books.map((book) => ({ title: book.title, href: prefix + readerPath(book.id) })))}</details>` : ""}
   ${renderToStaticMarkup(element(LibraryFooter, { publisher: site.footer }))}
   </main>`;
@@ -442,24 +442,9 @@ export async function writeStaticPages(
     }
     if (!segments.length && site.shelf) {
       const alcove = assetNamed(assets, prefix, "alcove");
-      const cabinet =
-        !site.books.some((book) => book.category) &&
-        (site.books.length === 3 || site.books.length === 4)
-          ? assetNamed(assets, prefix, "mobile-cabinet")
-          : alcove;
       if (alcove)
         head.metadata += `
-<link rel="preload" as="image" data-first-art fetchpriority="high" media="(min-width: 700px)" href="${alcove}">`;
-      const smallCabinet =
-        cabinet === alcove
-          ? undefined
-          : assetNamed(assets, prefix, "mobile-cabinet-sm");
-      if (cabinet)
-        head.metadata += `
-<link rel="preload" as="image" data-first-art fetchpriority="high" media="${smallCabinet ? "(481px <= width < 700px)" : "(max-width: 699px)"}" href="${cabinet}">`;
-      if (smallCabinet)
-        head.metadata += `
-<link rel="preload" as="image" data-first-art fetchpriority="high" media="(max-width: 480px)" href="${smallCabinet}">`;
+<link rel="preload" as="image" data-first-art fetchpriority="high" href="${alcove}">`;
     }
     const directory = join(destination, ...segments);
     await mkdir(directory, { recursive: true });

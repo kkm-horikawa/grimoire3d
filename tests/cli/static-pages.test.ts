@@ -238,3 +238,44 @@ it("omits the first h2 anchor on static next-page links to a chapter opening", a
     await rm(root, { recursive: true, force: true });
   }
 });
+
+it.each([
+  ["3 uncategorized books", 3, false, 'class="shelf resting-shelf"'],
+  ["5 uncategorized books", 5, false, 'class="shelf resting-shelf"'],
+  ["8 uncategorized books", 8, false, 'class="shelf resting-shelf"'],
+  ["categorized books", 4, true, 'class="shelf shelf-categorized"'],
+] as const)(
+  "emits consistent SSR shelf classes matching client hydration for %s",
+  async (_label, count, categorized, expectedClassAttr) => {
+    const root = await mkdtemp(join(tmpdir(), "grimoire-uniform-shelf-"));
+    try {
+      await mkdir(join(root, "template"));
+      await writeFile(
+        join(root, "template/index.html"),
+        '<html lang="en"><head><title>Default</title></head><body><div id="root"></div></body></html>'
+      );
+      for (let i = 1; i <= count; i++) {
+        await mkdir(join(root, `docs/book-${i}`), { recursive: true });
+        const fm = categorized
+          ? `---\ncategory: ${i <= 2 ? "Guides" : "Reference"}\n---\n`
+          : "";
+        await writeFile(
+          join(root, `docs/book-${i}/index.md`),
+          `${fm}# Book ${i}\n\nSample page.`
+        );
+      }
+      const library = await readLibrary(root, { locale: "en" });
+      await writeStaticPages(
+        join(root, "template"),
+        join(root, "site"),
+        library
+      );
+      const html = await readFile(join(root, "site/index.html"), "utf8");
+      expect(html).toContain(expectedClassAttr);
+      expect(html).not.toContain("shelf-many");
+      expect(html).not.toContain("data-mobile-rows");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  }
+);
