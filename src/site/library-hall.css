@@ -1,0 +1,466 @@
+:root {
+  font-family: Georgia, "Noto Serif", "Noto Serif CJK JP", serif;
+  color: #f4e4c7;
+  background: #210c14;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: flow-root;
+  margin: 0;
+  min-width: 290px;
+  min-height: 100svh;
+}
+
+a {
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid #f2c17a;
+  outline-offset: 4px;
+}
+
+.status-screen {
+  display: grid;
+  min-height: 100svh;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  padding: 32px;
+  text-align: center;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 44px;
+  font-size: clamp(16px, 1.48vw, 25px);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand svg {
+  flex: none;
+  stroke-width: 1.35;
+}
+
+.library {
+  position: relative;
+  min-height: 100svh;
+  background: radial-gradient(ellipse at 50% 60%, #35191b 0%, #1c0712 80%);
+}
+
+.library-brand {
+  position: absolute;
+  left: 2.4vw;
+  top: 13px;
+  z-index: 2;
+}
+
+.library-heading {
+  text-align: center;
+  margin-inline: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.library-heading h1 {
+  margin: 0 auto;
+  color: #f4e0bb;
+  font-size: clamp(30px, 3.28vw, 56px);
+  line-height: 1.12;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+}
+
+.library-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  margin: 16px clamp(0px, 2.65vw, 48px) 0;
+  padding-block-start: 8px;
+  border-block-start: 1px solid #604841;
+  color: #e0cfb5;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.library-publisher {
+  margin-inline-end: auto;
+  overflow-wrap: anywhere;
+}
+
+.library-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 2px 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.library-footer a:hover {
+  color: #f4e4c7;
+}
+
+.library-hall {
+  display: flex;
+  flex-direction: column;
+  padding: 14px clamp(20px, 4.8vw, 72px) 16px;
+}
+
+.hall-heading {
+  padding: clamp(10px, 2vh, 34px) 0 clamp(14px, 2.6vh, 36px);
+}
+
+.hall-subtitle {
+  margin: 6px auto 0;
+  color: #e6d5b8;
+  font-size: clamp(15px, 1.3vw, 21px);
+  font-weight: 400;
+  letter-spacing: 0.015em;
+}
+
+.hall-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 340px));
+  justify-content: center;
+  align-items: start;
+  gap: clamp(18px, 2.4vw, 40px);
+  width: 100%;
+  max-width: 1510px;
+  margin: auto;
+  padding: 16px 0 clamp(14px, 2.5vh, 36px);
+}
+
+.hall-shelf {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+  transition: transform 220ms ease;
+}
+
+.hall-alcove {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 640 / 717;
+  display: block;
+}
+
+.hall-alcove-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 18px 26px #090206c8);
+  transition: filter 240ms ease;
+}
+
+.hall-alcove-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.hall-shelf:hover .hall-alcove-frame,
+.hall-shelf:focus-visible .hall-alcove-frame {
+  filter: drop-shadow(0 0 18px #f5bc6280) drop-shadow(0 0 3px #ffe6a8cc)
+    drop-shadow(0 20px 28px #090206d8) brightness(1.06);
+}
+
+.hall-shelf:hover,
+.hall-shelf:focus-visible {
+  transform: translateY(-2px);
+}
+
+.hall-plaque-slot {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  max-width: calc(100% - 36px);
+}
+
+.hall-plaque {
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  width: fit-content;
+  min-width: min(100%, 10ch);
+  max-width: 100%;
+  margin: 0;
+  padding: 5px 18px;
+  border: 9px solid transparent;
+  border-image: url("./art/shelf-plate.webp") 32 fill / 9px stretch;
+  color: #fff0c8;
+  font-size: clamp(15px, 1.35vw, 21px);
+  font-weight: 600;
+  line-height: 1.18;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  filter: drop-shadow(0 5px 7px #080201d9);
+  transition: filter 220ms ease;
+}
+
+.hall-shelf:hover .hall-plaque,
+.hall-shelf:focus-visible .hall-plaque {
+  filter: drop-shadow(0 0 10px #f4c16a75) drop-shadow(0 5px 7px #080201d9);
+}
+
+.hall-plaque::before,
+.hall-plaque::after {
+  position: absolute;
+  content: "";
+  width: 12px;
+  height: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.hall-plaque::before {
+  inset-inline-start: -2px;
+  background-image: url("./art/shelf-screw-left.webp?no-inline");
+}
+
+.hall-plaque::after {
+  inset-inline-end: -2px;
+  background-image: url("./art/shelf-screw-right.webp?no-inline");
+}
+
+.hall-books {
+  position: absolute;
+  z-index: 2;
+  inset: auto 12% 11.2%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  height: 58%;
+  pointer-events: none;
+  transition: transform 240ms ease;
+}
+
+.hall-shelf:hover .hall-books,
+.hall-shelf:focus-visible .hall-books {
+  transform: translateY(-3px);
+}
+
+.hall-book {
+  position: relative;
+  display: block;
+  flex: none;
+}
+
+/* Desktop multi-book shelf: Blender-rendered antique leather book spines */
+.hall-book--stack {
+  height: 92%;
+  aspect-ratio: 120 / 452;
+}
+
+.hall-book--stack[data-index="1"] {
+  height: 89%;
+}
+
+.hall-book--stack[data-index="2"] {
+  height: 91%;
+}
+
+.hall-book--stack .hall-book-face {
+  display: none;
+}
+
+.hall-book--stack .hall-book-spine {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 8px 10px #090301dc);
+}
+
+.hall-book--stack .hall-book-spine img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: var(--cover-filter, none);
+}
+
+/* Solo book on desktop: full front leather-bound hardcover */
+.hall-book--solo {
+  height: 92%;
+  aspect-ratio: 600 / 760;
+}
+
+.hall-book--solo .hall-book-spine {
+  display: none;
+}
+
+.hall-book-face {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 10px 12px #090301dc);
+}
+
+.hall-book-face picture,
+.hall-book-face img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: var(--cover-filter, none);
+}
+
+/* Compensate for differing transparent bottom margins in cover-{red,green,blue}.avif */
+.hall-book[data-base="red"] .hall-book-face img {
+  transform: translateY(7%);
+}
+
+.hall-book[data-base="green"] .hall-book-face img {
+  transform: translateY(12%) scale(1.07);
+  transform-origin: center bottom;
+}
+
+.hall-book[data-base="blue"] .hall-book-face img {
+  transform: translateY(4%);
+}
+
+.hall-description {
+  margin: 10px 8px 0;
+  color: #ebd9bd;
+  font-size: clamp(14px, 1.12vw, 17px);
+  line-height: 1.45;
+  text-align: center;
+  max-width: 30ch;
+}
+
+.hall-empty {
+  margin: auto;
+  padding: 48px 16px;
+  color: #e6d5b8;
+  font-size: clamp(16px, 1.4vw, 20px);
+  text-align: center;
+}
+
+.library-hall .library-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  color: #e0cfb5;
+}
+
+@media (max-width: 699px) {
+  .library-hall {
+    padding: 14px 14px 18px;
+  }
+
+  .library-hall .library-brand {
+    position: static;
+    margin-bottom: 4px;
+  }
+
+  .hall-heading {
+    padding: 6px 0 18px;
+  }
+
+  .hall-grid {
+    grid-template-columns: 1fr;
+    max-width: 440px;
+    gap: 24px;
+    padding: 8px 0 26px;
+  }
+
+  .hall-alcove {
+    aspect-ratio: 760 / 413;
+  }
+
+  .hall-plaque-slot {
+    top: -10px;
+  }
+
+  .hall-plaque {
+    padding: 4px 16px;
+    font-size: 17px;
+  }
+
+  .hall-books {
+    inset: auto 10% 13.5%;
+    gap: 6px;
+    height: 62%;
+  }
+
+  /* On mobile, horizontal Blender alcoves show front leather covers side-by-side */
+  .hall-book--stack,
+  .hall-book--solo {
+    height: 100%;
+    width: auto;
+    aspect-ratio: 600 / 760;
+  }
+
+  .hall-book--stack .hall-book-spine {
+    display: none;
+  }
+
+  .hall-book--stack .hall-book-face {
+    display: flex;
+  }
+
+  .hall-description {
+    margin-top: 8px;
+    font-size: 15px;
+  }
+
+  .library-hall .library-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin: 24px 12px 0;
+    text-align: center;
+  }
+
+  .library-hall .library-publisher {
+    margin-inline-end: 0;
+  }
+
+  .library-hall .library-footer a {
+    min-height: 44px;
+    padding: 4px 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hall-shelf,
+  .hall-alcove-frame,
+  .hall-plaque,
+  .hall-books {
+    transition: none;
+  }
+
+  .hall-shelf:hover,
+  .hall-shelf:focus-visible,
+  .hall-shelf:hover .hall-books,
+  .hall-shelf:focus-visible .hall-books {
+    transform: none;
+  }
+}

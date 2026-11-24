@@ -24,6 +24,10 @@ export default defineConfig({
     outDir: resolve(import.meta.dirname, "dist/site"),
     emptyOutDir: true,
     rolldownOptions: {
+      input: {
+        index: resolve(import.meta.dirname, "src/site/index.html"),
+        hall: resolve(import.meta.dirname, "src/site/hall.html"),
+      },
       output: {
         manualChunks(id) {
           if (id.endsWith("/three/build/three.core.js")) return "three-core";
