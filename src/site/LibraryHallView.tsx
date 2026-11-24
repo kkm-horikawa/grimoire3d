@@ -1,7 +1,7 @@
 import { BookOpen } from "lucide-react";
 import type { JSX } from "react";
 import { LibraryFooter } from "../../cli/library-footer.js";
-import { coverFor } from "./covers";
+import { coverFor, hallAlcoveArt } from "./covers";
 import type { Copy, HallBookPreview, LibraryHall } from "./types";
 import "./library-hall.css";
 
@@ -31,12 +31,26 @@ function ShelfPreviewBook({
       aria-hidden="true"
     >
       <span className="hall-book-spine">
-        <span className="hall-book-bands" />
+        <img
+          src={finish.spineSrc}
+          width={120}
+          height={452}
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
       </span>
       <span className="hall-book-face">
         <picture>
           <source media="(max-width: 699px)" srcSet={finish.compact} />
-          <img src={finish.src} alt="" loading="eager" decoding="async" />
+          <img
+            src={finish.src}
+            width={600}
+            height={760}
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
         </picture>
       </span>
     </span>
@@ -71,10 +85,32 @@ export function LibraryHallView({
                 data-shelf={shelf.id}
               >
                 <div className="hall-alcove">
+                  <picture className="hall-alcove-frame">
+                    <source
+                      media="(max-width: 480px)"
+                      srcSet={hallAlcoveArt.mobileSm}
+                      width={440}
+                      height={239}
+                    />
+                    <source
+                      media="(max-width: 699px)"
+                      srcSet={hallAlcoveArt.mobile}
+                      width={760}
+                      height={413}
+                    />
+                    <img
+                      className="hall-alcove-art"
+                      src={hallAlcoveArt.desktop}
+                      width={640}
+                      height={717}
+                      alt=""
+                      fetchPriority="high"
+                      decoding="async"
+                    />
+                  </picture>
                   <div className="hall-plaque-slot">
                     <h2 className="hall-plaque">{shelf.title}</h2>
                   </div>
-                  <div className="hall-spotlight" aria-hidden="true" />
                   <div className="hall-books" data-count={previews.length}>
                     {previews.map((book, index) => (
                       <ShelfPreviewBook
@@ -85,7 +121,6 @@ export function LibraryHallView({
                       />
                     ))}
                   </div>
-                  <div className="hall-plank" aria-hidden="true" />
                 </div>
                 {shelf.description && (
                   <p className="hall-description">{shelf.description}</p>

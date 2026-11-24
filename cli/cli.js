@@ -89,6 +89,7 @@ function serializedLibrary(library) {
 
 async function populateLibrary(destination, library, headMarkup) {
   await cp(template, destination, { recursive: true });
+  await rm(join(destination, "hall.html"), { force: true });
   for (const [name, content] of serializedLibrary(library)) {
     const path = join(destination, name);
     await mkdir(dirname(path), { recursive: true });
@@ -140,6 +141,7 @@ async function writeStaticSite(cwd, outDir, library, headMarkup) {
 async function writeStaticHall(cwd, outDir, hall, headMarkup) {
   return replaceOutput(cwd, outDir, hall.manifest.locale, async (staging) => {
     await cp(template, staging, { recursive: true });
+    await rm(join(staging, "hall.html"), { force: true });
     await writeHallPages(template, staging, hall.manifest, headMarkup);
     for (const [id, child] of hall.children) {
       await populateLibrary(join(staging, id), child, headMarkup);
@@ -374,7 +376,7 @@ async function respondTemplateFile(
     return;
   }
   const mediaType = contentType(lookup(path) || "application/octet-stream");
-  if (name === "index.html") {
+  if (name === "index.html" || name === "hall.html") {
     const html = await readFile(path, "utf8");
     response.writeHead(200, {
       "Content-Type": mediaType,
@@ -510,7 +512,7 @@ function serveHall(cwd, port, initial) {
         await respondTemplateFile(request, response, childName, child);
         return;
       }
-      const name = rawPath || "index.html";
+      const name = rawPath || "hall.html";
       if (name === "shelves.json") {
         if (current.error) {
           response
@@ -529,7 +531,7 @@ function serveHall(cwd, port, initial) {
       await respondTemplateFile(
         request,
         response,
-        name,
+        name === "index.html" ? "hall.html" : name,
         { manifest: current.manifest, assets: new Map() },
         '<meta name="grimoire-hall" content="true">\n'
       );

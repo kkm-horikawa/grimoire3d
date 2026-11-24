@@ -235,6 +235,9 @@ describe("Multi-shelf Library Hall configuration and build", () => {
     expect(hallHtml).toContain("Product Docs");
     expect(hallHtml).toContain("Release Notes");
     expect(hallHtml).toContain('href="./product-docs/"');
+    expect(hallHtml).toContain("<style>");
+    expect(hallHtml).toContain("data-first-art");
+    expect(hallHtml).not.toContain('rel="stylesheet"');
     expect(hallHtml).not.toContain("SECRET_PRODUCT_TEXT");
     expect(shelvesJson.shelves.map((s: { id: string }) => s.id)).toEqual([
       "product-docs",

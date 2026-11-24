@@ -1,3 +1,117 @@
+:root {
+  font-family: Georgia, "Noto Serif", "Noto Serif CJK JP", serif;
+  color: #f4e4c7;
+  background: #210c14;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: flow-root;
+  margin: 0;
+  min-width: 290px;
+  min-height: 100svh;
+}
+
+a {
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid #f2c17a;
+  outline-offset: 4px;
+}
+
+.status-screen {
+  display: grid;
+  min-height: 100svh;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  padding: 32px;
+  text-align: center;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 44px;
+  font-size: clamp(16px, 1.48vw, 25px);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand svg {
+  flex: none;
+  stroke-width: 1.35;
+}
+
+.library {
+  position: relative;
+  min-height: 100svh;
+  background: radial-gradient(ellipse at 50% 60%, #35191b 0%, #1c0712 80%);
+}
+
+.library-brand {
+  position: absolute;
+  left: 2.4vw;
+  top: 13px;
+  z-index: 2;
+}
+
+.library-heading {
+  text-align: center;
+  margin-inline: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.library-heading h1 {
+  margin: 0 auto;
+  color: #f4e0bb;
+  font-size: clamp(30px, 3.28vw, 56px);
+  line-height: 1.12;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+}
+
+.library-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  margin: 16px clamp(0px, 2.65vw, 48px) 0;
+  padding-block-start: 8px;
+  border-block-start: 1px solid #604841;
+  color: #e0cfb5;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.library-publisher {
+  margin-inline-end: auto;
+  overflow-wrap: anywhere;
+}
+
+.library-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 2px 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.library-footer a:hover {
+  color: #f4e4c7;
+}
+
 .library-hall {
   display: flex;
   flex-direction: column;
@@ -5,12 +119,12 @@
 }
 
 .hall-heading {
-  padding: clamp(12px, 2.2vh, 36px) 0 clamp(18px, 3vh, 40px);
+  padding: clamp(10px, 2vh, 34px) 0 clamp(14px, 2.6vh, 36px);
 }
 
 .hall-subtitle {
   margin: 6px auto 0;
-  color: #d6c2a5;
+  color: #e6d5b8;
   font-size: clamp(15px, 1.3vw, 21px);
   font-weight: 400;
   letter-spacing: 0.015em;
@@ -18,14 +132,14 @@
 
 .hall-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 330px));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 340px));
   justify-content: center;
   align-items: start;
-  gap: clamp(20px, 2.5vw, 42px);
+  gap: clamp(18px, 2.4vw, 40px);
   width: 100%;
   max-width: 1510px;
   margin: auto;
-  padding: 16px 0 clamp(18px, 3vh, 42px);
+  padding: 16px 0 clamp(14px, 2.5vh, 36px);
 }
 
 .hall-shelf {
@@ -41,44 +155,29 @@
 .hall-alcove {
   position: relative;
   width: 100%;
-  aspect-ratio: 0.84;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 58px 20px 0;
-  border-radius: 50% 50% 14px 14px / 24% 24% 14px 14px;
-  border: 7px solid #4e2b19;
-  background:
-    radial-gradient(ellipse 68% 46% at 50% 18%, #b96e2c8a 0%, #5b2e1330 46%, transparent 72%),
-    linear-gradient(90deg, #1b0b04 0%, #462514 24%, #57311c 50%, #462514 76%, #1b0b04 100%);
-  box-shadow:
-    inset 0 0 34px #100502e6,
-    inset 0 18px 34px #160803c2,
-    0 0 0 1px #7d4f3266,
-    0 20px 38px #0d0308b8;
-  transition: box-shadow 240ms ease, border-color 240ms ease;
+  aspect-ratio: 640 / 717;
+  display: block;
 }
 
-.hall-alcove::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: url("./art/alcove.avif") center top / 100% 100% no-repeat;
-  opacity: 0.34;
-  mix-blend-mode: soft-light;
-  pointer-events: none;
+.hall-alcove-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 18px 26px #090206c8);
+  transition: filter 240ms ease;
 }
 
-.hall-shelf:hover .hall-alcove,
-.hall-shelf:focus-visible .hall-alcove {
-  border-color: #9e6a3c;
-  box-shadow:
-    inset 0 0 30px #150702cc,
-    0 0 0 1.5px #f5cf8b,
-    0 0 28px #f5bc6266,
-    0 22px 42px #0d0308cc;
+.hall-alcove-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.hall-shelf:hover .hall-alcove-frame,
+.hall-shelf:focus-visible .hall-alcove-frame {
+  filter: drop-shadow(0 0 18px #f5bc6280) drop-shadow(0 0 3px #ffe6a8cc)
+    drop-shadow(0 20px 28px #090206d8) brightness(1.06);
 }
 
 .hall-shelf:hover,
@@ -88,11 +187,11 @@
 
 .hall-plaque-slot {
   position: absolute;
-  top: -17px;
+  top: -6px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
-  max-width: calc(100% - 28px);
+  max-width: calc(100% - 36px);
 }
 
 .hall-plaque {
@@ -103,24 +202,24 @@
   min-width: min(100%, 10ch);
   max-width: 100%;
   margin: 0;
-  padding: 6px 20px;
+  padding: 5px 18px;
   border: 9px solid transparent;
   border-image: url("./art/shelf-plate.webp") 32 fill / 9px stretch;
-  color: #ffe9b8;
-  font-size: clamp(16px, 1.4vw, 22px);
+  color: #fff0c8;
+  font-size: clamp(15px, 1.35vw, 21px);
   font-weight: 600;
   line-height: 1.18;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  filter: drop-shadow(0 4px 6px #090301cc);
+  filter: drop-shadow(0 5px 7px #080201d9);
   transition: filter 220ms ease;
 }
 
 .hall-shelf:hover .hall-plaque,
 .hall-shelf:focus-visible .hall-plaque {
-  filter: drop-shadow(0 0 10px #f4c16a70) drop-shadow(0 4px 6px #090301cc);
+  filter: drop-shadow(0 0 10px #f4c16a75) drop-shadow(0 5px 7px #080201d9);
 }
 
 .hall-plaque::before,
@@ -146,37 +245,16 @@
   background-image: url("./art/shelf-screw-right.webp?no-inline");
 }
 
-.hall-spotlight {
-  position: absolute;
-  top: 34px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 56px;
-  height: 12px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, #fff5d2 0%, #f1b35a 48%, transparent 74%);
-  box-shadow: 0 14px 48px 18px #e4954052;
-  pointer-events: none;
-  z-index: 1;
-  transition: box-shadow 240ms ease, opacity 240ms ease;
-}
-
-.hall-shelf:hover .hall-spotlight,
-.hall-shelf:focus-visible .hall-spotlight {
-  box-shadow: 0 16px 56px 24px #f5b35978;
-}
-
 .hall-books {
-  position: relative;
+  position: absolute;
   z-index: 2;
+  inset: auto 12% 11.2%;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 5px;
-  width: 100%;
-  height: 62%;
-  padding: 0 14px;
-  margin-bottom: -2px;
+  gap: 3px;
+  height: 58%;
+  pointer-events: none;
   transition: transform 240ms ease;
 }
 
@@ -191,10 +269,18 @@
   flex: none;
 }
 
-/* Desktop multi-book shelf: upright 3D leather-bound book spines */
+/* Desktop multi-book shelf: Blender-rendered antique leather book spines */
 .hall-book--stack {
-  width: clamp(36px, 3.2vw, 48px);
-  height: clamp(148px, 14.5vw, 198px);
+  height: 92%;
+  aspect-ratio: 120 / 452;
+}
+
+.hall-book--stack[data-index="1"] {
+  height: 89%;
+}
+
+.hall-book--stack[data-index="2"] {
+  height: 91%;
 }
 
 .hall-book--stack .hall-book-face {
@@ -202,65 +288,25 @@
 }
 
 .hall-book--stack .hall-book-spine {
-  position: relative;
   display: block;
   width: 100%;
   height: 100%;
-  border-radius: 5px 4px 3px 3px;
-  background:
-    linear-gradient(
-      90deg,
-      #ffffff26 0%,
-      #ffffff0d 18%,
-      transparent 44%,
-      #00000038 82%,
-      #00000066 100%
-    ),
-    linear-gradient(180deg, #ffffff14 0%, transparent 14%, #00000033 100%),
-    var(--leather-edge, #6d2022);
-  box-shadow:
-    inset 0 11px 0 -4px #ead9b8,
-    inset 0 13px 4px -4px #3c241499,
-    inset 1px 0 0 #ffffff24,
-    inset -2px 0 4px #00000059,
-    0 8px 14px #0c0401cc;
+  filter: drop-shadow(0 8px 10px #090301dc);
 }
 
-.hall-book--stack .hall-book-bands {
-  position: absolute;
-  inset: 18% 0 14%;
+.hall-book--stack .hall-book-spine img {
   display: block;
-  background:
-    linear-gradient(
-      180deg,
-      #d8b46d99 0 2px,
-      transparent 2px 24%,
-      #00000044 24% 27%,
-      #ffffff1c 27% 30%,
-      transparent 30% 52%,
-      #00000044 52% 55%,
-      #ffffff1c 55% 58%,
-      transparent 58% 82%,
-      #00000044 82% 85%,
-      #ffffff1c 85% 88%,
-      transparent 88% calc(100% - 2px),
-      #d8b46d99 calc(100% - 2px) 100%
-    );
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: var(--cover-filter, none);
 }
 
-/* Slight organic height variation for stacked spines */
-.hall-book--stack[data-index="1"] {
-  height: clamp(144px, 14vw, 192px);
-}
-
-.hall-book--stack[data-index="2"] {
-  height: clamp(146px, 14.2vw, 195px);
-}
-
-/* Solo book on desktop: full front leather-bound cover with gold emblem */
+/* Solo book on desktop: full front leather-bound hardcover */
 .hall-book--solo {
-  width: clamp(128px, 11.5vw, 168px);
-  aspect-ratio: 0.78;
+  height: 92%;
+  aspect-ratio: 600 / 760;
 }
 
 .hall-book--solo .hall-book-spine {
@@ -274,7 +320,7 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 10px 14px #0b0301cc);
+  filter: drop-shadow(0 10px 12px #090301dc);
 }
 
 .hall-book-face picture,
@@ -301,29 +347,10 @@
   transform: translateY(4%);
 }
 
-.hall-plank {
-  position: relative;
-  z-index: 2;
-  width: calc(100% + 22px);
-  height: 24px;
-  margin-top: 0;
-  border-radius: 6px 6px 10px 10px;
-  background: linear-gradient(
-    180deg,
-    #b67b4d 0%,
-    #7e4925 22%,
-    #4f2c17 62%,
-    #2b160b 100%
-  );
-  box-shadow:
-    inset 0 2px 3px #f3c89866,
-    0 10px 18px #0a0301cc;
-}
-
 .hall-description {
-  margin: 14px 8px 0;
-  color: #e4d2b6;
-  font-size: clamp(14px, 1.15vw, 17px);
+  margin: 10px 8px 0;
+  color: #ebd9bd;
+  font-size: clamp(14px, 1.12vw, 17px);
   line-height: 1.45;
   text-align: center;
   max-width: 30ch;
@@ -332,19 +359,20 @@
 .hall-empty {
   margin: auto;
   padding: 48px 16px;
-  color: #d6c2a5;
+  color: #e6d5b8;
   font-size: clamp(16px, 1.4vw, 20px);
   text-align: center;
 }
 
 .library-hall .library-footer {
   margin-top: auto;
-  padding-top: 14px;
+  padding-top: 12px;
+  color: #e0cfb5;
 }
 
 @media (max-width: 699px) {
   .library-hall {
-    padding: 14px 16px 18px;
+    padding: 14px 14px 18px;
   }
 
   .library-hall .library-brand {
@@ -353,50 +381,41 @@
   }
 
   .hall-heading {
-    padding: 8px 0 22px;
+    padding: 6px 0 18px;
   }
 
   .hall-grid {
     grid-template-columns: 1fr;
     max-width: 440px;
-    gap: 28px;
-    padding: 8px 0 28px;
+    gap: 24px;
+    padding: 8px 0 26px;
   }
 
   .hall-alcove {
-    aspect-ratio: 1.72;
-    padding: 36px 14px 0;
-    border-width: 5px;
-    border-radius: 82px 82px 12px 12px / 48px 48px 12px 12px;
+    aspect-ratio: 760 / 413;
   }
 
   .hall-plaque-slot {
-    top: -15px;
+    top: -10px;
   }
 
   .hall-plaque {
     padding: 4px 16px;
-    font-size: 18px;
-  }
-
-  .hall-spotlight {
-    top: 26px;
-    width: 48px;
-    height: 10px;
+    font-size: 17px;
   }
 
   .hall-books {
-    height: 70%;
-    gap: 8px;
-    padding: 0 10px;
+    inset: auto 10% 13.5%;
+    gap: 6px;
+    height: 62%;
   }
 
-  /* On mobile, horizontal alcoves show front leather covers side-by-side */
+  /* On mobile, horizontal Blender alcoves show front leather covers side-by-side */
   .hall-book--stack,
   .hall-book--solo {
-    width: clamp(74px, 23vw, 102px);
-    height: auto;
-    aspect-ratio: 0.78;
+    height: 100%;
+    width: auto;
+    aspect-ratio: 600 / 760;
   }
 
   .hall-book--stack .hall-book-spine {
@@ -407,22 +426,33 @@
     display: flex;
   }
 
-  .hall-plank {
-    width: calc(100% + 14px);
-    height: 18px;
+  .hall-description {
+    margin-top: 8px;
+    font-size: 15px;
   }
 
-  .hall-description {
-    margin-top: 10px;
-    font-size: 15px;
+  .library-hall .library-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin: 24px 12px 0;
+    text-align: center;
+  }
+
+  .library-hall .library-publisher {
+    margin-inline-end: 0;
+  }
+
+  .library-hall .library-footer a {
+    min-height: 44px;
+    padding: 4px 10px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hall-shelf,
-  .hall-alcove,
+  .hall-alcove-frame,
   .hall-plaque,
-  .hall-spotlight,
   .hall-books {
     transition: none;
   }

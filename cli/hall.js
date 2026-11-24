@@ -240,26 +240,59 @@ function bookOpenIconSvg() {
   return '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>';
 }
 
+function findAsset(assets, prefix, stem, ext) {
+  const file = assets.find(
+    (name) =>
+      name.startsWith(`${stem}-`) &&
+      !name.startsWith(`${stem}-mobile-`) &&
+      !name.startsWith(`${stem}-sm-`) &&
+      name.endsWith(ext)
+  );
+  return file ? `${prefix}assets/${file}` : "";
+}
+
+function startAfterArtwork(entry) {
+  const path = JSON.stringify(entry);
+  return `<script type="module">
+    const events = ["pointerdown","keydown"];
+    let started = false;
+    function start() {
+      if (started) return;
+      started = true;
+      for (const event of events) window.removeEventListener(event,start,true);
+      void import(${path});
+    }
+    const art = [...document.querySelectorAll("link[data-first-art]")].find(link => matchMedia(link.media).matches);
+    if (!art || !matchMedia("(max-width: 699px)").matches) start();
+    else {
+      for (const event of events) window.addEventListener(event,start,{capture:true,once:true});
+      const image = new Image();
+      const painted = () => requestAnimationFrame(() => requestAnimationFrame(start));
+      image.addEventListener("load", painted, { once:true });
+      image.addEventListener("error", painted, { once:true });
+      image.src = art.href;
+    }
+    </script>`;
+}
+
 function staticBookPreview(book, index, count, assets, prefix) {
   const binding = selectCover(book.id, book.cover);
   const option = coverOptions[binding] ?? coverOptions.red;
-  const cover = assets.find(
-    (file) =>
-      file.startsWith(`cover-${option.base}-`) &&
-      !file.startsWith(`cover-${option.base}-mobile-`) &&
-      file.endsWith(".avif")
-  );
-  const compact = assets.find(
-    (file) =>
-      file.startsWith(`cover-${option.base}-mobile-`) && file.endsWith(".avif")
+  const coverSrc = findAsset(assets, prefix, `cover-${option.base}`, ".avif");
+  const compactSrc =
+    findAsset(assets, prefix, `cover-${option.base}-mobile`, ".avif") ||
+    coverSrc;
+  const spineSrc = findAsset(
+    assets,
+    prefix,
+    `hall-spine-${option.base}`,
+    ".webp"
   );
   const style = `--cover-filter:${option.filter};--leather-edge:${option.edge};`;
-  const coverSrc = cover ? `${prefix}assets/${cover}` : "";
-  const compactSrc = compact ? `${prefix}assets/${compact}` : coverSrc;
   const spineOnly = count > 1;
   return `<span class="hall-book${spineOnly ? " hall-book--stack" : " hall-book--solo"}" data-cover="${escapeHtml(binding)}" data-base="${escapeHtml(option.base)}" data-index="${index}" style="${style}" aria-hidden="true">
-    <span class="hall-book-spine"><span class="hall-book-bands"></span></span>
-    <span class="hall-book-face">${coverSrc ? `<picture>${compactSrc ? `<source media="(max-width: 699px)" srcset="${escapeHtml(compactSrc)}">` : ""}<img src="${escapeHtml(coverSrc)}" alt="" loading="eager" decoding="async"></picture>` : ""}</span>
+    <span class="hall-book-spine">${spineSrc ? `<img src="${escapeHtml(spineSrc)}" width="120" height="452" alt="" loading="lazy" decoding="async">` : ""}</span>
+    <span class="hall-book-face">${coverSrc ? `<picture>${compactSrc ? `<source media="(max-width: 699px)" srcset="${escapeHtml(compactSrc)}">` : ""}<img src="${escapeHtml(coverSrc)}" width="600" height="760" alt="" loading="lazy" decoding="async"></picture>` : ""}</span>
   </span>`;
 }
 
@@ -268,16 +301,27 @@ function staticHallBody(manifest, assets, prefix) {
     manifest.locale === "ja"
       ? "表示できる書架がありません。"
       : "No bookshelves are available.";
+  const desktopAlcove = findAsset(assets, prefix, "hall-alcove", ".webp");
+  const mobileAlcove =
+    findAsset(assets, prefix, "hall-alcove-mobile", ".webp") || desktopAlcove;
+  const smallMobileAlcove = findAsset(
+    assets,
+    prefix,
+    "hall-alcove-mobile-sm",
+    ".webp"
+  );
+  const alcovePicture = desktopAlcove
+    ? `<picture class="hall-alcove-frame">${smallMobileAlcove ? `<source media="(max-width: 480px)" srcset="${escapeHtml(smallMobileAlcove)}" width="440" height="239">` : ""}${mobileAlcove ? `<source media="(max-width: 699px)" srcset="${escapeHtml(mobileAlcove)}" width="760" height="413">` : ""}<img class="hall-alcove-art" src="${escapeHtml(desktopAlcove)}" width="640" height="717" alt="" fetchpriority="high" decoding="async"></picture>`
+    : "";
   const cards = manifest.shelves.length
     ? `<div class="hall-grid">${manifest.shelves
         .map((shelf) => {
           const books = shelf.books.slice(0, 3);
           return `<a class="hall-shelf" href="${escapeHtml(shelf.href)}" data-shelf="${escapeHtml(shelf.id)}">
             <div class="hall-alcove">
+              ${alcovePicture}
               <div class="hall-plaque-slot"><h2 class="hall-plaque">${escapeHtml(shelf.title)}</h2></div>
-              <div class="hall-spotlight" aria-hidden="true"></div>
               <div class="hall-books" data-count="${books.length}">${books.map((book, idx) => staticBookPreview(book, idx, books.length, assets, prefix)).join("")}</div>
-              <div class="hall-plank" aria-hidden="true"></div>
             </div>
             ${shelf.description ? `<p class="hall-description">${escapeHtml(shelf.description)}</p>` : ""}
           </a>`;
@@ -304,13 +348,28 @@ export async function writeHallPages(
   manifest,
   headMarkup = ""
 ) {
-  const template = await readFile(join(templateDir, "index.html"), "utf8");
+  const template = await readFile(join(templateDir, "hall.html"), "utf8").catch(
+    (error) => {
+      if (error.code === "ENOENT") {
+        return readFile(join(templateDir, "index.html"), "utf8");
+      }
+      throw error;
+    }
+  );
   const assets = await readdir(join(templateDir, "assets")).catch((error) => {
     if (error.code === "ENOENT") return [];
     throw error;
   });
   const prefix = "./";
   const canonical = manifest.siteUrl;
+  const desktopAlcove = findAsset(assets, prefix, "hall-alcove", ".webp");
+  const mobileAlcove = findAsset(assets, prefix, "hall-alcove-mobile", ".webp");
+  const smallMobileAlcove = findAsset(
+    assets,
+    prefix,
+    "hall-alcove-mobile-sm",
+    ".webp"
+  );
   const meta = [
     '<meta name="grimoire-hall" content="true">',
     `<meta name="grimoire-static" content="${prefix}">`,
@@ -319,14 +378,45 @@ export async function writeHallPages(
       `<meta name="description" content="${escapeHtml(manifest.description)}">`,
     manifest.author &&
       `<meta name="author" content="${escapeHtml(manifest.author)}">`,
+    desktopAlcove &&
+      `<link rel="preload" as="image" data-first-art fetchpriority="high" media="(min-width: 700px)" href="${escapeHtml(desktopAlcove)}">`,
+    mobileAlcove &&
+      `<link rel="preload" as="image" data-first-art fetchpriority="high" media="${smallMobileAlcove ? "(481px <= width < 700px)" : "(max-width: 699px)"}" href="${escapeHtml(mobileAlcove)}">`,
+    smallMobileAlcove &&
+      `<link rel="preload" as="image" data-first-art fetchpriority="high" media="(max-width: 480px)" href="${escapeHtml(smallMobileAlcove)}">`,
     `<script type="application/json" id="grimoire-hall">${JSON.stringify(manifest).replace(/</g, "\\u003c")}</script>`,
   ]
     .filter(Boolean)
     .join("\n");
 
+  let inlined = template.replace(/<link rel="modulepreload"[^>]*>\s*/g, "");
+  const cssMatch =
+    /<link rel="stylesheet"[^>]*href="\.\/assets\/([^"]+\.css)"[^>]*>/.exec(
+      inlined
+    );
+  if (cssMatch) {
+    const css = await readFile(
+      join(templateDir, "assets", cssMatch[1]),
+      "utf8"
+    ).catch(() => "");
+    if (css) {
+      const rewritten = css
+        .replace(/url\((["']?)\.\//g, "url($1./assets/")
+        .replace(/<\/style/gi, "<\\/style");
+      inlined = inlined.replace(
+        cssMatch[0],
+        () => `<style>${rewritten}</style>`
+      );
+    }
+  }
+
   const body = staticHallBody(manifest, assets, prefix);
-  let html = template
+  let html = inlined
     .replace('<html lang="en">', `<html lang="${manifest.locale}">`)
+    .replace(
+      /<script type="module"[^>]*src="([^"]+)"[^>]*><\/script>/,
+      (_, source) => startAfterArtwork(prefix + source.replace(/^\.\//, ""))
+    )
     .replace(
       /<title>[^<]*<\/title>/,
       () => `<title>${escapeHtml(manifest.title)}</title>\n${meta}`
