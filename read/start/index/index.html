@@ -29,14 +29,14 @@
       if (started) return;
       started = true;
       for (const event of events) window.removeEventListener(event,start,true);
-      const reader = "../../../assets/BookReader-CMVm2j3P.js";
+      const reader = "../../../assets/BookReader-DLYZCDb0.js";
       if (reader) {
         const preload = document.createElement("link");
         preload.rel = "modulepreload";
         preload.href = reader;
         document.head.append(preload);
       }
-      void import("../../../assets/index-GvaNKs5v.js");
+      void import("../../../assets/index-KbmztiiE.js");
     }
     const art = [...document.querySelectorAll("link[data-first-art]")].find(link => matchMedia(link.media).matches);
     if (!art || !matchMedia("(max-width: 699px)").matches) start();
@@ -50,8 +50,8 @@
       image.src = art.href;
     }
     </script>
-    <link rel="modulepreload" crossorigin href="../../../assets/jsxRuntime-WpZ1bTm4.js">
-    <link rel="stylesheet" crossorigin href="../../../assets/index-DMzLZTw8.css">
+    <link rel="modulepreload" crossorigin href="../../../assets/types-HX5Q6aR9.js">
+    <link rel="stylesheet" crossorigin href="../../../assets/index-B58FK2sK.css">
   </head>
   <body>
     <div id="root"><main class="reader static-reader">
@@ -77,7 +77,7 @@
     <nav class="reader-pagination" aria-label="Contents">
       <button class="turn-button" disabled aria-label="Previous page">‹</button>
       <div class="reading-position"><span>Getting Started</span><span>1 / 6</span></div>
-      <a class="turn-button" href="../../../read/start/first-book/#preview-the-book" aria-label="Next page">›</a>
+      <a class="turn-button" href="../../../read/start/first-book/" aria-label="Next page">›</a>
     </nav>
   </main></div>
   </body>
