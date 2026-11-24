@@ -1,43 +1,27 @@
-.shelf.shelf-categorized.shelf-many {
-  margin-top: 24px;
-  max-width: 1510px;
-  min-height: 0;
-  padding: clamp(64px, 8vw, 130px) clamp(24px, 6vw, 105px) 32px;
-  background: linear-gradient(90deg, #1d0c05, #57321e 47%, #251007);
-  border: 8px solid #5b321e;
-  border-radius: clamp(55px, 15vw, 230px) clamp(55px, 15vw, 230px) 20px 20px / clamp(66px, 9vw, 145px) clamp(66px, 9vw, 145px) 20px 20px;
-  box-shadow: inset 0 0 28px #150803, 0 22px 48px #11050b9c;
-}
-.shelf.shelf-categorized.shelf-many::before {
+.shelf.shelf-categorized::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
   inset: 0 0 auto;
-  height: clamp(370px, 40vw, 630px);
-  border: 0;
-  box-shadow: none;
+  height: clamp(320px, 38vw, 580px);
+  border-radius: inherit;
   background: url("./art/alcove.avif") center top / 100% 100% no-repeat;
   mask-image: linear-gradient(#000 67%, transparent 84%);
+  pointer-events: none;
 }
 .shelf-categorized .category-shelf.shelf-grid {
-  --category-column-gap: clamp(14px, 3vw, 35px);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 26px var(--category-column-gap);
-  padding-block: 14px 19px;
+  row-gap: 26px;
 }
-.shelf-categorized .shelf-cell {
-  width: 100%;
-  contain-intrinsic-size: auto 220px;
-}
-.shelf-categorized :is(.shelf-cell, .shelf-label-rail)::after {
+.shelf-categorized .shelf-label-rail::after {
   position: absolute;
   content: "";
-  inset: auto calc(var(--category-column-gap) / -2) -8px;
+  z-index: -1;
+  inset: auto calc(var(--shelf-column-gap) / -2 - 1px) -8px;
   height: 13px;
   border-radius: 0;
   background: linear-gradient(#b2794c, #724320 29%, #4c2b18 70%, #29160c);
   box-shadow: 0 5px 8px #1b0804;
   pointer-events: none;
-}
-.shelf.shelf-categorized .volume {
-  width: min(100%, 235px);
 }
 .shelf-label-rail {
   position: relative;
@@ -56,7 +40,7 @@
   border: 9.5px solid transparent;
   border-image: url("./art/shelf-plate.webp") 32 fill / 9.5px stretch;
   color: #ffe6ae;
-  font-size: clamp(17px, 1.45vw, 25px);
+  font-size: clamp(16px, 1.35vw, 23px);
   font-weight: 650;
   line-height: 1.18;
   text-align: center;
@@ -84,19 +68,11 @@
   background-image: url("./art/shelf-screw-right.webp?no-inline");
 }
 @media (max-width: 699px) {
-  .shelf.shelf-categorized.shelf-many {
-    padding: 63px 14px 22px;
-  }
-  .shelf.shelf-categorized.shelf-many::before {
+  .shelf.shelf-categorized::before {
     height: 435px;
   }
   .shelf-categorized .category-shelf.shelf-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: 15px;
-    padding-block: 12px 15px;
-  }
-  .shelf-categorized .shelf-cell {
-    contain-intrinsic-size: auto 155px;
   }
   .shelf-label-rail {
     grid-column: 1 / -1;
