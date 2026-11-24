@@ -512,12 +512,20 @@ export function LibraryView({
         </>
       ) : (
         <div
-          data-mobile-rows={
-            !categorized && books.length >= 3 && books.length <= 4
-              ? "2"
-              : undefined
-          }
-          className={`shelf ${categorized ? "shelf-categorized shelf-many" : `${large ? "shelf-many" : ""} ${restingShelf ? "resting-shelf" : ""} ${filtering ? "shelf-searching" : ""} ${filtering && results.length === 1 ? "shelf-one-match" : ""}`}`}
+          className={[
+            "shelf",
+            categorized
+              ? "shelf-categorized"
+              : restingShelf
+                ? "resting-shelf"
+                : undefined,
+            !categorized && filtering ? "shelf-searching" : undefined,
+            !categorized && filtering && results.length === 1
+              ? "shelf-one-match"
+              : undefined,
+          ]
+            .filter(Boolean)
+            .join(" ")}
         >
           {restingShelf &&
             !categorized &&
