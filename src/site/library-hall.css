@@ -1,0 +1,436 @@
+.library-hall {
+  display: flex;
+  flex-direction: column;
+  padding: 14px clamp(20px, 4.8vw, 72px) 16px;
+}
+
+.hall-heading {
+  padding: clamp(12px, 2.2vh, 36px) 0 clamp(18px, 3vh, 40px);
+}
+
+.hall-subtitle {
+  margin: 6px auto 0;
+  color: #d6c2a5;
+  font-size: clamp(15px, 1.3vw, 21px);
+  font-weight: 400;
+  letter-spacing: 0.015em;
+}
+
+.hall-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 330px));
+  justify-content: center;
+  align-items: start;
+  gap: clamp(20px, 2.5vw, 42px);
+  width: 100%;
+  max-width: 1510px;
+  margin: auto;
+  padding: 16px 0 clamp(18px, 3vh, 42px);
+}
+
+.hall-shelf {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+  transition: transform 220ms ease;
+}
+
+.hall-alcove {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 0.84;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 58px 20px 0;
+  border-radius: 50% 50% 14px 14px / 24% 24% 14px 14px;
+  border: 7px solid #4e2b19;
+  background:
+    radial-gradient(ellipse 68% 46% at 50% 18%, #b96e2c8a 0%, #5b2e1330 46%, transparent 72%),
+    linear-gradient(90deg, #1b0b04 0%, #462514 24%, #57311c 50%, #462514 76%, #1b0b04 100%);
+  box-shadow:
+    inset 0 0 34px #100502e6,
+    inset 0 18px 34px #160803c2,
+    0 0 0 1px #7d4f3266,
+    0 20px 38px #0d0308b8;
+  transition: box-shadow 240ms ease, border-color 240ms ease;
+}
+
+.hall-alcove::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: url("./art/alcove.avif") center top / 100% 100% no-repeat;
+  opacity: 0.34;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.hall-shelf:hover .hall-alcove,
+.hall-shelf:focus-visible .hall-alcove {
+  border-color: #9e6a3c;
+  box-shadow:
+    inset 0 0 30px #150702cc,
+    0 0 0 1.5px #f5cf8b,
+    0 0 28px #f5bc6266,
+    0 22px 42px #0d0308cc;
+}
+
+.hall-shelf:hover,
+.hall-shelf:focus-visible {
+  transform: translateY(-2px);
+}
+
+.hall-plaque-slot {
+  position: absolute;
+  top: -17px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  max-width: calc(100% - 28px);
+}
+
+.hall-plaque {
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  width: fit-content;
+  min-width: min(100%, 10ch);
+  max-width: 100%;
+  margin: 0;
+  padding: 6px 20px;
+  border: 9px solid transparent;
+  border-image: url("./art/shelf-plate.webp") 32 fill / 9px stretch;
+  color: #ffe9b8;
+  font-size: clamp(16px, 1.4vw, 22px);
+  font-weight: 600;
+  line-height: 1.18;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  filter: drop-shadow(0 4px 6px #090301cc);
+  transition: filter 220ms ease;
+}
+
+.hall-shelf:hover .hall-plaque,
+.hall-shelf:focus-visible .hall-plaque {
+  filter: drop-shadow(0 0 10px #f4c16a70) drop-shadow(0 4px 6px #090301cc);
+}
+
+.hall-plaque::before,
+.hall-plaque::after {
+  position: absolute;
+  content: "";
+  width: 12px;
+  height: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.hall-plaque::before {
+  inset-inline-start: -2px;
+  background-image: url("./art/shelf-screw-left.webp?no-inline");
+}
+
+.hall-plaque::after {
+  inset-inline-end: -2px;
+  background-image: url("./art/shelf-screw-right.webp?no-inline");
+}
+
+.hall-spotlight {
+  position: absolute;
+  top: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, #fff5d2 0%, #f1b35a 48%, transparent 74%);
+  box-shadow: 0 14px 48px 18px #e4954052;
+  pointer-events: none;
+  z-index: 1;
+  transition: box-shadow 240ms ease, opacity 240ms ease;
+}
+
+.hall-shelf:hover .hall-spotlight,
+.hall-shelf:focus-visible .hall-spotlight {
+  box-shadow: 0 16px 56px 24px #f5b35978;
+}
+
+.hall-books {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  height: 62%;
+  padding: 0 14px;
+  margin-bottom: -2px;
+  transition: transform 240ms ease;
+}
+
+.hall-shelf:hover .hall-books,
+.hall-shelf:focus-visible .hall-books {
+  transform: translateY(-3px);
+}
+
+.hall-book {
+  position: relative;
+  display: block;
+  flex: none;
+}
+
+/* Desktop multi-book shelf: upright 3D leather-bound book spines */
+.hall-book--stack {
+  width: clamp(36px, 3.2vw, 48px);
+  height: clamp(148px, 14.5vw, 198px);
+}
+
+.hall-book--stack .hall-book-face {
+  display: none;
+}
+
+.hall-book--stack .hall-book-spine {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px 4px 3px 3px;
+  background:
+    linear-gradient(
+      90deg,
+      #ffffff26 0%,
+      #ffffff0d 18%,
+      transparent 44%,
+      #00000038 82%,
+      #00000066 100%
+    ),
+    linear-gradient(180deg, #ffffff14 0%, transparent 14%, #00000033 100%),
+    var(--leather-edge, #6d2022);
+  box-shadow:
+    inset 0 11px 0 -4px #ead9b8,
+    inset 0 13px 4px -4px #3c241499,
+    inset 1px 0 0 #ffffff24,
+    inset -2px 0 4px #00000059,
+    0 8px 14px #0c0401cc;
+}
+
+.hall-book--stack .hall-book-bands {
+  position: absolute;
+  inset: 18% 0 14%;
+  display: block;
+  background:
+    linear-gradient(
+      180deg,
+      #d8b46d99 0 2px,
+      transparent 2px 24%,
+      #00000044 24% 27%,
+      #ffffff1c 27% 30%,
+      transparent 30% 52%,
+      #00000044 52% 55%,
+      #ffffff1c 55% 58%,
+      transparent 58% 82%,
+      #00000044 82% 85%,
+      #ffffff1c 85% 88%,
+      transparent 88% calc(100% - 2px),
+      #d8b46d99 calc(100% - 2px) 100%
+    );
+}
+
+/* Slight organic height variation for stacked spines */
+.hall-book--stack[data-index="1"] {
+  height: clamp(144px, 14vw, 192px);
+}
+
+.hall-book--stack[data-index="2"] {
+  height: clamp(146px, 14.2vw, 195px);
+}
+
+/* Solo book on desktop: full front leather-bound cover with gold emblem */
+.hall-book--solo {
+  width: clamp(128px, 11.5vw, 168px);
+  aspect-ratio: 0.78;
+}
+
+.hall-book--solo .hall-book-spine {
+  display: none;
+}
+
+.hall-book-face {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 10px 14px #0b0301cc);
+}
+
+.hall-book-face picture,
+.hall-book-face img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: var(--cover-filter, none);
+}
+
+/* Compensate for differing transparent bottom margins in cover-{red,green,blue}.avif */
+.hall-book[data-base="red"] .hall-book-face img {
+  transform: translateY(7%);
+}
+
+.hall-book[data-base="green"] .hall-book-face img {
+  transform: translateY(12%) scale(1.07);
+  transform-origin: center bottom;
+}
+
+.hall-book[data-base="blue"] .hall-book-face img {
+  transform: translateY(4%);
+}
+
+.hall-plank {
+  position: relative;
+  z-index: 2;
+  width: calc(100% + 22px);
+  height: 24px;
+  margin-top: 0;
+  border-radius: 6px 6px 10px 10px;
+  background: linear-gradient(
+    180deg,
+    #b67b4d 0%,
+    #7e4925 22%,
+    #4f2c17 62%,
+    #2b160b 100%
+  );
+  box-shadow:
+    inset 0 2px 3px #f3c89866,
+    0 10px 18px #0a0301cc;
+}
+
+.hall-description {
+  margin: 14px 8px 0;
+  color: #e4d2b6;
+  font-size: clamp(14px, 1.15vw, 17px);
+  line-height: 1.45;
+  text-align: center;
+  max-width: 30ch;
+}
+
+.hall-empty {
+  margin: auto;
+  padding: 48px 16px;
+  color: #d6c2a5;
+  font-size: clamp(16px, 1.4vw, 20px);
+  text-align: center;
+}
+
+.library-hall .library-footer {
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+@media (max-width: 699px) {
+  .library-hall {
+    padding: 14px 16px 18px;
+  }
+
+  .library-hall .library-brand {
+    position: static;
+    margin-bottom: 4px;
+  }
+
+  .hall-heading {
+    padding: 8px 0 22px;
+  }
+
+  .hall-grid {
+    grid-template-columns: 1fr;
+    max-width: 440px;
+    gap: 28px;
+    padding: 8px 0 28px;
+  }
+
+  .hall-alcove {
+    aspect-ratio: 1.72;
+    padding: 36px 14px 0;
+    border-width: 5px;
+    border-radius: 82px 82px 12px 12px / 48px 48px 12px 12px;
+  }
+
+  .hall-plaque-slot {
+    top: -15px;
+  }
+
+  .hall-plaque {
+    padding: 4px 16px;
+    font-size: 18px;
+  }
+
+  .hall-spotlight {
+    top: 26px;
+    width: 48px;
+    height: 10px;
+  }
+
+  .hall-books {
+    height: 70%;
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  /* On mobile, horizontal alcoves show front leather covers side-by-side */
+  .hall-book--stack,
+  .hall-book--solo {
+    width: clamp(74px, 23vw, 102px);
+    height: auto;
+    aspect-ratio: 0.78;
+  }
+
+  .hall-book--stack .hall-book-spine {
+    display: none;
+  }
+
+  .hall-book--stack .hall-book-face {
+    display: flex;
+  }
+
+  .hall-plank {
+    width: calc(100% + 14px);
+    height: 18px;
+  }
+
+  .hall-description {
+    margin-top: 10px;
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hall-shelf,
+  .hall-alcove,
+  .hall-plaque,
+  .hall-spotlight,
+  .hall-books {
+    transition: none;
+  }
+
+  .hall-shelf:hover,
+  .hall-shelf:focus-visible,
+  .hall-shelf:hover .hall-books,
+  .hall-shelf:focus-visible .hall-books {
+    transform: none;
+  }
+}

@@ -15,6 +15,7 @@ import {
   type CoverOrigin,
   motionQuery,
 } from "./BookTransition";
+import { LibraryHallView } from "./LibraryHallView";
 import { LibraryView, type ShelfState, shelfBatchSize } from "./LibraryView";
 import {
   assetHref,
@@ -25,7 +26,7 @@ import {
   readLocation,
   shelfHref,
 } from "./navigation";
-import { type Book, copy, type Library } from "./types";
+import { type Book, copy, type Library, type LibraryHall } from "./types";
 import "katex/dist/katex.min.css";
 import "./style.css";
 
@@ -308,39 +309,102 @@ function activateArtwork(): (() => void) | undefined {
   return release;
 }
 
-const element = originalMarkup;
-if (element) {
-  const mount = initialSmallScreenArt ? document.createElement("div") : element;
-  if (mount !== element) {
-    mount.id = "grimoire-app";
-    element.after(mount);
+async function getHallJson(signal?: AbortSignal): Promise<LibraryHall> {
+  const response = await fetch(assetHref("./shelves.json"), {
+    cache: "no-store",
+    signal,
+  });
+  if (response.status === 422) {
+    const error = await response.json();
+    throw new Error(error.error);
   }
-  const root = createRoot(mount);
-  async function bootstrap(): Promise<void> {
-    const initial = document.getElementById("grimoire-initial")?.textContent;
-    const data: { library: Library; book?: Book } = initial
-      ? JSON.parse(initial)
-      : { library: await getJson<Library>("./library.json") };
-    const reader = data.book
-      ? (await import("./BookReader")).BookReader
-      : undefined;
-    document.documentElement.lang = data.library.locale;
-    root.render(
-      <App
-        library={data.library}
-        initialBook={data.book}
-        initialReader={reader}
-      />
-    );
+  if (!response.ok) throw new Error(`./shelves.json (${response.status})`);
+  return response.json();
+}
+
+function HallApp({ initial }: { initial?: LibraryHall }): JSX.Element {
+  const [hall, setHall] = useState<LibraryHall | undefined>(initial);
+  const [failed, setFailed] = useState("");
+
+  useEffect(() => {
+    const request = new AbortController();
+    getHallJson(request.signal)
+      .then((fresh) => {
+        setHall(fresh);
+        document.documentElement.lang = fresh.locale;
+        document.title = fresh.title;
+      })
+      .catch((error: Error) => {
+        if (!request.signal.aborted && !initial) setFailed(error.message);
+      });
+    return () => request.abort();
+  }, [initial]);
+
+  if (hall) {
+    return <LibraryHallView hall={hall} text={copy[hall.locale]} />;
   }
-  void bootstrap().catch((error: Error) => {
-    if (mount !== element) return;
-    root.render(
+  if (failed) {
+    return (
       <main className="status-screen" role="alert">
-        {error.message}
+        {failed}
       </main>
     );
-  });
+  }
+  const locale = document.documentElement.lang === "ja" ? "ja" : "en";
+  return (
+    <main className="status-screen" aria-busy="true">
+      {copy[locale].loading}
+    </main>
+  );
+}
+
+const element = originalMarkup;
+if (element) {
+  const isHall = Boolean(document.querySelector('meta[name="grimoire-hall"]'));
+  if (isHall) {
+    const root = createRoot(element);
+    const raw = document.getElementById("grimoire-hall")?.textContent;
+    const initial = raw ? (JSON.parse(raw) as LibraryHall) : undefined;
+    if (initial) {
+      document.documentElement.lang = initial.locale;
+      document.title = initial.title;
+    }
+    root.render(<HallApp initial={initial} />);
+  } else {
+    const mount = initialSmallScreenArt
+      ? document.createElement("div")
+      : element;
+    if (mount !== element) {
+      mount.id = "grimoire-app";
+      element.after(mount);
+    }
+    const root = createRoot(mount);
+    async function bootstrap(): Promise<void> {
+      const initial = document.getElementById("grimoire-initial")?.textContent;
+      const data: { library: Library; book?: Book } = initial
+        ? JSON.parse(initial)
+        : { library: await getJson<Library>("./library.json") };
+      const reader = data.book
+        ? (await import("./BookReader")).BookReader
+        : undefined;
+      document.documentElement.lang = data.library.locale;
+      root.render(
+        <App
+          library={data.library}
+          initialBook={data.book}
+          initialReader={reader}
+        />
+      );
+    }
+    void bootstrap().catch((error: Error) => {
+      if (mount !== element) return;
+      root.render(
+        <main className="status-screen" role="alert">
+          {error.message}
+        </main>
+      );
+    });
+  }
 
   if (document.querySelector('meta[name="grimoire-preview"]')) {
     const events = new EventSource(assetHref("./__grimoire_events"));
