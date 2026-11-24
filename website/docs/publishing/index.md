@@ -1,6 +1,9 @@
 ---
 cover: blue
 description: Build a static site from Markdown and publish it to a static web host.
+chapters:
+  - metadata.md
+  - shelves.md
 ---
 # Publishing
 
@@ -20,4 +23,4 @@ Publish the contents of the output directory with a static host such as Cloudfla
 
 For a site under a subpath, such as a GitHub Pages project at `https://example.github.io/handbook/`, include that path in `siteUrl` before you build.
 
-[Configure your site metadata](./metadata.md) before you publish.
+[Configure your site metadata](./metadata.md) before you publish, or organize [multiple separate bookshelves in a Library Hall](./shelves.md) from one `grimoire.yml`.
