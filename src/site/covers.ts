@@ -20,6 +20,18 @@ const art = {
     opaqueBounds: [49, 42, 507, 637],
   },
 } as const;
+const spineArt = {
+  red: new URL("./art/hall-spine-red.webp", import.meta.url).href,
+  blue: new URL("./art/hall-spine-blue.webp", import.meta.url).href,
+  green: new URL("./art/hall-spine-green.webp", import.meta.url).href,
+} as const;
+
+export const hallAlcoveArt = {
+  desktop: new URL("./art/hall-alcove.webp", import.meta.url).href,
+  mobile: new URL("./art/hall-alcove-mobile.webp", import.meta.url).href,
+  mobileSm: new URL("./art/hall-alcove-mobile-sm.webp", import.meta.url).href,
+} as const;
+
 export type BindingColor = string;
 
 export function coverFor(id: string, requested?: string) {
@@ -34,7 +46,13 @@ export function coverFor(id: string, requested?: string) {
     "--leather-edge": option.edge,
     "--leather-filter": option.mobile,
   } as CSSProperties;
-  return { ...art[option.base], ...option, binding, style };
+  return {
+    ...art[option.base],
+    spineSrc: spineArt[option.base],
+    ...option,
+    binding,
+    style,
+  };
 }
 
 const resting = import.meta.glob<string>("./art/resting-*.avif", {
