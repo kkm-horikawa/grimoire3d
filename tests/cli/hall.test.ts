@@ -1,12 +1,10 @@
-import { execFileSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { readLibrary, readSettings } from "../../cli/content.js";
 import { readLibraryHall, writeHallPages } from "../../cli/hall.js";
-
-const cliPath = resolve(import.meta.dirname, "../../cli/cli.js");
+import { writeStaticPages } from "../../cli/static-pages.js";
 
 describe("Multi-shelf Library Hall configuration and build", () => {
   let project: string;
@@ -187,7 +185,7 @@ describe("Multi-shelf Library Hall configuration and build", () => {
     await expect(readSettings(project)).rejects.toThrow("href");
   });
 
-  it("builds root hall and isolated child shelves via the CLI", async () => {
+  it("inlines Hall CSS, preloads responsive alcove art, and writes isolated child shelves", async () => {
     await write(
       "grimoire.yml",
       [
@@ -213,39 +211,68 @@ describe("Multi-shelf Library Hall configuration and build", () => {
       "docs/releases/v1/index.md",
       "---\ncover: plum\n---\n# v1.0\n\nSECRET_RELEASE_TEXT"
     );
-
-    execFileSync(process.execPath, [cliPath, "build", "--out-dir", "dist"], {
-      cwd: project,
-      stdio: "pipe",
-    });
-
-    const hallHtml = await readFile(join(project, "dist/index.html"), "utf8");
-    const shelvesJson = JSON.parse(
-      await readFile(join(project, "dist/shelves.json"), "utf8")
+    await write(
+      "template/index.html",
+      '<html lang="en"><head><meta charset="UTF-8"><title>Default</title><script type="module" src="./assets/index-app.js"></script></head><body><div id="root"></div></body></html>'
     );
-    const productSearch = await readFile(
-      join(project, "dist/product-docs/search/library.json"),
+    await write(
+      "template/hall.html",
+      '<html lang="en"><head><meta charset="UTF-8"><title>Default</title><link rel="modulepreload" href="./assets/jsx-123.js"><link rel="stylesheet" href="./assets/hall-123.css"><script type="module" src="./assets/hall-123.js"></script></head><body><div id="root"></div></body></html>'
+    );
+    await write(
+      "template/assets/hall-123.css",
+      '.hall-plaque{border-image:url("./shelf-plate-123.webp") 32 fill/9px stretch}'
+    );
+    await write("template/assets/hall-alcove-123.webp", "desktop-art");
+    await write("template/assets/hall-alcove-mobile-123.webp", "mobile-art");
+    await write(
+      "template/assets/hall-alcove-mobile-sm-123.webp",
+      "mobile-sm-art"
+    );
+    await write("template/assets/hall-spine-red-123.webp", "spine-art");
+    await write("template/assets/cover-red-123.avif", "cover-art");
+
+    const settings = await readSettings(project);
+    const hall = await readLibraryHall(project, settings, readLibrary);
+    const templateDir = join(project, "template");
+    const outDir = join(project, "dist");
+
+    await writeHallPages(templateDir, outDir, hall.manifest);
+    for (const [id, child] of hall.children) {
+      await writeStaticPages(templateDir, join(outDir, id), child);
+    }
+
+    const hallHtml = await readFile(join(outDir, "index.html"), "utf8");
+    const shelvesJson = JSON.parse(
+      await readFile(join(outDir, "shelves.json"), "utf8")
+    );
+    const productHtml = await readFile(
+      join(outDir, "product-docs/read/guide/index/index.html"),
       "utf8"
     );
-    const releaseSearch = await readFile(
-      join(project, "dist/release-notes/search/library.json"),
+    const releaseHtml = await readFile(
+      join(outDir, "release-notes/read/v1/index/index.html"),
       "utf8"
     );
 
     expect(hallHtml).toContain("Product Docs");
     expect(hallHtml).toContain("Release Notes");
     expect(hallHtml).toContain('href="./product-docs/"');
-    expect(hallHtml).toContain("<style>");
+    expect(hallHtml).toContain(
+      '<style>.hall-plaque{border-image:url("./assets/shelf-plate-123.webp") 32 fill/9px stretch}</style>'
+    );
     expect(hallHtml).toContain("data-first-art");
+    expect(hallHtml).toContain("hall-alcove-mobile-sm-123.webp");
     expect(hallHtml).not.toContain('rel="stylesheet"');
+    expect(hallHtml).not.toContain('rel="modulepreload"');
     expect(hallHtml).not.toContain("SECRET_PRODUCT_TEXT");
     expect(shelvesJson.shelves.map((s: { id: string }) => s.id)).toEqual([
       "product-docs",
       "release-notes",
     ]);
-    expect(productSearch).toContain("SECRET_PRODUCT_TEXT");
-    expect(productSearch).not.toContain("SECRET_RELEASE_TEXT");
-    expect(releaseSearch).toContain("SECRET_RELEASE_TEXT");
-    expect(releaseSearch).not.toContain("SECRET_PRODUCT_TEXT");
+    expect(productHtml).toContain("SECRET_PRODUCT_TEXT");
+    expect(productHtml).not.toContain("SECRET_RELEASE_TEXT");
+    expect(releaseHtml).toContain("SECRET_RELEASE_TEXT");
+    expect(releaseHtml).not.toContain("SECRET_PRODUCT_TEXT");
   });
 });
