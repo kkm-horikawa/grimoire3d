@@ -11,6 +11,7 @@ import {
 } from "node:path";
 import { parse } from "yaml";
 import { coverOptions } from "./cover-options.js";
+import { isSafeHref, parseShelvesConfig } from "./hall.js";
 import { readMarkdown } from "./markdown.js";
 
 const rootId = "_root";
@@ -233,6 +234,7 @@ export async function readSettings(cwd) {
     magicMode,
     footer,
     headFile,
+    shelves,
   } = settings;
   if (
     typeof settings !== "object" ||
@@ -277,6 +279,7 @@ export async function readSettings(cwd) {
     footer: readFooter(footer),
     headFile,
     siteUrl: siteUrl && normalizeSiteUrl(siteUrl),
+    shelves: parseShelvesConfig(shelves),
   };
 }
 
@@ -300,13 +303,13 @@ function readFooter(footer) {
   }
   const { label, url } = footer;
   if (url === undefined) return { label: label.trim() };
-  const link = typeof url === "string" ? absoluteWebUrl(url) : undefined;
-  if (!link) {
-    throw new Error(
-      "grimoire.yml: footer.url must be an absolute HTTP(S) URL."
-    );
+  if (typeof url === "string" && isSafeHref(url)) {
+    const absolute = absoluteWebUrl(url);
+    return { label: label.trim(), url: absolute ? absolute.href : url.trim() };
   }
-  return { label: label.trim(), url: link.href };
+  throw new Error(
+    "grimoire.yml: footer.url must be an HTTP(S) URL or a relative path."
+  );
 }
 
 function normalizeSiteUrl(value) {

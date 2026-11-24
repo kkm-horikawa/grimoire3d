@@ -28,6 +28,7 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { contentType, lookup } from "mime-types";
 import { readLibrary, readSettings } from "./content.js";
+import { readLibraryHall, writeHallPages } from "./hall.js";
 import { readHeadFile } from "./head-file.js";
 import { previewHead, writeStaticPages } from "./static-pages.js";
 
@@ -86,9 +87,24 @@ function serializedLibrary(library) {
   ]);
 }
 
-async function writeStaticSite(cwd, outDir, library, headMarkup) {
+async function populateLibrary(destination, library, headMarkup) {
+  await cp(template, destination, { recursive: true });
+  await rm(join(destination, "hall.html"), { force: true });
+  for (const [name, content] of serializedLibrary(library)) {
+    const path = join(destination, name);
+    await mkdir(dirname(path), { recursive: true });
+    await writeFile(path, content);
+  }
+  for (const [name, source] of library.assets) {
+    const path = join(destination, "content", name);
+    await mkdir(dirname(path), { recursive: true });
+    await copyFile(source, path);
+  }
+  await writeStaticPages(template, destination, library, headMarkup);
+}
+
+async function replaceOutput(cwd, outDir, locale, populate) {
   const output = resolve(cwd, outDir);
-  const { locale } = library.manifest;
   const exists = await existingOutput(output, locale);
   const parent = dirname(output);
   await mkdir(parent, { recursive: true });
@@ -97,18 +113,7 @@ async function writeStaticSite(cwd, outDir, library, headMarkup) {
   const backup = join(temporary, "previous");
   let preserveBackup = false;
   try {
-    await cp(template, staging, { recursive: true });
-    for (const [name, content] of serializedLibrary(library)) {
-      const path = join(staging, name);
-      await mkdir(dirname(path), { recursive: true });
-      await writeFile(path, content);
-    }
-    for (const [name, source] of library.assets) {
-      const path = join(staging, "content", name);
-      await mkdir(dirname(path), { recursive: true });
-      await copyFile(source, path);
-    }
-    await writeStaticPages(template, staging, library, headMarkup);
+    await populate(staging);
     await writeFile(join(staging, marker), json(await listFiles(staging)));
     if (exists) await rename(output, backup);
     try {
@@ -125,6 +130,23 @@ async function writeStaticSite(cwd, outDir, library, headMarkup) {
     if (!preserveBackup) await rm(temporary, { recursive: true, force: true });
   }
   return output;
+}
+
+async function writeStaticSite(cwd, outDir, library, headMarkup) {
+  return replaceOutput(cwd, outDir, library.manifest.locale, (staging) =>
+    populateLibrary(staging, library, headMarkup)
+  );
+}
+
+async function writeStaticHall(cwd, outDir, hall, headMarkup) {
+  return replaceOutput(cwd, outDir, hall.manifest.locale, async (staging) => {
+    await cp(template, staging, { recursive: true });
+    await rm(join(staging, "hall.html"), { force: true });
+    await writeHallPages(template, staging, hall.manifest, headMarkup);
+    for (const [id, child] of hall.children) {
+      await populateLibrary(join(staging, id), child, headMarkup);
+    }
+  });
 }
 
 function showIssues(library) {
@@ -313,6 +335,227 @@ function serve(cwd, port, initial, docsDir) {
   });
 }
 
+function hallSnapshot(hall) {
+  return {
+    manifest: hall.manifest,
+    children: new Map(
+      [...hall.children].map(([id, child]) => [id, snapshot(child)])
+    ),
+    watchedDirectories: [...hall.children.values()].map(
+      (child) => child.docsDirectory
+    ),
+    error: null,
+  };
+}
+
+async function respondTemplateFile(
+  request,
+  response,
+  name,
+  current,
+  extraHead = ""
+) {
+  const requested = resolve(template, name);
+  if (
+    name.startsWith("content/") &&
+    !current.assets.has(name.slice("content/".length))
+  ) {
+    response.writeHead(404).end();
+    return;
+  }
+  const asset = current.assets.get(name.slice("content/".length));
+  const diff = relative(template, requested);
+  if (diff === ".." || diff.startsWith(`..${sep}`) || isAbsolute(diff)) {
+    response.writeHead(404).end();
+    return;
+  }
+  const path = name.startsWith("content/") ? asset : requested;
+  const file = await stat(path);
+  if (!file.isFile()) {
+    response.writeHead(404).end();
+    return;
+  }
+  const mediaType = contentType(lookup(path) || "application/octet-stream");
+  if (name === "index.html" || name === "hall.html") {
+    const html = await readFile(path, "utf8");
+    response.writeHead(200, {
+      "Content-Type": mediaType,
+      "Cache-Control": "no-store",
+    });
+    response.end(
+      html
+        .replace('<html lang="en">', `<html lang="${current.manifest.locale}">`)
+        .replace(
+          "</head>",
+          () => `${extraHead}${previewHead(current.manifest)}</head>`
+        )
+    );
+    return;
+  }
+  const headers = {
+    "Content-Type": mediaType,
+    "Cache-Control": "no-cache",
+    "Content-Length": file.size,
+  };
+  let status = 200;
+  let slice;
+  if (typeof mediaType === "string" && mediaType.startsWith("video/")) {
+    headers["Accept-Ranges"] = "bytes";
+    const range = /^bytes=(\d*)-(\d*)$/.exec(request.headers.range ?? "");
+    if (range) {
+      const [, from, to] = range;
+      const start = from ? Number(from) : Math.max(0, file.size - Number(to));
+      const end =
+        from && to ? Math.min(Number(to), file.size - 1) : file.size - 1;
+      if (!Number.isSafeInteger(start) || start > end) {
+        response
+          .writeHead(416, {
+            "Accept-Ranges": "bytes",
+            "Content-Range": `bytes */${file.size}`,
+          })
+          .end();
+        return;
+      }
+      status = 206;
+      slice = { start, end };
+      headers["Content-Length"] = end - start + 1;
+      headers["Content-Range"] = `bytes ${start}-${end}/${file.size}`;
+    }
+  }
+  response.writeHead(status, headers);
+  if (request.method === "HEAD") response.end();
+  else
+    createReadStream(path, slice)
+      .on("error", () => response.destroy())
+      .pipe(response);
+}
+
+function serveHall(cwd, port, initial) {
+  let current = hallSnapshot(initial);
+  let watchers = [];
+  let timer;
+  let changes = 0;
+  const clients = new Set();
+  const notify = () => {
+    for (const client of clients) client.write("event: update\ndata: {}\n\n");
+  };
+  function syncWatchers(directories) {
+    for (const watcher of watchers) watcher.close();
+    watchers = [...new Set(directories)].map((dir) =>
+      watch(dir, { recursive: true }, schedule)
+    );
+  }
+  async function refresh() {
+    const revision = ++changes;
+    try {
+      const settings = await readSettings(cwd);
+      const hall = await readLibraryHall(cwd, settings, readLibrary);
+      if (revision !== changes) return;
+      current = hallSnapshot(hall);
+      syncWatchers(current.watchedDirectories);
+      showIssues(hall);
+    } catch (error) {
+      if (revision !== changes) return;
+      current = { ...current, error: error.message };
+      console.error(error.message);
+    }
+    notify();
+  }
+  function schedule() {
+    clearTimeout(timer);
+    timer = setTimeout(() => void refresh(), 140);
+  }
+  syncWatchers(current.watchedDirectories);
+  const settingsWatcher = watch(cwd, (_event, name) => {
+    if (name === "grimoire.yml") schedule();
+  });
+
+  const server = createServer(async (request, response) => {
+    try {
+      const url = new URL(request.url, "http://localhost");
+      const rawPath = decodeURIComponent(url.pathname.slice(1));
+      if (
+        rawPath === "__grimoire_events" ||
+        rawPath.endsWith("/__grimoire_events")
+      ) {
+        response.writeHead(200, {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+        });
+        response.write(": connected\n\n");
+        clients.add(response);
+        response.on("close", () => clients.delete(response));
+        return;
+      }
+      if (rawPath && !rawPath.includes("/") && current.children.has(rawPath)) {
+        response.writeHead(302, {
+          Location: `/${encodeURIComponent(rawPath)}/`,
+        });
+        response.end();
+        return;
+      }
+      const slash = rawPath.indexOf("/");
+      const maybeShelf = slash >= 0 ? rawPath.slice(0, slash) : "";
+      if (maybeShelf && current.children.has(maybeShelf)) {
+        const child = current.children.get(maybeShelf);
+        const childName = rawPath.slice(slash + 1) || "index.html";
+        const content = child.files.get(childName);
+        if (content !== undefined) {
+          response
+            .writeHead(200, {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-store",
+            })
+            .end(content);
+          return;
+        }
+        await respondTemplateFile(request, response, childName, child);
+        return;
+      }
+      const name = rawPath || "hall.html";
+      if (name === "shelves.json") {
+        if (current.error) {
+          response
+            .writeHead(422, { "Content-Type": "application/json" })
+            .end(json({ error: current.error }));
+          return;
+        }
+        response
+          .writeHead(200, {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-store",
+          })
+          .end(json(current.manifest));
+        return;
+      }
+      await respondTemplateFile(
+        request,
+        response,
+        name === "index.html" ? "hall.html" : name,
+        { manifest: current.manifest, assets: new Map() },
+        '<meta name="grimoire-hall" content="true">\n'
+      );
+    } catch (error) {
+      if (response.headersSent) response.destroy();
+      else response.writeHead(error.code === "ENOENT" ? 404 : 400).end();
+    }
+  });
+  const stopWatchers = () => {
+    clearTimeout(timer);
+    for (const watcher of watchers) watcher.close();
+    settingsWatcher.close();
+  };
+  server.on("error", (error) => {
+    stopWatchers();
+    console.error(error.message);
+    process.exitCode = 1;
+  });
+  server.listen(port, "127.0.0.1", () => {
+    const label = initial.manifest.locale === "ja" ? "プレビュー" : "Preview";
+    console.log(`${label}: http://127.0.0.1:${server.address().port}/`);
+  });
+}
+
 async function main() {
   const {
     positionals: [command],
@@ -337,15 +580,20 @@ async function main() {
   const cwd = process.cwd();
   const settings = await readSettings(cwd);
   const docsDir = values["docs-dir"];
-  const library = await readLibrary(cwd, settings, docsDir);
-  showIssues(library);
+  const isHall = settings.shelves !== undefined && !docsDir;
   if (command === "build") {
-    const output = await writeStaticSite(
-      cwd,
-      values["out-dir"] ?? settings.outDir ?? "dist",
-      library,
-      await readHeadFile(cwd, settings.headFile)
-    );
+    const headMarkup = await readHeadFile(cwd, settings.headFile);
+    const outDir = values["out-dir"] ?? settings.outDir ?? "dist";
+    let output;
+    if (isHall) {
+      const hall = await readLibraryHall(cwd, settings, readLibrary);
+      showIssues(hall);
+      output = await writeStaticHall(cwd, outDir, hall, headMarkup);
+    } else {
+      const library = await readLibrary(cwd, settings, docsDir);
+      showIssues(library);
+      output = await writeStaticSite(cwd, outDir, library, headMarkup);
+    }
     const label = settings.locale === "ja" ? "書き出し先" : "Built to";
     console.log(`${label}: ${basename(output)}/ (${output})`);
     return;
@@ -358,6 +606,14 @@ async function main() {
         : "--port must be an integer from 0 to 65535."
     );
   }
+  if (isHall) {
+    const hall = await readLibraryHall(cwd, settings, readLibrary);
+    showIssues(hall);
+    serveHall(cwd, port, hall);
+    return;
+  }
+  const library = await readLibrary(cwd, settings, docsDir);
+  showIssues(library);
   serve(cwd, port, library, docsDir);
 }
 

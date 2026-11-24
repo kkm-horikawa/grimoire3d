@@ -62,6 +62,26 @@ Open the URL printed in the terminal. The preview updates when you save.
 
 ![Workflow from Markdown files to a local bookshelf and a static site in dist](docs/book-experience/workflow.avif)
 
+## Multiple bookshelves (Library Hall)
+
+To split documentation into independent bookshelves from a single `grimoire.yml`, add a `shelves` list. Each entry with `docsDir` builds into its own isolated bookshelf (`./<id>/`) with its own search index, and Grimoire3D generates a Library Hall landing page (`index.html` and `shelves.json`) at the root.
+
+```yaml
+title: Library Hall
+description: Choose a bookshelf to explore
+shelves:
+  - id: product-docs
+    title: Product Docs
+    description: Guides, specs, and onboarding
+    docsDir: ./docs/product
+  - id: architecture
+    title: Architecture
+    description: System design and runbooks
+    docsDir: ./docs/architecture
+```
+
+Existing projects without `shelves` continue to build a single bookshelf unchanged.
+
 ## Build and publish
 
 ```sh

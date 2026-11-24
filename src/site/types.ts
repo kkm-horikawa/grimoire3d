@@ -21,6 +21,30 @@ export interface Library {
   books: BookSummary[];
 }
 
+export interface HallBookPreview {
+  id: string;
+  title: string;
+  cover?: string;
+}
+
+export interface HallShelf {
+  id: string;
+  title: string;
+  description?: string;
+  href: string;
+  books: HallBookPreview[];
+}
+
+export interface LibraryHall {
+  title: string;
+  description?: string;
+  locale: Locale;
+  siteUrl?: string;
+  author?: string;
+  footer?: LibraryPublisher;
+  shelves: HallShelf[];
+}
+
 export interface Section {
   id: string;
   title: string;
@@ -91,6 +115,8 @@ export const copy = {
     close: "Close",
     unavailable: "This page could not be opened.",
     loading: "Opening…",
+    hallEmpty: "No bookshelves are available.",
+    hallUnavailable: "Bookshelves could not be loaded.",
   },
   ja: {
     library: "書架",
@@ -140,6 +166,8 @@ export const copy = {
     close: "閉じる",
     unavailable: "ページを開けませんでした。",
     loading: "読み込み中…",
+    hallEmpty: "表示できる書架がありません。",
+    hallUnavailable: "書架一覧を読み込めませんでした。",
   },
 } as const;
 
