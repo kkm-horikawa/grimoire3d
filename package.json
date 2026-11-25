@@ -1,6 +1,6 @@
 {
   "name": "grimoire3d",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "3D magical book documentation generator - Transform your docs into an interactive grimoire",
   "type": "module",
   "main": "./dist/index.js",
