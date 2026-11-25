@@ -693,6 +693,7 @@ a {
   left: 0;
   right: 0;
   font-size: 0.72em;
+  line-height: 1.05;
   text-align: center;
   pointer-events: none;
 }
@@ -1024,14 +1025,14 @@ a {
       0 10px 15px #1b080b;
   }
   .book-sheet--right {
-    inset: 40px 9.2% 30px 9.9%;
+    inset: 40px 9.2% 27px 9.9%;
     width: auto;
     height: auto;
     font-size: 17px;
     line-height: 1.45;
   }
   .page-text {
-    height: calc(100% - 16px);
+    height: calc(100% - 17px);
     max-height: none;
   }
   .page-text h1 {
@@ -1048,8 +1049,11 @@ a {
     bottom: auto;
     left: 50%;
     gap: 17px;
-    margin-block: 10px max(12px, env(safe-area-inset-bottom));
+    margin-block: 2px max(6px, env(safe-area-inset-bottom));
     grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+  .reading-position {
+    gap: 0.14em;
   }
   .catalog {
     inset: auto 2.5vw 0;
@@ -1677,29 +1681,31 @@ output.book-count {
   width: min(calc(100% - 26px), clamp(280px, 28vw, 460px));
 }
 .turn-button {
-  width: clamp(34px, 2.7vw, 46px);
-  height: clamp(34px, 2.7vw, 46px);
-  border-radius: 9px;
+  width: clamp(30px, 2.2vw, 38px);
+  height: clamp(30px, 2.2vw, 38px);
+  border-radius: 8px;
 }
 .turn-button svg {
-  width: 1.25em;
-  height: 1.25em;
+  width: 1.2em;
+  height: 1.2em;
 }
 .reading-position {
-  font-size: clamp(13px, 1.15vw, 19px);
-  line-height: 1.12;
+  gap: 0.14em;
+  font-size: clamp(12px, 1vw, 16px);
+  line-height: 1.08;
 }
 .reader-stage[data-frame="reading"] {
   --read-padding-x: clamp(20px, 2.3vw, 40px);
   --read-padding-y: clamp(18px, 2.6vh, 32px);
   --read-padding-top: calc(var(--read-padding-y) - 6px);
+  --read-padding-bottom: clamp(6px, 0.85vh, 10px);
   width: 100%;
-  height: calc(100svh - clamp(96px, 10.5vh, 120px));
+  height: calc(100svh - clamp(76px, 8vh, 90px));
   min-height: 225px;
   aspect-ratio: auto;
 }
 .reader-stage[data-frame="reading"] ~ .reader-pagination {
-  bottom: clamp(8px, 1.2vh, 14px);
+  bottom: clamp(4px, 0.65vh, 8px);
 }
 .reader-stage[data-frame="reading"] .book-fallback {
   inset: 50% auto auto 50%;
@@ -1709,7 +1715,7 @@ output.book-count {
 }
 .reader-stage[data-frame="reading"] .book-sheet {
   top: calc(50% - var(--read-paper-height, 75vh) / 2 + var(--read-padding-top));
-  height: calc(var(--read-paper-height, 75vh) - var(--read-padding-top) - var(--read-padding-y));
+  height: calc(var(--read-paper-height, 75vh) - var(--read-padding-top) - var(--read-padding-bottom));
   width: calc(var(--read-paper-width, 86vw) / 2 - var(--read-padding-x) * 2);
   font-size: clamp(13.5px, 0.95vw, 16px);
   line-height: 1.48;
@@ -1721,7 +1727,7 @@ output.book-count {
   left: calc(50% + var(--read-padding-x));
 }
 .reader-stage[data-frame="reading"] .page-text {
-  max-height: calc(100% - 26px);
+  max-height: calc(100% - 17px);
 }
 .reader-stage[data-frame="reading"] .page-running-head {
   display: none;
@@ -1750,7 +1756,7 @@ output.book-count {
   font-size: max(12px, 0.84em);
 }
 .reader-stage[data-frame="reading"] .folio-number {
-  font-size: max(11px, 0.78em);
+  font-size: max(11px, 0.76em);
 }
 
 }
@@ -2110,9 +2116,9 @@ output.book-count {
 }
 
 .static-reader .reader-stage {
-  --read-stage-height: calc(100svh - clamp(96px, 10.5vh, 120px));
+  --read-stage-height: calc(100svh - clamp(76px, 8vh, 90px));
   --read-paper-width: min(86vw, calc(var(--read-stage-height) * 2.2));
-  --read-paper-height: min(calc(var(--read-stage-height) * .88), 82vw);
+  --read-paper-height: min(calc(var(--read-stage-height) * .91), 82vw);
 }
 .static-reader .contents-button { text-decoration: none; }
 .static-reader [data-fallback-magic] {
