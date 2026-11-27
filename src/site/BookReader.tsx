@@ -3,6 +3,8 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ExternalLink,
+  FileText,
   List,
   Sparkles,
   X,
@@ -22,7 +24,13 @@ import {
   useState,
 } from "react";
 import { coverFor, restingImage } from "./covers";
-import { bookHref, initialPaper, navigate, shelfHref } from "./navigation";
+import {
+  bookHref,
+  initialPaper,
+  navigate,
+  resolveHref,
+  shelfHref,
+} from "./navigation";
 import { captureInk } from "./pageInk";
 import {
   type PreparedTurn,
@@ -265,6 +273,10 @@ export function BookReader({
   const [collapsed, setCollapsed] = useState(() => new Set<string>());
   const catalog = useRef<HTMLDialogElement>(null);
   const contentsButton = useRef<HTMLButtonElement>(null);
+  const appendixButton = useRef<HTMLButtonElement>(null);
+  const appendicesSection = useRef<HTMLElement>(null);
+  const contentsTrigger = useRef<"contents" | "appendix">("contents");
+  const savedScrollTops = useRef(new Map<string, number>());
   const stage = useRef<HTMLDivElement>(null);
   const paper = useRef<HTMLDivElement>(null);
   const initialPaperSlot = useRef<HTMLDivElement>(null);
@@ -284,6 +296,8 @@ export function BookReader({
     if (!wide) setReady(false);
   }, [wide]);
   const { pages } = book;
+  const appendices = book.appendices ?? [];
+  const hasAppendices = appendices.length > 0;
   const { binding, style } = coverFor(
     book.id,
     book.cover ?? (library.shelf ? undefined : "red")
@@ -569,9 +583,13 @@ export function BookReader({
     const dialog = catalog.current;
     if (!dialog || dialog.open) return;
     dialog.showModal();
-    dialog
-      .querySelector<HTMLElement>("[aria-current=page]")
-      ?.scrollIntoView({ block: "nearest" });
+    if (contentsTrigger.current === "appendix" && appendicesSection.current) {
+      appendicesSection.current.scrollIntoView?.({ block: "start" });
+    } else {
+      dialog
+        .querySelector<HTMLElement>("[aria-current=page]")
+        ?.scrollIntoView?.({ block: "nearest" });
+    }
   }, [opened]);
 
   useEffect(() => {
@@ -646,9 +664,49 @@ export function BookReader({
       );
   }
 
+  function openCatalog(trigger: "contents" | "appendix"): void {
+    const positions = new Map<string, number>();
+    const host = stage.current;
+    if (host) {
+      for (const sheet of host.querySelectorAll<HTMLElement>(
+        ":scope > .book-sheet"
+      )) {
+        const side = sheet.dataset.sheet;
+        const article = sheet.querySelector<HTMLElement>(".page-text");
+        if (side && article) positions.set(side, article.scrollTop);
+      }
+    }
+    savedScrollTops.current = positions;
+    contentsTrigger.current = trigger;
+    setOpened(true);
+  }
+
+  function closeForNavigation(): void {
+    savedScrollTops.current.clear();
+    catalog.current?.close();
+  }
+
   function confirmClose(): void {
+    const returnTarget =
+      contentsTrigger.current === "appendix"
+        ? appendixButton.current
+        : contentsButton.current;
     setOpened(false);
-    requestAnimationFrame(() => contentsButton.current?.focus());
+    requestAnimationFrame(() => {
+      const host = stage.current;
+      if (host && savedScrollTops.current.size) {
+        for (const sheet of host.querySelectorAll<HTMLElement>(
+          ":scope > .book-sheet"
+        )) {
+          const side = sheet.dataset.sheet;
+          const article = sheet.querySelector<HTMLElement>(".page-text");
+          const saved = side ? savedScrollTops.current.get(side) : undefined;
+          if (article && saved !== undefined) article.scrollTop = saved;
+        }
+        savedScrollTops.current.clear();
+      }
+      returnTarget?.focus();
+    });
   }
 
   const rightIndex = wide ? start + 1 : start;
@@ -665,19 +723,39 @@ export function BookReader({
       className="contents-button"
       aria-haspopup="dialog"
       disabled={!!turnPlan}
-      onClick={() => setOpened(true)}
+      onClick={() => openCatalog("contents")}
     >
       <List size={22} aria-hidden />
       {text.contents}
     </button>
   );
+  const appendixControl = hasAppendices ? (
+    <button
+      key="appendix"
+      type="button"
+      ref={appendixButton}
+      className="appendix-bookmark"
+      data-binding={binding}
+      style={style}
+      aria-haspopup="dialog"
+      disabled={!!turnPlan}
+      onClick={() => openCatalog("appendix")}
+    >
+      <span className="appendix-bookmark-leather" aria-hidden="true">
+        <span className="appendix-bookmark-seam" />
+      </span>
+      <span className="appendix-bookmark-label">{text.appendix}</span>
+    </button>
+  ) : null;
   return (
     <main
       tabIndex={-1}
       data-magic={magic || undefined}
       className={`reader ${opened ? "reader--catalog" : ""}`}
     >
-      <header className="reader-header reader-header--search">
+      <header
+        className={`reader-header reader-header--search${hasAppendices ? " reader-header--appendices" : ""}`}
+      >
         {library.shelf ? (
           <a href={shelfHref} className="brand" onClick={onReturn}>
             <ChevronLeft size={23} aria-hidden />
@@ -689,6 +767,7 @@ export function BookReader({
             {library.title}
           </span>
         )}
+        {!wide && appendixControl}
         <div className="reader-actions">
           {library.magicMode && (
             <button
@@ -723,6 +802,7 @@ export function BookReader({
           swipe.current = undefined;
         }}
       >
+        {wide && appendixControl}
         {keptPaper ? (
           <div
             className="resting-art-slot"
@@ -900,90 +980,135 @@ export function BookReader({
                 <X aria-hidden size={24} />
               </button>
             </div>
-            <ol
-              className="catalog-pages"
-              style={
-                {
-                  "--folio-digits": String(pages.length).length,
-                } as CSSProperties
-              }
-            >
-              {entries.map((entry) => {
-                const active = activePage?.id === entry.id;
-                const nested = entry.sections;
-                const showPages = nested.length > 0 && !collapsed.has(entry.id);
-                const activeSection =
-                  active && showPages && (index > entry.first || activeAnchor)
-                    ? activePage.section?.id
-                    : undefined;
-                return (
-                  <li key={entry.id}>
-                    <div
-                      className="catalog-row"
-                      data-expandable={nested.length > 0 || undefined}
-                    >
-                      <a
-                        href={bookHref(book.id, entry.id)}
-                        aria-current={
-                          active && !activeSection ? "page" : undefined
-                        }
-                        onClick={() => catalog.current?.close()}
+            <div className="catalog-body">
+              <ol
+                className="catalog-pages"
+                style={
+                  {
+                    "--folio-digits": String(pages.length).length,
+                  } as CSSProperties
+                }
+              >
+                {entries.map((entry) => {
+                  const active = activePage?.id === entry.id;
+                  const nested = entry.sections;
+                  const showPages =
+                    nested.length > 0 && !collapsed.has(entry.id);
+                  const activeSection =
+                    active && showPages && (index > entry.first || activeAnchor)
+                      ? activePage.section?.id
+                      : undefined;
+                  return (
+                    <li key={entry.id}>
+                      <div
+                        className="catalog-row"
+                        data-expandable={nested.length > 0 || undefined}
                       >
-                        <span className="catalog-label">{entry.label}</span>
-                        <span className="catalog-leader" aria-hidden="true" />
-                        <span className="catalog-folio">{entry.first + 1}</span>
-                      </a>
-                      {nested.length > 0 && (
-                        <button
-                          type="button"
-                          className="catalog-expand"
-                          aria-label={text.chapterPages(entry.label)}
-                          aria-expanded={showPages}
-                          onClick={() =>
-                            setCollapsed((current) => {
-                              const next = new Set(current);
-                              if (next.has(entry.id)) next.delete(entry.id);
-                              else next.add(entry.id);
-                              return next;
-                            })
+                        <a
+                          href={bookHref(book.id, entry.id)}
+                          aria-current={
+                            active && !activeSection ? "page" : undefined
                           }
+                          onClick={closeForNavigation}
                         >
-                          <ChevronDown aria-hidden size={15} />
-                        </button>
+                          <span className="catalog-label">{entry.label}</span>
+                          <span className="catalog-leader" aria-hidden="true" />
+                          <span className="catalog-folio">
+                            {entry.first + 1}
+                          </span>
+                        </a>
+                        {nested.length > 0 && (
+                          <button
+                            type="button"
+                            className="catalog-expand"
+                            aria-label={text.chapterPages(entry.label)}
+                            aria-expanded={showPages}
+                            onClick={() =>
+                              setCollapsed((current) => {
+                                const next = new Set(current);
+                                if (next.has(entry.id)) next.delete(entry.id);
+                                else next.add(entry.id);
+                                return next;
+                              })
+                            }
+                          >
+                            <ChevronDown aria-hidden size={15} />
+                          </button>
+                        )}
+                      </div>
+                      {showPages && (
+                        <ol className="catalog-nested">
+                          {nested.map(({ section, position }) => (
+                            <li key={section.id}>
+                              <a
+                                href={bookHref(book.id, entry.id, section.id)}
+                                aria-current={
+                                  activeSection === section.id
+                                    ? "page"
+                                    : undefined
+                                }
+                                onClick={closeForNavigation}
+                              >
+                                <span className="catalog-label">
+                                  {section.title}
+                                </span>
+                                <span
+                                  className="catalog-leader"
+                                  aria-hidden="true"
+                                />
+                                <span className="catalog-folio">
+                                  {position + 1}
+                                </span>
+                              </a>
+                            </li>
+                          ))}
+                        </ol>
                       )}
-                    </div>
-                    {showPages && (
-                      <ol className="catalog-nested">
-                        {nested.map(({ section, position }) => (
-                          <li key={section.id}>
-                            <a
-                              href={bookHref(book.id, entry.id, section.id)}
-                              aria-current={
-                                activeSection === section.id
-                                  ? "page"
-                                  : undefined
-                              }
-                              onClick={() => catalog.current?.close()}
-                            >
-                              <span className="catalog-label">
-                                {section.title}
-                              </span>
-                              <span
-                                className="catalog-leader"
-                                aria-hidden="true"
-                              />
-                              <span className="catalog-folio">
-                                {position + 1}
-                              </span>
-                            </a>
-                          </li>
-                        ))}
-                      </ol>
-                    )}
-                  </li>
-                );
-              })}
-            </ol>
+                    </li>
+                  );
+                })}
+              </ol>
+              {hasAppendices && (
+                <section
+                  ref={appendicesSection}
+                  className="catalog-appendices"
+                  aria-labelledby="catalog-appendices-title"
+                >
+                  <h3 id="catalog-appendices-title">{text.appendices}</h3>
+                  <ul className="catalog-appendix-list">
+                    {appendices.map((appendix) => (
+                      <li key={`${appendix.href}\0${appendix.title}`}>
+                        <a
+                          className="catalog-appendix-link"
+                          href={resolveHref(appendix.href)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <FileText
+                            className="catalog-appendix-icon"
+                            size={20}
+                            aria-hidden="true"
+                          />
+                          <span className="catalog-appendix-title">
+                            {appendix.title}
+                          </span>
+                          <span className="catalog-appendix-format">PDF</span>
+                          <ExternalLink
+                            className="catalog-appendix-external"
+                            size={18}
+                            aria-hidden="true"
+                          />
+                          <span className="sr-only">
+                            {" "}
+                            ({text.opensInNewTab})
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+            </div>
           </div>
         )}
       </dialog>

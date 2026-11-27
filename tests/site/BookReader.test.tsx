@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BookReader, layoutOffsetTop } from "../../src/site/BookReader";
 import { type Book, copy, type Library } from "../../src/site/types";
@@ -129,5 +129,154 @@ describe("BookReader mobile page-turn and anchor scroll", () => {
     heading.getBoundingClientRect = () => new DOMRect(0, 272, 300, 32);
 
     expect(layoutOffsetTop(heading, article)).toBe(151);
+  });
+});
+
+describe("BookReader PDF appendices", () => {
+  beforeEach(() => {
+    HTMLDialogElement.prototype.showModal = vi.fn(function (
+      this: HTMLDialogElement
+    ) {
+      this.open = true;
+    });
+    HTMLDialogElement.prototype.close = vi.fn(function (
+      this: HTMLDialogElement
+    ) {
+      this.open = false;
+      this.dispatchEvent(new Event("close"));
+    });
+    Element.prototype.scrollIntoView = vi.fn();
+  });
+
+  const bookWithAppendices: Book = {
+    ...book,
+    appendices: [
+      {
+        title: "Observation worksheet",
+        href: "./content/field-notes/assets/observation-sheet.pdf",
+      },
+      {
+        title: "Equipment checklist",
+        href: "./content/field-notes/assets/checklist.pdf",
+      },
+    ],
+  };
+
+  it("omits the bookmark and Appendices section when a book has zero appendices", () => {
+    render(
+      <BookReader
+        library={{ ...library, locale: "en" }}
+        text={copy.en}
+        book={book}
+        pageId="index"
+        anchor={null}
+      />
+    );
+
+    expect(
+      screen.queryByRole("button", { name: copy.en.appendix })
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: copy.en.contents }));
+    expect(
+      screen.queryByRole("heading", { name: copy.en.appendices })
+    ).not.toBeInTheDocument();
+  });
+
+  it("opens Contents scrolled to Appendices from the bookmark and restores focus and scroll on close", () => {
+    const raf = vi
+      .spyOn(window, "requestAnimationFrame")
+      .mockImplementation((callback: FrameRequestCallback) => {
+        callback(0);
+        return 1;
+      });
+    try {
+      const { container } = render(
+        <BookReader
+          library={{ ...library, locale: "en" }}
+          text={copy.en}
+          book={bookWithAppendices}
+          pageId="why-ubuntu"
+          anchor={null}
+        />
+      );
+
+      const article = container.querySelector<HTMLElement>(
+        '.book-sheet[data-sheet="right"] .page-text'
+      );
+      expect(article).not.toBeNull();
+      if (article) article.scrollTop = 145;
+
+      const bookmark = screen.getByRole("button", { name: copy.en.appendix });
+      fireEvent.click(bookmark);
+
+      const appendicesHeading = screen.getByRole("heading", {
+        name: copy.en.appendices,
+      });
+      expect(appendicesHeading).toBeInTheDocument();
+      const scrollSpy = vi.mocked(Element.prototype.scrollIntoView);
+      expect(scrollSpy).toHaveBeenCalledWith({ block: "start" });
+
+      const links = screen
+        .getAllByRole("link")
+        .filter((link) => link.classList.contains("catalog-appendix-link"));
+      expect(
+        links.map(
+          (link) => link.querySelector(".catalog-appendix-title")?.textContent
+        )
+      ).toEqual(["Observation worksheet", "Equipment checklist"]);
+      for (const link of links) {
+        expect(link).toHaveAttribute("target", "_blank");
+        expect(link).toHaveAttribute("rel", "noopener noreferrer");
+        expect(link.textContent).toContain("PDF");
+        expect(link.textContent).toContain(copy.en.opensInNewTab);
+      }
+      expect(links[0].getAttribute("href")).toContain(
+        "/content/field-notes/assets/observation-sheet.pdf"
+      );
+
+      // Simulate scroll perturbation while Contents is open, then close Contents.
+      if (article) article.scrollTop = 0;
+      fireEvent.click(screen.getByRole("button", { name: copy.en.close }));
+
+      expect(document.activeElement).toBe(bookmark);
+      expect(article?.scrollTop).toBe(145);
+
+      // Opening from Contents restores focus to the Contents button instead.
+      const contentsBtn = screen.getByRole("button", {
+        name: copy.en.contents,
+      });
+      fireEvent.click(contentsBtn);
+      fireEvent.click(screen.getByRole("button", { name: copy.en.close }));
+      expect(document.activeElement).toBe(contentsBtn);
+    } finally {
+      raf.mockRestore();
+    }
+  });
+
+  it("renders the Japanese bookmark inside the reading stage on desktop viewports", () => {
+    vi.stubGlobal("matchMedia", (query: string) => ({
+      matches:
+        query === "(prefers-reduced-motion: reduce)" ||
+        query === "(min-width: 700px)",
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+
+    const { container } = render(
+      <BookReader
+        library={library}
+        text={copy.ja}
+        book={bookWithAppendices}
+        pageId="index"
+        anchor={null}
+      />
+    );
+
+    const bookmark = screen.getByRole("button", { name: copy.ja.appendix });
+    expect(bookmark.closest(".reader-stage")).not.toBeNull();
+    expect(
+      container.querySelector(".reader-header .appendix-bookmark")
+    ).toBeNull();
   });
 });
