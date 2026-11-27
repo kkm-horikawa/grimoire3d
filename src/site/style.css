@@ -815,19 +815,23 @@ a {
   background: none;
   border: 0;
 }
+.catalog-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #ab825c transparent;
+}
 .catalog-pages {
   --folio-width: max(23px, calc(var(--folio-digits, 2) * 1ch));
   --folio-padding: 10px;
   --catalog-gap: 8px;
   --catalog-toggle-size: 44px;
   font-size: clamp(17px, 1.45vw, 23px);
-  overflow: auto;
-  overscroll-behavior: contain;
   list-style: none;
   padding: 0 4px;
   margin: 6px 0 12px;
-  scrollbar-width: thin;
-  scrollbar-color: #ab825c transparent;
 }
 .catalog-pages a {
   display: grid;
@@ -2489,8 +2493,13 @@ html[data-initial-art="shelf"] body {
 .reader-header--search {
   grid-template-columns: minmax(0, 1fr) auto;
   column-gap: 8px;
+  pointer-events: none;
+}
+.reader-header--search > * {
+  pointer-events: auto;
 }
 .reader-header--search .brand {
+  justify-self: start;
   min-width: 0;
 }
 .reader-actions {
@@ -2516,5 +2525,272 @@ html[data-initial-art="shelf"] body {
   .reader-actions .magic-mode {
     font-size: 0;
     min-width: 42px;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.reader--catalog .appendix-bookmark {
+  visibility: hidden;
+}
+
+.appendix-bookmark {
+  --tab-bevel: 14px;
+  position: relative;
+  isolation: isolate;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: clamp(78px, 6.2vw, 114px);
+  min-height: 44px;
+  padding: 8px 18px 6px;
+  border: 0;
+  background: transparent;
+  color: var(--cover-lettering, #f4e4c7);
+  font-size: clamp(14px, 1.15vw, 18px);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-shadow: var(--cover-title-shadow, 0 1px 2px #1b0609);
+  transition: transform 0.16s ease, filter 0.16s ease;
+}
+
+.appendix-bookmark-leather,
+.appendix-bookmark-leather::before,
+.appendix-bookmark-seam,
+.appendix-bookmark-seam::after {
+  position: absolute;
+  pointer-events: none;
+}
+
+.appendix-bookmark-leather {
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, #9a574b 0%, #612023 48%, #2e0a0e 100%);
+  clip-path: polygon(
+    var(--tab-bevel) 0,
+    calc(100% - var(--tab-bevel)) 0,
+    100% var(--tab-bevel),
+    100% 100%,
+    0 100%,
+    0 var(--tab-bevel)
+  );
+  filter: var(--leather-filter, none);
+}
+
+.appendix-bookmark-leather::before {
+  content: "";
+  inset: 1.5px 1.5px 0;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.18'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 50% 18%, #7f292c 0%, #5b181d 55%, #3d0d13 100%);
+  clip-path: polygon(
+    calc(var(--tab-bevel) - 1px) 0,
+    calc(100% - var(--tab-bevel) + 1px) 0,
+    100% calc(var(--tab-bevel) - 1px),
+    100% 100%,
+    0 100%,
+    0 calc(var(--tab-bevel) - 1px)
+  );
+}
+
+.appendix-bookmark-seam {
+  inset: 5px 5px 0;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      #c68d7080 0 4px,
+      transparent 4px 7px
+    ),
+    linear-gradient(180deg, #b97d6366 0%, #9b5c4755 68%, #24080b80 100%);
+  clip-path: polygon(
+    calc(var(--tab-bevel) - 4px) 0,
+    calc(100% - var(--tab-bevel) + 4px) 0,
+    100% calc(var(--tab-bevel) - 4px),
+    100% 100%,
+    0 100%,
+    0 calc(var(--tab-bevel) - 4px)
+  );
+}
+
+.appendix-bookmark-seam::after {
+  content: "";
+  inset: 1px 1.5px 0;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.2'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #742427 0%, #58171c 62%, #390c11 100%);
+  box-shadow: inset 0 -6px 8px -4px #16040699;
+  clip-path: polygon(
+    calc(var(--tab-bevel) - 5px) 0,
+    calc(100% - var(--tab-bevel) + 5px) 0,
+    100% calc(var(--tab-bevel) - 5px),
+    100% 100%,
+    0 100%,
+    0 calc(var(--tab-bevel) - 5px)
+  );
+}
+
+.appendix-bookmark-label {
+  position: relative;
+  z-index: 1;
+}
+
+.appendix-bookmark:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+
+.appendix-bookmark:focus-visible {
+  outline: 2px solid #f2c17a;
+  outline-offset: 3px;
+  border-radius: 6px 6px 2px 2px;
+}
+
+@media (min-width: 700px) {
+  .reader-stage[data-frame="reading"] .appendix-bookmark {
+    position: absolute;
+    bottom: calc(50% + var(--read-paper-height, 75vh) / 2 + 6px);
+    left: calc(50% + clamp(12px, 1.3vw, 26px));
+    min-width: clamp(86px, 6.2vw, 118px);
+    height: clamp(38px, 4.4svh, 48px);
+    min-height: 38px;
+    padding: 4px clamp(16px, 1.5vw, 24px) 2px;
+    filter: drop-shadow(0 -2px 6px #12040880);
+  }
+  .reader-stage[data-frame="reading"] .appendix-bookmark:not(:disabled):hover {
+    transform: translateY(-2px);
+    filter: drop-shadow(0 -3px 8px #120408a0) brightness(1.08);
+  }
+}
+
+@media (max-width: 699px) {
+  .reader-header--appendices {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-inline: 12px;
+  }
+  .reader-header--appendices .brand {
+    flex: 0 0 auto;
+    gap: 4px;
+    font-size: 15px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .reader-header--appendices .appendix-bookmark {
+    --tab-bevel: 12px;
+    flex: 0 0 auto;
+    margin-inline: auto;
+    align-self: flex-end;
+    min-width: 72px;
+    height: 38px;
+    min-height: 38px;
+    padding: 4px 11px 3px;
+    font-size: 14px;
+    transform: translateY(12px);
+    filter: drop-shadow(0 -2px 5px #12040870);
+  }
+  .reader-header--appendices .reader-actions {
+    flex: 0 0 auto;
+    gap: 4px;
+  }
+  .reader-header--appendices .reader-search-button {
+    min-width: 36px;
+  }
+  .reader-header--appendices .contents-button {
+    grid-area: auto;
+    gap: 5px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 440px) {
+  html[lang="en"] .reader-header--appendices .magic-mode {
+    font-size: 0;
+    min-width: 36px;
+    min-height: 36px;
+    padding-inline: 0;
+    gap: 0;
+  }
+}
+
+.catalog-appendices {
+  margin: 14px 4px 8px;
+  padding: 16px 4px 0;
+  border-top: 1px solid #9874428c;
+}
+
+.catalog-appendices h3 {
+  margin: 0 0 10px 8px;
+  color: #321b13;
+  font-size: clamp(16px, 1.35vw, 22px);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.catalog-appendix-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.catalog-appendix-link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #ba733024;
+  color: #321b13;
+  font-size: clamp(14px, 1.05vw, 17px);
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.catalog-appendix-link:is(:hover, :focus-visible) {
+  background: #ba73303a;
+}
+
+.catalog-appendix-icon,
+.catalog-appendix-format,
+.catalog-appendix-external {
+  color: #7c242b;
+  flex: none;
+}
+
+.catalog-appendix-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.catalog-appendix-format {
+  font-size: 0.78em;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+@media (max-width: 699px) {
+  .catalog-appendices h3 {
+    font-size: clamp(18px, 5vw, 22px);
+  }
+  .catalog-appendix-link {
+    font-size: clamp(15.5px, 4.2vw, 18px);
+    min-height: 50px;
+    padding: 11px 14px;
   }
 }
