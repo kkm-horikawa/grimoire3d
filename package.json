@@ -22,9 +22,9 @@
     "cli"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run build && node cli/cli.js serve",
     "build": "vite build && tsc --emitDeclarationOnly --declaration --noEmit false --outDir dist && vite build --config vite.site.config.ts",
-    "preview": "vite preview",
+    "docs:build": "node cli/cli.js build",
     "lint": "biome lint src cli",
     "lint:fix": "biome lint --write src cli",
     "format": "biome format --write src cli",

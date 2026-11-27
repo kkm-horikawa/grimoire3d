@@ -6,7 +6,7 @@
 
 # Core source code
 /src/ @kkm-horikawa
-/packages/ @kkm-horikawa
+/cli/ @kkm-horikawa
 
 # Documentation
 /docs/ @kkm-horikawa

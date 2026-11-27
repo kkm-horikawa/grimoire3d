@@ -19,7 +19,7 @@ The [open model](open.glb) loads through GLTFLoader. The [closed model](closed.g
 
 Counts come from the GLB nodes, primitives, and indices. The browser adds one draw call for the floor shadow. The model omits hidden interior faces, groups the foil by material, and shares geometry between the left and underlying right pages.
 
-The [paper reference](materials/paper.avif) comes from an unprinted region of the reader concept. The [leather reference](materials/calfskin.avif) uses patches from the red cover with the title, emblem, and gold lines removed. The [red](closed-render.avif), [evergreen](closed-evergreen.avif), and [indigo](closed-indigo.avif) renders share their camera and lighting.
+The [paper reference](materials/paper.avif) comes from an unprinted region of the reader concept. The [leather reference](materials/calfskin.avif) uses patches from the red cover with the title, emblem, and gold lines removed. Running `generate.py` also outputs five Cycles AVIF preview renders (`read-render.avif`, `explore-render.avif`, `closed-render.avif`, `closed-evergreen.avif`, and `closed-indigo.avif`) for local inspection.
 
 ## Pages and camera
 
@@ -37,15 +37,9 @@ Adjacent morph weights interpolate linearly. The original Explore pose uses 25%.
 
 [BookScene](../../src/site/BookScene.tsx) emits `grimoire-projection` when it renders. The event gives the four corners of each stationary page and a 9×9 grid for the turning sheet, normalized to the canvas dimensions for matching HTML placement. In the Explore reference, the front page's ink composites a transparent canvas into the right-page UV. The upper left is the far spine corner and the lower right is the near fore edge. The reverse is blank in that reference, and the number appears on the paper beneath it.
 
-## Comparison with the design references
+## Reference measurements
 
-| State | Reference | Cycles render | Overlay |
-| --- | --- | --- | --- |
-| Large reader | [Mockup](../../docs/book-experience/read-large-v2.avif) | [Reader](read-render.avif) | [Overlay](read-overlay.avif) |
-| Explore reference | [Mockup](../../docs/book-experience/explore.avif) | [Explore](explore-render.avif) | [Overlay](explore-overlay.avif) |
-| Closed cover | [Bookshelf](../../docs/book-experience/shelf-large-v2.avif) | [Cover](closed-render.avif) | — |
-
-The cover corners in the reference set each camera's pose and focal length. The Explore model follows the top, bottom, and fore-edge contours of the curled sheet. Each overlay blends the text-bearing reference and the unprinted render equally.
+The cover corners in the original design references set each camera's pose and focal length. The Explore model follows the top, bottom, and fore-edge contours of the curled sheet.
 
 On November 19, 2026, both rendered and reference frames were resized to 700×394. The paper mask used the largest connected component within the book above RGB thresholds of 90, 60, and 35. Holes left by letters were filled. Paper shadows and foil can affect the mask boundary.
 
@@ -57,9 +51,9 @@ On November 19, 2026, both rendered and reference frames were resized to 700×39
 | Reader, 1920×1080 browser | 96.9% | 2 px | 6 px |
 | Explore, 1920×1080 browser | 95.4% | 3.2 px | 13 px |
 
-The [material comparison](material-comparison.avif) pairs reference crops with the browser reader, Explore, and Cycles shelf covers. In the large browser reader, one paper sample was RGB (246,229,208) versus reference (247,230,210). Explore's fore edge measured (210,170,134) versus (212,174,138). The underside of the curl, the paper stack, the gold highlights, and the shadow footprint still differed.
+In the large browser reader, one paper sample measured RGB (246,229,208) versus reference (247,230,210). Explore's fore edge measured (210,170,134) versus (212,174,138).
 
-Tuning the right-page shadow lowered mean RGB error from 27.9 to 6.5 across 24 patches of 7×7 pixels in 600×337 images. Tuning the shadow across the spine, underside of the curl, paper stack, and foil lowered error from 42.6 to 24.4 on the curl and 60.1 to 34.7 on the front paper stack. A model update brought curl error from 30.8 to 17.0 at 700×394 and reduced the average vertical offset of four foil bands from 13.0 px to 1.0 px. Raising the leather under the foil increased the 90th-percentile green-channel value of the second band from 143 to 175, compared with 192 in the reference. The [browser comparison](../../docs/book-experience/comparison/explore-large-comparison.avif) shows the final frame and its overlay.
+Tuning the right-page shadow lowered mean RGB error from 27.9 to 6.5 across 24 patches of 7×7 pixels in 600×337 images. Tuning the shadow across the spine, underside of the curl, paper stack, and foil lowered error from 42.6 to 24.4 on the curl and 60.1 to 34.7 on the front paper stack. A model update brought curl error from 30.8 to 17.0 at 700×394 and reduced the average vertical offset of four foil bands from 13.0 px to 1.0 px. Raising the leather under the foil increased the 90th-percentile green-channel value of the second band from 143 to 175, compared with 192 in the reference.
 
 ## Browser rendering measurements
 

@@ -16,7 +16,6 @@ export default defineConfig({
       exclude: [
         "node_modules/",
         "tests/setup.ts",
-        "src/main.tsx",
         "src/index.ts",
         "src/types/**",
         "src/components/BookModel.tsx",

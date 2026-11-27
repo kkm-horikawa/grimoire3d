@@ -10,7 +10,7 @@ Run `npx grimoire3d serve` from your project directory and open the URL it print
 
 If your Markdown lives in `handbook/`, add `--docs-dir handbook` to either `serve` or `build`.
 
-![A Markdown chapter is added under docs, then opened and paged through from the Grimoire3D bookshelf](docs/book-experience/quick-start.gif)
+![A Markdown chapter is added under docs, then opened and paged through from the Grimoire3D bookshelf](docs/assets/quick-start.gif)
 
 [Read the documentation](https://kkm-horikawa.github.io/grimoire3d/)
 
@@ -60,7 +60,7 @@ npx grimoire3d serve
 
 Open the URL printed in the terminal. The preview updates when you save.
 
-![Workflow from Markdown files to a local bookshelf and a static site in dist](docs/book-experience/workflow.avif)
+![Workflow from Markdown files to a local bookshelf and a static site in dist](docs/assets/workflow.avif)
 
 ## Multiple bookshelves (Library Hall)
 
