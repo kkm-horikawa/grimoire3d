@@ -110,18 +110,23 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
     expect(guide).not.toContain("<iframe");
     expect(guide).not.toContain("library-footer");
     const cover = await readFile(
-      join(root, "site/read/notes/index/index.html"),
-      "utf8"
-    );
-    expect(cover).toContain("../../../read/notes/guide/#publish");
-    expect(cover).toContain(
-      '<a class="turn-button" href="../../../read/notes/guide/" aria-label="次のページ">'
-    );
-    const book = await readFile(
       join(root, "site/read/notes/index.html"),
       "utf8"
     );
-    for (const html of [shelf, book, cover, guide]) {
+    expect(cover).toContain(
+      'rel="canonical" href="https://example.com/projects/grimoire/read/notes/"'
+    );
+    expect(cover).toContain("../../read/notes/guide/#publish");
+    expect(cover).toContain(
+      '<a class="turn-button" href="../../read/notes/guide/" aria-label="次のページ">'
+    );
+    expect(guide).toContain(
+      '<a class="turn-button" href="../../../read/notes/" aria-label="前のページ">'
+    );
+    await expect(
+      readFile(join(root, "site/read/notes/index/index.html"), "utf8")
+    ).rejects.toMatchObject({ code: "ENOENT" });
+    for (const html of [shelf, cover, guide]) {
       expect(html.split(verification)).toHaveLength(2);
       expect(html.split(snippet)).toHaveLength(2);
       expect(html.indexOf(verification)).toBeGreaterThan(
@@ -132,6 +137,10 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
     }
     const sitemap = await readFile(join(root, "site/sitemap.xml"), "utf8");
     expect(sitemap).toContain(
+      "<loc>https://example.com/projects/grimoire/read/notes/</loc>"
+    );
+    expect(sitemap).not.toContain("/read/notes/index/");
+    expect(sitemap).toContain(
       "<loc>https://example.com/projects/grimoire/read/notes/guide/</loc>"
     );
     const review = await readFile(
@@ -141,7 +150,7 @@ it("publishes readable chapter HTML and canonical URLs under a site subpath", as
     expect(review).toContain('<meta name="robots" content="noindex">');
     expect(review).toContain("Readable by direct link.");
     expect(sitemap).not.toContain("/read/notes/review/");
-    for (const html of [shelf, book, cover, guide]) {
+    for (const html of [shelf, cover, guide]) {
       expect(html).not.toContain('<meta name="robots" content="noindex">');
     }
   } finally {
@@ -172,12 +181,15 @@ it.each([
       const output = join(root, "site");
       await writeStaticPages(join(root, "template"), output, library);
 
-      for (const route of ["/", `/read/${id}/`, `/read/${id}/index/`]) {
+      for (const route of ["/", `/read/${id}/`]) {
         const html = await readFile(join(output, route, "index.html"), "utf8");
         expect(html.includes('<meta name="robots" content="noindex">')).toBe(
           !indexable.some((url) => url === route)
         );
       }
+      await expect(
+        readFile(join(output, `/read/${id}/index/index.html`), "utf8")
+      ).rejects.toMatchObject({ code: "ENOENT" });
       if (indexable.length) {
         const sitemap = await readFile(join(output, "sitemap.xml"), "utf8");
         expect(sitemap.match(/<loc>(.*?)<\/loc>/g)).toEqual([
@@ -221,7 +233,7 @@ it("omits the first h2 anchor on static next-page links to a chapter opening", a
     const library = await readLibrary(root, { locale: "ja" });
     await writeStaticPages(join(root, "template"), join(root, "site"), library);
     const cover = await readFile(
-      join(root, "site/read/book/index/index.html"),
+      join(root, "site/read/book/index.html"),
       "utf8"
     );
     const chapter = await readFile(
@@ -229,11 +241,76 @@ it("omits the first h2 anchor on static next-page links to a chapter opening", a
       "utf8"
     );
     expect(cover).toContain(
-      '<a class="turn-button" href="../../../read/book/chapter/" aria-label="次のページ">'
+      '<a class="turn-button" href="../../read/book/chapter/" aria-label="次のページ">'
+    );
+    expect(chapter).toContain(
+      '<a class="turn-button" href="../../../read/book/" aria-label="前のページ">'
     );
     expect(chapter).toContain(
       '<a class="turn-button" href="../../../read/book/chapter/#second" aria-label="次のページ">'
     );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+it("keeps nested folder index pages and books without a root index.md working", async () => {
+  const root = await mkdtemp(join(tmpdir(), "grimoire-nested-index-"));
+  try {
+    await mkdir(join(root, "docs/with-nested/part"), { recursive: true });
+    await mkdir(join(root, "docs/no-index"), { recursive: true });
+    await mkdir(join(root, "template"));
+    await writeFile(
+      join(root, "template/index.html"),
+      '<html lang="en"><head><title>Default</title></head><body><div id="root"></div></body></html>'
+    );
+    await writeFile(
+      join(root, "docs/with-nested/index.md"),
+      "# Root Cover\n\nOpening text."
+    );
+    await writeFile(
+      join(root, "docs/with-nested/part/index.md"),
+      "# Nested Part\n\nPart intro."
+    );
+    await writeFile(
+      join(root, "docs/no-index/chapter-one.md"),
+      "# Chapter One\n\nFirst chapter without root index."
+    );
+    const library = await readLibrary(root, {
+      locale: "en",
+      siteUrl: "https://example.com/",
+    });
+    const out = join(root, "site");
+    await writeStaticPages(join(root, "template"), out, library);
+
+    const rootCover = await readFile(
+      join(out, "read/with-nested/index.html"),
+      "utf8"
+    );
+    expect(rootCover).toContain("Opening text.");
+    await expect(
+      readFile(join(out, "read/with-nested/index/index.html"), "utf8")
+    ).rejects.toMatchObject({ code: "ENOENT" });
+
+    const nestedIndex = await readFile(
+      join(out, "read/with-nested/part/index/index.html"),
+      "utf8"
+    );
+    expect(nestedIndex).toContain("Part intro.");
+    expect(nestedIndex).toContain(
+      'rel="canonical" href="https://example.com/read/with-nested/part/index/"'
+    );
+
+    const noIndexBook = await readFile(
+      join(out, "read/no-index/index.html"),
+      "utf8"
+    );
+    expect(noIndexBook).toContain("static-reading");
+    const chapterOne = await readFile(
+      join(out, "read/no-index/chapter-one/index.html"),
+      "utf8"
+    );
+    expect(chapterOne).toContain("First chapter without root index.");
   } finally {
     await rm(root, { recursive: true, force: true });
   }

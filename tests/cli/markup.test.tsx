@@ -93,10 +93,7 @@ it("renders the same rich Markdown and safe author HTML in the live and publishe
   const library = await readLibrary(root, { locale: "ja" });
   expect(library.issues).toEqual([]);
   await writeStaticPages(join(root, "template"), join(root, "dist"), library);
-  const html = await readFile(
-    join(root, "dist/read/book/index/index.html"),
-    "utf8"
-  );
+  const html = await readFile(join(root, "dist/read/book/index.html"), "utf8");
   const published = document.createElement("div");
   published.innerHTML = html;
   const live = render(
@@ -181,7 +178,7 @@ it("renders the same rich Markdown and safe author HTML in the live and publishe
     "#/book/other"
   );
   expect(published.querySelector("details a")?.getAttribute("href")).toBe(
-    "../../../read/book/other/"
+    "../../read/book/other/"
   );
 });
 

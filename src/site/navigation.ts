@@ -32,7 +32,9 @@ export function bookHref(book: string, page?: string, anchor?: string): string {
     );
   }
   const route = `#/${encodeURIComponent(book)}`;
-  if (page === undefined) return route;
+  if (page === undefined || page === "index") {
+    return anchor ? `${route}?anchor=${encodeURIComponent(anchor)}` : route;
+  }
   const chapter = `${route}/${encodeURIComponent(page)}`;
   return anchor ? `${chapter}?anchor=${encodeURIComponent(anchor)}` : chapter;
 }
