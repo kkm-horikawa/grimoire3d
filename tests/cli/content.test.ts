@@ -428,4 +428,130 @@ describe("Markdown in a project", () => {
     );
     expect(books[0].pages[1].section?.id).toBe("移行");
   });
+
+  it("bundles book-scoped PDF appendices in declared order even without chapter links", async () => {
+    await write(
+      "docs/field-notes/index.md",
+      [
+        "---",
+        "title: Field Notes",
+        "appendices:",
+        "  - title: Observation worksheet",
+        '    file: "./assets/observation sheet.pdf"',
+        "  - title: Field checklist",
+        "    file: ./assets/checklist.pdf",
+        "---",
+        "# Field Notes",
+      ].join("\n")
+    );
+    await write("docs/field-notes/assets/observation sheet.pdf", "%PDF-1.4\n");
+    await write("docs/field-notes/assets/checklist.pdf", "%PDF-1.4\n");
+    await write(
+      "docs/field-notes/recording.md",
+      "---\nappendices:\n  - title: Ignored\n    file: ./assets/checklist.pdf\n---\n# Recording Observations"
+    );
+    await write(
+      "docs/reference/index.md",
+      "---\nappendices: []\n---\n# Reference"
+    );
+    await write("docs/guides/index.md", "---\ntitle: Guides\n---\n# Guides");
+    await write(
+      "docs/guides/printable/index.md",
+      [
+        "---",
+        "book: true",
+        "title: Printable Kit",
+        "appendices:",
+        "  - title: Quick card",
+        "    file: ./assets/card.pdf",
+        "---",
+        "# Printable Kit",
+      ].join("\n")
+    );
+    await write("docs/guides/printable/assets/card.pdf", "%PDF-1.4\n");
+
+    const result = await readLibrary(project, { locale: "en" });
+    const fieldNotes = result.books.find(
+      (book: { id: string }) => book.id === "field-notes"
+    );
+    const reference = result.books.find(
+      (book: { id: string }) => book.id === "reference"
+    );
+    const guides = result.books.find(
+      (book: { id: string }) => book.id === "guides"
+    );
+    const printable = result.books.find(
+      (book: { id: string }) => book.id === "_book-guides--printable"
+    );
+
+    expect(fieldNotes.appendices).toEqual([
+      {
+        title: "Observation worksheet",
+        href: "./content/field-notes/assets/observation%20sheet.pdf",
+      },
+      {
+        title: "Field checklist",
+        href: "./content/field-notes/assets/checklist.pdf",
+      },
+    ]);
+    expect(reference.appendices).toBeUndefined();
+    expect(guides.appendices).toBeUndefined();
+    expect(printable.appendices).toEqual([
+      {
+        title: "Quick card",
+        href: "./content/guides/printable/assets/card.pdf",
+      },
+    ]);
+    expect([...result.assets.keys()].sort()).toEqual([
+      "field-notes/assets/checklist.pdf",
+      "field-notes/assets/observation sheet.pdf",
+      "guides/printable/assets/card.pdf",
+    ]);
+  });
+
+  it.each([
+    ["non-list value", 'appendices: "./assets/sheet.pdf"', "appendices"],
+    [
+      "missing title",
+      "appendices:\n  - file: ./assets/sheet.pdf",
+      "./assets/sheet.pdf",
+    ],
+    ["missing file", "appendices:\n  - title: Worksheet", "Worksheet"],
+    [
+      "missing local PDF",
+      "appendices:\n  - title: Worksheet\n    file: ./assets/missing.pdf",
+      "./assets/missing.pdf",
+    ],
+    [
+      "non-PDF file",
+      "appendices:\n  - title: Notes\n    file: ./assets/notes.txt",
+      "./assets/notes.txt",
+    ],
+    [
+      "external URL",
+      "appendices:\n  - title: External\n    file: https://example.com/sheet.pdf",
+      "https://example.com/sheet.pdf",
+    ],
+    [
+      "path outside docs",
+      "appendices:\n  - title: Outside\n    file: ../../outside.pdf",
+      "../../outside.pdf",
+    ],
+  ])(
+    "reports a diagnostic naming the book and file for %s",
+    async (_caseName, frontMatter, expectedDetail) => {
+      await write("outside.pdf", "%PDF-1.4\n");
+      await write("docs/field-notes/assets/notes.txt", "plain text");
+      await write(
+        "docs/field-notes/index.md",
+        `---\ntitle: Field Notes\n${frontMatter}\n---\n# Field Notes`
+      );
+      await expect(readLibrary(project, { locale: "en" })).rejects.toThrow(
+        "field-notes/index.md (Field Notes)"
+      );
+      await expect(readLibrary(project, { locale: "en" })).rejects.toThrow(
+        expectedDetail
+      );
+    }
+  );
 });

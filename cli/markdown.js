@@ -189,6 +189,7 @@ export function readMarkdown(source) {
           : undefined,
       date: metadata.date,
       chapters: metadata.chapters,
+      appendices: metadata.appendices,
       book: metadata.book === true,
       noindex: metadata.noindex === true,
       coverImage:
