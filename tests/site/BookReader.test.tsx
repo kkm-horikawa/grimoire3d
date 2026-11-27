@@ -85,7 +85,7 @@ describe("BookReader mobile page-turn and anchor scroll", () => {
     );
     expect(
       screen.getByRole("link", { name: copy.ja.previous }).getAttribute("href")
-    ).toBe("#/ubuntu-guide/index");
+    ).toBe("#/ubuntu-guide");
     expect(
       screen.getByRole("link", { name: copy.ja.next }).getAttribute("href")
     ).toBe("#/ubuntu-guide/why-ubuntu?anchor=next-step");

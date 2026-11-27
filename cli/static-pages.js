@@ -471,34 +471,38 @@ export async function writeStaticPages(
   );
   for (const book of site.books) {
     const pages = chapters.get(book.id) ?? [];
-    await write(
-      {
-        title: book.title,
-        description: pages[0]?.description,
-        noindex: pages[0]?.noindex,
-      },
-      ["read", book.id],
-      (prefix) =>
-        `<main class="static-reading"><nav><a href="${prefix}">${libraryLabel}</a></nav><h1>${escapeHtml(book.title)}</h1>${linkList(
-          pages.map((page) => ({
-            href: prefix + readerPath(book.id, page.chapter),
-            title: page.title,
-          }))
-        )}</main>`
-    );
-    for (const page of pages) {
+    const coverPage = pages.find((page) => page.chapter === "index");
+    if (!coverPage) {
       await write(
-        page,
-        ["read", book.id, ...page.chapter.split("/")],
+        {
+          title: book.title,
+          description: pages[0]?.description,
+          noindex: pages[0]?.noindex,
+        },
+        ["read", book.id],
         (prefix) =>
-          staticChapter({
-            site,
-            book: books.get(book.id),
-            page,
-            prefix,
-            assets,
-            libraryLabel,
-          })
+          `<main class="static-reading"><nav><a href="${prefix}">${libraryLabel}</a></nav><h1>${escapeHtml(book.title)}</h1>${linkList(
+            pages.map((page) => ({
+              href: prefix + readerPath(book.id, page.chapter),
+              title: page.title,
+            }))
+          )}</main>`
+      );
+    }
+    for (const page of pages) {
+      const segments =
+        page.chapter === "index"
+          ? ["read", book.id]
+          : ["read", book.id, ...page.chapter.split("/")];
+      await write(page, segments, (prefix) =>
+        staticChapter({
+          site,
+          book: books.get(book.id),
+          page,
+          prefix,
+          assets,
+          libraryLabel,
+        })
       );
     }
   }

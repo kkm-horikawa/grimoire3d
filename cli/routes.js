@@ -1,6 +1,7 @@
 /** @param {string} book @param {string} [chapter] */
 export function readerPath(book, chapter) {
-  return `read/${[book, ...(chapter?.split("/") ?? [])].map(encodeURIComponent).join("/")}/`;
+  const segments = chapter && chapter !== "index" ? chapter.split("/") : [];
+  return `read/${[book, ...segments].map(encodeURIComponent).join("/")}/`;
 }
 
 /** @param {string} hash */

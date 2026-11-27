@@ -119,7 +119,7 @@ describe("opt-in full-text search", () => {
     fireEvent.keyDown(field, { key: "ArrowDown" });
     expect(result).toHaveFocus();
     fireEvent.click(result);
-    expect(decodeURIComponent(location.hash)).toBe("#/guide/index?anchor=設定");
+    expect(decodeURIComponent(location.hash)).toBe("#/guide?anchor=設定");
     await waitFor(() =>
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     );
