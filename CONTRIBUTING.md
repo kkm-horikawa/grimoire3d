@@ -20,25 +20,17 @@ npm ci
 
 > **Note**: `npm ci` sets up Husky pre-commit hooks via the `prepare` script.
 
-### Running Development Server
+### Previewing and building the documentation
 
-```bash
+The public library and development demo are built by Grimoire3D directly from `docs/`. Edit the Markdown there and use the CLI to preview or build it.
+
+```sh
 npm run dev
 ```
 
-Open http://localhost:5173 in your browser to see the BookViewer demo.
+`npm run dev` builds the package and starts the local Grimoire3D preview server for `docs/`. If `dist/` is already built, you can run `node cli/cli.js serve` directly.
 
-### Previewing and building the documentation
-
-The public library is built by Grimoire3D from `website/docs/`. Edit the Markdown there and use the CLI to preview or build it.
-
-```sh
-npm ci
-npm run build
-node cli/cli.js serve
-```
-
-Run `node cli/cli.js build` from the repository root to regenerate `website/dist/`. The root `grimoire.yml` selects `website/docs/` for both commands. The GitHub Pages site publishes the built files from the root of `gh-pages`. Add an empty `.nojekyll` file to the deployment copy when updating that branch.
+Run `npm run docs:build` (or `node cli/cli.js build`) from the repository root to regenerate `dist-site/`. The root `grimoire.yml` reads `docs/` by default and writes the static site to `dist-site/` so it does not collide with the package build in `dist/`. The GitHub Pages site publishes the built files from the root of `gh-pages`. Add an empty `.nojekyll` file to the deployment copy when updating that branch.
 
 ### Running Tests
 
@@ -178,13 +170,13 @@ import type { PageContent } from "./types";
 
 ```
 tests/
-├── setup.ts              # Test setup
+├── setup.ts                  # Test setup
+├── cli/
+│   └── content.test.ts
 ├── components/
 │   └── BookViewer.test.tsx
-├── hooks/
-│   └── usePageFlip.test.ts
-└── utils/
-    └── parseMarkdown.test.ts
+└── site/
+    └── BookReader.test.tsx
 ```
 
 #### Test Naming
@@ -222,24 +214,23 @@ npm test -- --run tests/components/BookViewer.test.tsx
 
 ```
 grimoire3d/
+├── assets/
+│   ├── book/                 # Blender book generator, materials, and GLB models
+│   └── shelf-plate/          # Blender brass shelf plate source and render scripts
+├── cli/                      # Grimoire3D CLI (serve / build)
+├── docs/                     # Public documentation and local development demo
 ├── src/
-│   ├── index.ts              # Main exports
-│   ├── components/
-│   │   ├── index.ts
-│   │   └── BookViewer.tsx
-│   ├── hooks/
-│   ├── types/
-│   │   └── index.ts
-│   ├── utils/
-│   └── styles/
-│       └── main.css
+│   ├── index.ts              # Main library exports
+│   ├── components/           # Public React BookViewer component
+│   ├── site/                 # Standalone 3D bookshelf, reader, and Library Hall app
+│   ├── styles/
+│   └── types/
 ├── tests/
-├── docs/
-│   ├── ARCHITECTURE.md
-│   └── GLOSSARY.md
+├── grimoire.yml
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
+├── vite.site.config.ts
 └── biome.json
 ```
 

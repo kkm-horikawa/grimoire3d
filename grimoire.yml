@@ -1,6 +1,5 @@
 title: Grimoire3D Documentation
-docsDir: website/docs
-outDir: website/dist
+outDir: dist-site
 description: Turn Markdown into a 3D bookshelf. Learn how to write chapters, embed media and diagrams, and publish a static Grimoire3D site.
 siteUrl: https://kkm-horikawa.github.io/grimoire3d/
 author: Grimoire3D
