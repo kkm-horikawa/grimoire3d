@@ -93,3 +93,23 @@ coverImage: ./assets/field-notes.webp
 ```
 
 Use an AVIF, GIF, JPEG, PNG, or WebP file anywhere under `docs/`. Paths are relative to the book's `index.md`. The image fits below the title without cropping. Long titles use up to three lines on the cover, and the book link keeps its full title. Use a small, compressed image for a fast bookshelf.
+
+## PDF appendices
+
+List book-level PDF attachments such as printable worksheets or checklists in the book's `index.md` front matter. Paths are relative to that `index.md`.
+
+```markdown
+---
+title: Field Notes
+appendices:
+  - title: Observation worksheet
+    file: ./assets/observation-sheet.pdf
+  - title: Equipment checklist
+    file: ./assets/equipment-checklist.pdf
+---
+# Field Notes
+```
+
+When a book declares one or more appendices, the reader shows a leather **Appendix** bookmark above the book and lists the files under **Appendices** at the end of **Contents** in the order declared. Selecting an entry opens the PDF in a new tab while keeping the reader on the current page.
+
+Both `serve` and `build` include every declared PDF in the published site even when no chapter links to it directly. Missing files, non-PDF paths, or paths outside `docs/` stop the build with an error naming the book and file.
