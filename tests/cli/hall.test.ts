@@ -247,11 +247,11 @@ describe("Multi-shelf Library Hall configuration and build", () => {
       await readFile(join(outDir, "shelves.json"), "utf8")
     );
     const productHtml = await readFile(
-      join(outDir, "product-docs/read/guide/index/index.html"),
+      join(outDir, "product-docs/read/guide/index.html"),
       "utf8"
     );
     const releaseHtml = await readFile(
-      join(outDir, "release-notes/read/v1/index/index.html"),
+      join(outDir, "release-notes/read/v1/index.html"),
       "utf8"
     );
 
