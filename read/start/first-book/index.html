@@ -29,14 +29,14 @@
       if (started) return;
       started = true;
       for (const event of events) window.removeEventListener(event,start,true);
-      const reader = "../../../assets/BookReader-Dj9bVeII.js";
+      const reader = "../../../assets/BookReader-ahvkdMC8.js";
       if (reader) {
         const preload = document.createElement("link");
         preload.rel = "modulepreload";
         preload.href = reader;
         document.head.append(preload);
       }
-      void import("../../../assets/index-CBClBwEj.js");
+      void import("../../../assets/index-BaHzJo5n.js");
     }
     const art = [...document.querySelectorAll("link[data-first-art]")].find(link => matchMedia(link.media).matches);
     if (!art || !matchMedia("(max-width: 699px)").matches) start();
@@ -50,7 +50,7 @@
       image.src = art.href;
     }
     </script>
-    <link rel="modulepreload" crossorigin href="../../../assets/types-HX5Q6aR9.js">
+    <link rel="modulepreload" crossorigin href="../../../assets/types-DRAQKPUC.js">
     <link rel="stylesheet" crossorigin href="../../../assets/index-B1xJ-qX4.css">
   </head>
   <body>
@@ -87,11 +87,11 @@ This is my first 3D book.
       </div>
       <div class="book-sheet book-sheet--left static-neighbor"><article class="page-text"><h1>Getting Started</h1>
 <p>Run <code>npx grimoire3d serve</code> from your project directory to open your existing Markdown as books. Grimoire3D looks for <code>docs/</code> directly under that directory by default. Existing Markdown works without a scaffold. Use the <a href="../../../read/publishing/metadata/">configuration guide</a> to customize the library as needed.</p>
-<p>Start with <a href="../../../read/start/first-book/">your first book</a>. Then learn <a href="../../../read/writing/index/">how to organize a library</a> or <a href="../../../read/publishing/index/">publish it</a>.</p>
+<p>Start with <a href="../../../read/start/first-book/">your first book</a>. Then learn <a href="../../../read/writing/">how to organize a library</a> or <a href="../../../read/publishing/">publish it</a>.</p>
 <p>If you are embedding a book in an existing app, see <a href="../../../read/start/react/">BookViewer in React</a>.</p></article><span class="folio-number" aria-hidden="true">1</span></div>
     </div>
     <nav class="reader-pagination" aria-label="Contents">
-      <a class="turn-button" href="../../../read/start/index/" aria-label="Previous page">‹</a>
+      <a class="turn-button" href="../../../read/start/" aria-label="Previous page">‹</a>
       <div class="reading-position"><span>Your first book</span><span>2 / 6</span></div>
       <a class="turn-button" href="../../../read/start/first-book/#install-the-cli" aria-label="Next page">›</a>
     </nav>

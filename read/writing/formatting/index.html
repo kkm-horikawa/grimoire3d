@@ -29,14 +29,14 @@
       if (started) return;
       started = true;
       for (const event of events) window.removeEventListener(event,start,true);
-      const reader = "../../../assets/BookReader-Dj9bVeII.js";
+      const reader = "../../../assets/BookReader-ahvkdMC8.js";
       if (reader) {
         const preload = document.createElement("link");
         preload.rel = "modulepreload";
         preload.href = reader;
         document.head.append(preload);
       }
-      void import("../../../assets/index-CBClBwEj.js");
+      void import("../../../assets/index-BaHzJo5n.js");
     }
     const art = [...document.querySelectorAll("link[data-first-art]")].find(link => matchMedia(link.media).matches);
     if (!art || !matchMedia("(max-width: 699px)").matches) start();
@@ -50,7 +50,7 @@
       image.src = art.href;
     }
     </script>
-    <link rel="modulepreload" crossorigin href="../../../assets/types-HX5Q6aR9.js">
+    <link rel="modulepreload" crossorigin href="../../../assets/types-DRAQKPUC.js">
     <link rel="stylesheet" crossorigin href="../../../assets/index-B1xJ-qX4.css">
   </head>
   <body>
@@ -230,7 +230,7 @@ cover: green
 <p>Use an AVIF, GIF, JPEG, PNG, or WebP file anywhere under <code>docs/</code>. Paths are relative to the book&#x27;s <code>index.md</code>. The image fits below the title without cropping. Long titles use up to three lines on the cover, and the book link keeps its full title. Use a small, compressed image for a fast bookshelf.</p></article><span class="folio-number" aria-hidden="true">5</span></div>
     </div>
     <nav class="reader-pagination" aria-label="Contents">
-      <a class="turn-button" href="../../../read/writing/index/#custom-cover-artwork" aria-label="Previous page">‹</a>
+      <a class="turn-button" href="../../../read/writing/#custom-cover-artwork" aria-label="Previous page">‹</a>
       <div class="reading-position"><span>Formatting and Spell Mode</span><span>6 / 24</span></div>
       <a class="turn-button" href="../../../read/writing/formatting/#paper-marks" aria-label="Next page">›</a>
     </nav>
