@@ -168,6 +168,13 @@ function describeBook(pages, folder, fallback, configuredTitle) {
       path: index.path,
       value: index.metadata.coverImage,
     },
+    appendices:
+      index?.metadata.appendices !== undefined
+        ? {
+            path: index.path,
+            value: index.metadata.appendices,
+          }
+        : undefined,
     chapters: pages.map((page) => {
       const group = posix.dirname(page.path);
       const inBook = folder ? page.path.slice(folder.length + 1) : page.path;
@@ -368,6 +375,61 @@ async function loadLink(url, page, links, docs, assets, issues) {
   }
 }
 
+async function resolveAppendices(appendices, bookTitle, docs, assets) {
+  if (!appendices) return undefined;
+  const { path, value } = appendices;
+  const fail = (message) => {
+    throw new Error(`${path} (${bookTitle}): ${message}`);
+  };
+  if (!Array.isArray(value)) {
+    fail("appendices must be a list of PDF entries with title and file.");
+  }
+  if (!value.length) return undefined;
+  const resolved = [];
+  const appendixIssues = [];
+  for (const [entryIndex, entry] of value.entries()) {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      fail(`appendices[${entryIndex}] must be an object with title and file.`);
+    }
+    const entryTitle =
+      typeof entry.title === "string" ? entry.title.trim() : "";
+    const entryFile = typeof entry.file === "string" ? entry.file.trim() : "";
+    if (!entryTitle) {
+      const hint = entryFile ? ` ("${entryFile}")` : "";
+      fail(`appendices[${entryIndex}]${hint} must have a non-empty title.`);
+    }
+    if (!entryFile) {
+      fail(
+        `appendices[${entryIndex}] ("${entryTitle}") must specify a local PDF file.`
+      );
+    }
+    if (/^(?:[a-z][a-z\d+.-]*:|\/|#)/i.test(entryFile)) {
+      fail(
+        `appendices file "${entryFile}" must be a local PDF path relative to ${path}.`
+      );
+    }
+    const extension = extname(entryFile.split(/[?#]/, 1)[0]).toLowerCase();
+    if (extension !== ".pdf") {
+      fail(`appendices file "${entryFile}" must point to a PDF file.`);
+    }
+    const href = await loadLink(
+      entryFile,
+      { path },
+      new Map(),
+      docs,
+      assets,
+      appendixIssues
+    );
+    if (!href?.startsWith("./content/")) {
+      fail(
+        `appendices file "${entryFile}" must be a readable local PDF inside docs/.`
+      );
+    }
+    resolved.push({ title: entryTitle, href });
+  }
+  return resolved;
+}
+
 async function projectTitle(cwd) {
   const filename = join(cwd, "package.json");
   try {
@@ -460,6 +522,7 @@ export async function readLibrary(
     category,
     date,
     coverImage,
+    appendices,
     chapters,
   } of books) {
     let artwork;
@@ -480,6 +543,12 @@ export async function readLibrary(
         );
       }
     }
+    const resolvedAppendices = await resolveAppendices(
+      appendices,
+      title,
+      docs,
+      assets
+    );
     summaries.push({ id, title, cover, category, date, coverImage: artwork });
     searchBooks.push({
       id,
@@ -537,7 +606,13 @@ export async function readLibrary(
         links: chapterLinks,
       });
     }
-    publishedBooks.push({ id, title, cover, pages });
+    publishedBooks.push({
+      id,
+      title,
+      cover,
+      ...(resolvedAppendices ? { appendices: resolvedAppendices } : {}),
+      pages,
+    });
   }
   return {
     docsDirectory: docs,

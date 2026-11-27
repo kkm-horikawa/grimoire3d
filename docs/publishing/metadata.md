@@ -84,9 +84,28 @@ The generated chapter remains readable by URL, and its HTML tells search engines
 Share the URL for a chapter or a specific heading, for example `/read/publishing/metadata/#chapter-metadata`. Existing links that start with `#/` also work.
 
 
+## PDF appendices
+
+Declare book-level PDF attachments such as printable worksheets or checklists in the book's `index.md` front matter. Paths are relative to that `index.md`.
+
+```yaml
+---
+title: Field Notes
+appendices:
+  - title: Observation worksheet
+    file: ./assets/observation-sheet.pdf
+  - title: Equipment checklist
+    file: ./assets/equipment-checklist.pdf
+---
+```
+
+When a book declares one or more appendices, the reader shows a leather **Appendix** bookmark above the book and an **Appendices** section at the end of **Contents** in the order listed. Selecting an entry opens the PDF in a new tab while keeping the reader on the current page.
+
+Both `serve` and `build` include every declared PDF in the site output even when no chapter links to it directly. Missing files, non-PDF paths, or entries outside the Markdown folder fail with a diagnostic naming the book and file.
+
 ## Book index example
 
-In `docs/handbook/index.md`, combine the title, summary, share image, and reading order in YAML front matter.
+In `docs/handbook/index.md`, combine the title, summary, share image, reading order, and PDF appendices in YAML front matter.
 
 ```yaml
 ---
@@ -102,11 +121,14 @@ chapters:
   - setup.md
   - examples/
   - reference.md
+appendices:
+  - title: Release checklist
+    file: ./assets/release-checklist.pdf
 ---
 ```
 
-Add the actual image files and use paths relative to this `index.md`. `title` names the book and its opening chapter; `description` and `socialImage` describe that chapter for search and sharing. Other chapters can supply their own summaries and images.
+Add the actual image and PDF files and use paths relative to this `index.md`. `title` names the book and its opening chapter; `description` and `socialImage` describe that chapter for search and sharing. Other chapters can supply their own summaries and images.
 
-Use `cover`, `coverImage`, `category`, and `date` in the book's `index.md`. Use `chapters` in any folder's `index.md` to order its direct children.
+Use `cover`, `coverImage`, `category`, `date`, and `appendices` in the book's `index.md`. Use `chapters` in any folder's `index.md` to order its direct children.
 
 Put the site URL, language, and author in `grimoire.yml`. `siteUrl` supplies the base for canonical URLs and the sitemap. For public chapters, omit `noindex` or set it to `false`, and choose a summary and share image that match the content.

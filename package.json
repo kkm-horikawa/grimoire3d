@@ -1,6 +1,6 @@
 {
   "name": "grimoire3d",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "description": "3D magical book documentation generator - Transform your docs into an interactive grimoire",
   "type": "module",
   "main": "./dist/index.js",
@@ -70,7 +70,7 @@
     "@react-spring/three": "^10.1.2",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
-    "dompurify": "3.4.18",
+    "dompurify": "3.5.0",
     "hast-util-from-html-isomorphic": "^2.0.0",
     "hast-util-to-text": "^4.0.2",
     "html-to-image": "^1.11.13",
