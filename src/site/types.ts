@@ -185,12 +185,13 @@ export function chapterPageIndex(
   id: string | undefined,
   anchor: string | null
 ): number {
-  const chapter = pages.findIndex((page) => page.id === id);
+  const resolvedId = id ?? pages[0]?.id;
+  const chapter = pages.findIndex((page) => page.id === resolvedId);
   if (chapter < 0) return 0;
   if (anchor) {
     for (let index = chapter; index < pages.length; index += 1) {
       const page = pages[index];
-      if (!page || page.id !== id) break;
+      if (!page || page.id !== resolvedId) break;
       if (
         page.section?.id === anchor ||
         Object.values(page.headingIds ?? {}).includes(anchor)
