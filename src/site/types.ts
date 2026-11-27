@@ -61,8 +61,14 @@ export interface Page {
   links: Record<string, string>;
 }
 
+export interface Appendix {
+  title: string;
+  href: string;
+}
+
 export interface Book extends BookSummary {
   pages: Page[];
+  appendices?: Appendix[];
 }
 
 export const copy = {
@@ -92,6 +98,9 @@ export const copy = {
     matches: (count: number) =>
       `${count} ${count === 1 ? "book" : "books"} found`,
     contents: "Contents",
+    appendix: "Appendix",
+    appendices: "Appendices",
+    opensInNewTab: "Opens in a new tab",
     scrollableTable: "Horizontally scrollable table",
     loadVideo: "Load video",
     openVideo: "Open video on its site",
@@ -143,6 +152,9 @@ export const copy = {
     count: (count: number) => `${count} 冊`,
     matches: (count: number) => `${count} 冊見つかりました`,
     contents: "目次",
+    appendix: "付録",
+    appendices: "付録",
+    opensInNewTab: "新しいタブで開く",
     scrollableTable: "横にスクロールできる表",
     loadVideo: "動画を読み込む",
     openVideo: "動画サイトで開く",

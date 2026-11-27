@@ -356,3 +356,77 @@ it.each([
     }
   }
 );
+
+it("embeds book appendices in static deep links so subpath URLs resolve to published PDFs", async () => {
+  const root = await mkdtemp(join(tmpdir(), "grimoire-appendices-"));
+  try {
+    await mkdir(join(root, "docs/field-notes/assets"), { recursive: true });
+    await mkdir(join(root, "template"));
+    await writeFile(
+      join(root, "grimoire.yml"),
+      "locale: en\nsiteUrl: https://example.com/docs-site/\n"
+    );
+    await writeFile(
+      join(root, "template/index.html"),
+      '<html lang="en"><head><meta charset="UTF-8"><title>Default</title></head><body><div id="root"></div></body></html>'
+    );
+    await writeFile(
+      join(root, "docs/field-notes/assets/observation-sheet.pdf"),
+      "%PDF-1.4\n"
+    );
+    await writeFile(
+      join(root, "docs/field-notes/index.md"),
+      [
+        "---",
+        "title: Field Notes",
+        "appendices:",
+        "  - title: Observation worksheet",
+        "    file: ./assets/observation-sheet.pdf",
+        "---",
+        "# Field Notes",
+      ].join("\n")
+    );
+    await writeFile(
+      join(root, "docs/field-notes/recording.md"),
+      "# Recording Observations\n\nNotes without a direct PDF link."
+    );
+
+    const library = await readLibrary(root, await readSettings(root));
+    await writeStaticPages(join(root, "template"), join(root, "site"), library);
+
+    const chapterHtml = await readFile(
+      join(root, "site/read/field-notes/recording/index.html"),
+      "utf8"
+    );
+    const staticRoot = /<meta name="grimoire-static" content="([^"]+)">/.exec(
+      chapterHtml
+    )?.[1];
+    expect(staticRoot).toBe("../../../");
+
+    const payloadMatch =
+      /<script type="application\/json" id="grimoire-initial">([\s\S]*?)<\/script>/.exec(
+        chapterHtml
+      );
+    expect(payloadMatch).not.toBeNull();
+    const payload = JSON.parse(payloadMatch?.[1] ?? "{}");
+    expect(payload.book.appendices).toEqual([
+      {
+        title: "Observation worksheet",
+        href: "./content/field-notes/assets/observation-sheet.pdf",
+      },
+    ]);
+
+    const resolved = new URL(
+      payload.book.appendices[0].href,
+      new URL(
+        staticRoot ?? "./",
+        "https://example.com/docs-site/read/field-notes/recording/"
+      )
+    );
+    expect(resolved.href).toBe(
+      "https://example.com/docs-site/content/field-notes/assets/observation-sheet.pdf"
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
